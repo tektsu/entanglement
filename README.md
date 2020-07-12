@@ -1,6 +1,6 @@
 # Entanglement
 
-Entanglement exists as an experiment in generative art. It is a library for drawing [Zentangles](https://zentagle.com) using the [p5.js library](https://p5js.org/) as well as the [p5.collide2d library](https://github.com/bmoren/p5.collide2D). It is in its very early stages so far, and can only draw a few tangles. 
+Entanglement exists as an experiment in generative art. It is a library for drawing [Zentangles](https://zentagle.com) using the [p5.js library](https://p5js.org/) as well as the [p5.collide2d library](https://github.com/bmoren/p5.collide2D). It is in its very early stages so far, and can only draw a few tangles. Also, you may expect breaking changes for the foreseeable future as the features are tweaked.
 
 The goal of Entanglement is to duplicate Zentangle patterns, which are normally hand-drawn. Therefore, there are many random "imprefections" to simulate hand-drawn objects.
 
@@ -47,7 +47,7 @@ All elements of the options object are optional. The values show in the example 
 
 An [Aah](https://tektsu.github.io/entanglement/Aah.html) element is star-shaped. It needs an approximate size and a position. The size is approximate because the aah's components are buikt with some size variations. In addition, an aah can be rotated randomly, and the angle between the arms can vary.
 
-![AAH.png](images/AAH.png)
+![AAH.png](https://raw.githubusercontent.com/tektsu/entanglement/master/images/AAH.png)
 
 #### Aah Options
 
@@ -84,7 +84,7 @@ Tangles are complete patterns created with multiple tangle elements. They fill a
 
 The Aahs tangle is a complete implementation of the AAH zentangle. _Note: the class is called Aahs, but the zentangle it implements is called AAH. Yes, it is confusing. Sorry._ Ahhs, is composed of repeating patterns of Aah and Dot, placed randomly on the screen. Aahs takes a [Box](file:///Users/steve/Development/art/entanglement/docs/Box.html) as a parameter, which defines the area on the canvas where it should draw.
 
-![AahsTangle.png](images/AahsTangle.png)
+![AahsTangle.png](https://raw.githubusercontent.com/tektsu/entanglement/master/images/AahsTangle.png)
 
 #### Aahs Options
 
@@ -130,7 +130,60 @@ One of the options fields is `plan`. This is set of extended options affecting t
     aahTipDiameter,
 
     // These are not specified, but may be used to change the values of the
-    // corresponding Dat options:
+    // corresponding Dot options:
     dotSpacing,
 }
 ```
+
+## Examples
+
+### Draw a traditional AAH zentangle.
+
+```
+// Canvas size
+const height = 600;
+const width = 600;
+
+function setup() {
+    createCanvas(width, height);
+    background(240);
+}
+
+function draw() {
+    let aahs = new Aahs(Box.newFromXY(0, 0, width, height), {});
+    aahs.draw();
+    noLoop();
+}
+```
+![AahsTangle.png](https://raw.githubusercontent.com/tektsu/entanglement/master/images/AahsTangle.png)
+
+### Increase the aah size variation
+
+```
+// Canvas size
+const height = 600;
+const width = 600;
+
+function setup() {
+    createCanvas(width, height);
+    background(240);
+}
+
+function draw() {
+
+    let aahs = new Aahs(Box.newFromXY(0, 0, width, height), {
+        sizeSDP: 50,
+        plan: {
+            aahs: true,
+            dots: true,
+            dotDrawPre: function() {
+                fill(255, 255, 255);
+                stroke,(0, 0, 0);
+            },
+         },
+    });
+    aahs.draw();
+    noLoop();
+}
+```
+![AahsSizeVariation.png](https://raw.githubusercontent.com/tektsu/entanglement/master/images/AahsSizeVariation.png)
