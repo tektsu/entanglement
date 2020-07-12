@@ -148,6 +148,7 @@ class Aahs extends Tangle {
                 let options = {
                     debug: this.debug,
                 };
+                if (this.plan.aahDrawPre) options.drawPre = this.plan.aahDrawPre;
                 if (this.plan.aahArmCount) options.armCount = this.plan.aahArmCount;
                 if (this.plan.aahThetaSD) options.thetaSD = this.plan.aahThetaSD;
                 if (this.plan.aahLengthSDP) options.lengthSDP = this.plan.aahLengthSDP;
