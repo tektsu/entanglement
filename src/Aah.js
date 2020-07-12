@@ -148,14 +148,15 @@ class Aahs extends Tangle {
                 let options = {
                     debug: this.debug,
                 };
-                if (this.plan.aahDrawPre) options.drawPre = this.plan.aahDrawPre;
-                if (this.plan.aahArmCount) options.armCount = this.plan.aahArmCount;
-                if (this.plan.aahThetaSD) options.thetaSD = this.plan.aahThetaSD;
-                if (this.plan.aahLengthSDP) options.lengthSDP = this.plan.aahLengthSDP;
-                if (this.plan.aahGapSDP) options.gapSDP = this.plan.aahGapSDP;
-                if (this.plan.aahRotate) options.rotate = this.plan.aahRotate;
-                if (this.plan.aahTipDistancePercent) options.tipDistancePercent = this.plan.aahTipDistancePercent;
-                if (this.plan.aahTipDiameter) options.tipDiameter = this.plan.aahTipDiameter;
+                if (this.plan.aahDrawPre !== undefined) options.drawPre = this.plan.aahDrawPre;
+                if (this.plan.aahArmCount !== undefined) options.armCount = this.plan.aahArmCount;
+                if (this.plan.aahThetaSD !== undefined) options.thetaSD = this.plan.aahThetaSD;
+                if (this.plan.aahLengthSDP !== undefined) options.lengthSDP = this.plan.aahLengthSDP;
+                if (this.plan.aahGapSDP !== undefined) options.gapSDP = this.plan.aahGapSDP;
+                if (this.plan.aahRotate !== undefined) options.rotate = this.plan.aahRotate;
+                if (this.plan.aahTipDistancePercent !== undefined) options.tipDistancePercent = this.plan.aahTipDistancePercent;
+                if (this.plan.aahTipDiameter !== undefined) options.tipDiameter = this.plan.aahTipDiameter;
+                console.log(this.plan, options);
                 const aah = new Aah(randomGaussian(this.size, sizeSDev), center, options);
                 const poly = aah.getPoly();
 
@@ -185,8 +186,8 @@ class Aahs extends Tangle {
                 let options = {
                     debug: this.debug,
                 };
-                if (this.plan.dotDrawPre) options.drawPre = this.plan.dotDrawPre;
-                if (this.plan.dotSpacing) options.spacing = this.plan.dotSpacing;
+                if (this.plan.dotDrawPre !== undefined) options.drawPre = this.plan.dotDrawPre;
+                if (this.plan.dotSpacing !== undefined) options.spacing = this.plan.dotSpacing;
                 const dot = new Dot(diameter, center, options);
                 const poly = dot.getPoly();
 

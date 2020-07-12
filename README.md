@@ -173,17 +173,41 @@ function draw() {
 
     let aahs = new Aahs(Box.newFromXY(0, 0, width, height), {
         sizeSDP: 50,
-        plan: {
-            aahs: true,
-            dots: true,
-            dotDrawPre: function() {
-                fill(255, 255, 255);
-                stroke,(0, 0, 0);
-            },
-         },
     });
     aahs.draw();
     noLoop();
 }
 ```
 ![AahsSizeVariation.png](https://raw.githubusercontent.com/tektsu/entanglement/master/images/AahsSizeVariation.png)
+
+### Turn off Aah rotation and reduce the variation of the arm angles
+
+```
+// Canvas size
+const height = 600;
+const width = 600;
+
+function setup() {
+    createCanvas(width, height);
+    background(240);
+}
+
+function draw() {
+    let aahs = new Aahs(Box.newFromXY(0, 0, width, height), {
+        plan: {
+            aahs: true,
+            dots: true,
+            dotDrawPre: function() {
+                fill(255, 255, 255);
+                stroke(0, 0, 0);
+            },
+            aahRotate: false,
+            aahThetaSD: 1,
+        },
+    });
+    aahs.draw();
+    noLoop();
+}
+```
+
+![AahsNoRotation.png](https://raw.githubusercontent.com/tektsu/entanglement/master/images/AahsNoRotation.png)
