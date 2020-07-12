@@ -9,19 +9,11 @@ module.exports = function(grunt) {
                 dest: 'dist/entanglement.js',
             },
         },
-        terser: {
-            options: {
-
-            },
-                files: {
-                    './dist/entanglement.min.js': ['./dist/entanglement.js'],
-                },
-        },
         exec: {
             minify: 'minify dist/entanglement.js >dist/entanglement.min.js',
         },
         jsdoc: {
-            src: ['src/*.js'],
+            src: ['src/*.js', 'README.md'],
             options: {
                 destination: 'docs',
             },
