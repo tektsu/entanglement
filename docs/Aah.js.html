@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: entanglement.js</title>
+    <title>JSDoc: Source: Aah.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: entanglement.js</h1>
+    <h1 class="page-title">Source: Aah.js</h1>
 
     
 
@@ -26,247 +26,7 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>console.log("### p5.entanglement v0.0.1 ###");
-
-/**
- * Define a point with cartesian coordinates.
- */
-class Point {
-
-    /**
-     * Create a new point.
-     * @param {number} x The X Coordinate.
-     * @param {number} y The Y Coordinate.
-     */
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    /**
-     * Add another Point to this point.
-     * @param {Point} p The Point to be added.
-     */
-    add(p) {
-        this.x += p.x;
-        this.y += p.y;
-    }
-}
-
-/**
- * Define a point with polar coordinates.
- */
-class Polar {
-
-    /**
-     * Create a new point.
-     * @param {number} r The distance for the origin.
-     * @param {number} a The angle in radians.
-     */
-    constructor(r, a) {
-        this.r = r;
-        this.a = a;
-    }
-
-    /**
-     * Convert a Polar to a Point.
-     * @returns {Point}
-     */
-    toPoint() {
-        return new Point(this.r * cos(this.a), this.r * sin(this.a));
-    }
-
-    /**
-     * Convert a Polar to a Point, specifying the origin.
-     * @param {Point} center The origin.
-     * @returns {Point}
-     */
-    toPointCenter(center) {
-        let p = this.toPoint();
-        p.add(center);
-        return p;
-    }
-}
-
-/**
- * Define a rectangle.
- */
-class Box {
-
-    /**
-     * Create a new Box.
-     * @param {Point} position The position of the upper left corner.
-     * @param {number} width The width of the box.
-     * @param {number} height The height of the box.
-     */
-    constructor(position, width, height) {
-        this.position = position;
-        this.width = width === undefined ? 100 : width;
-        this.height = height === undefined ? 100 : height;
-    }
-
-    /**
-     * Create a new Box. This is an alternate constructor that accepts discrete x and y coordinates instead of a Point to define position.
-     * @param {number} x The X position of the upper left corner.
-     * @param {number} y The y position of the upper left corner.
-     * @param {number} width The width of the box.
-     * @param {number} height The height of the box.
-     * @returns {Box}
-     */
-    static newFromXY(x, y, width, height) {
-        if (x === undefined) x=0;
-        if (y === undefined) y=0;
-        return new Box(new Point(x, y), width, height);
-    }
-}
-
-/**
- * Define a range which a value could take.
- */
-class Range {
-
-    /**
-     * Create a new Range.
-     * @param {number} min The minimum value.
-     * @param {number} max The maximum value.
-     */
-    constructor(min, max) {
-        if (min > max) {
-            this.min = max;
-            this.max = min;
-        } else {
-            this.min = min;
-            this.max = max;
-        }
-    }
-
-    /**
-     * Return a random value, evenly distributed, from the range.
-     * @returns {number}
-     */
-    rand() {
-        return random(this.min, this.max);
-    }
-}
-
-/**
- * Base class for a repeatable element of a tangle.
- */
-class TangleElement {
-
-    /**
-     * Create a TangleElement.
-     * @param {bumber} size The size of the element. What this means depends on the implementing class.
-     * @param {Point} center The location of the element.
-     */
-    constructor(size, center) {
-        this.size = size===undefined ? 100 : size;
-        this.center = center==undefined ? Point(0,0) : center;
-        this.poly = [];
-        this.debug = false;
-        this.drawPre = function() {
-            fill(0, 0, 0);
-            stroke(0, 0, 0);
-        }
-    }
-
-    /**
-     * Load the options object into instance variables. Each element becomes and instance variable of the same name.
-     * @param {object} options The map of options.
-     */
-    loadOptions(options) {
-        if (options === undefined)
-            return;
-        for (const property in options) {
-            this[property] = options[property];
-        }
-    }
-
-    /**
-     * Add a vertex to the enclosing polygon for this TangleElement.
-     * @param {Point} p A Point describing the vertex location.
-     */
-    addVertex(p) {
-        this.poly.push(createVector(p.x, p.y));
-    }
-
-    /**
-     * Get the vertices of the enclosing polygon.
-     * @returns [p5.Vector] An array of vertices for the enclosing polygon.
-     */
-    getPoly() {
-        return this.poly
-    }
-
-    /**
-     * Draw the enclosing polygon. This is done with some transparency, and is meant as a debugging aid.
-     */
-    drawPoly() {
-        if (!this.debug) {
-            return;
-        }
-        fill(128,0,0,128);
-        beginShape();
-        for(let i=0; i&lt;this.poly.length; ++i){
-            vertex(this.poly[i].x, this.poly[i].y);
-        }
-        endShape(CLOSE);
-    }
-
-    /**
-     * Draw the TangleElement
-     */
-    draw() {
-        if (this.drawPre !== undefined)
-            this.drawPre();
-    }
-}
-
-/**
- * Base class for a tangle, which is an area filled with TangleElements
- */
-class Tangle {
-
-    /**
-     * Create a Tangle.
-     * @param {Box} box The area to be filled.
-     */
-    constructor(box) {
-        this.box = box;
-        this.debug = false;
-    }
-
-    /**
-     * Load the options object into instance variables. Each element becomes and instance variable of the same name.
-     * @param {object} options The map of options.
-     */
-    loadOptions(options) {
-        if (options === undefined)
-            return;
-        for (const property in options) {
-            this[property] = options[property];
-        }
-    }
-
-    /**
-     * Test an polygon for collisions with existing polygons.
-     * @param [p5.Vector] poly
-     * @returns {boolean} True if there is a collision.
-     */
-    collisionTest(poly) {
-        if (!this.avoidCollisions)
-            return false;
-        for (let i = 0; i &lt; this.polys.length; ++i) {
-            if (collidePolyPoly(poly, this.polys[i], true)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-}
-
-/**
+            <pre class="prettyprint source linenums"><code>/**
  * Define the Dot element.
  */
 class Dot extends TangleElement {
@@ -484,7 +244,7 @@ class Aahs extends Tangle {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sun Jul 12 2020 06:01:48 GMT-0700 (Mountain Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sun Jul 12 2020 12:52:12 GMT-0700 (Mountain Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

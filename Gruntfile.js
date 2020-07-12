@@ -1,0 +1,39 @@
+module.exports = function(grunt) {
+
+    // Project configuration.
+    grunt.initConfig({
+        concat: {
+            separator: ';\n',
+            dist: {
+                src: ['src/Draw.js', 'src/Base.js', 'src/Aah.js'],
+                dest: 'dist/entanglement.js',
+            },
+        },
+        terser: {
+            options: {
+
+            },
+                files: {
+                    './dist/entanglement.min.js': ['./dist/entanglement.js'],
+                },
+        },
+        exec: {
+            minify: 'minify dist/entanglement.js >dist/entanglement.min.js',
+        },
+        jsdoc: {
+            src: ['src/*.js'],
+            options: {
+                destination: 'docs',
+            },
+        },
+    });
+
+    grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-exec');
+    grunt.loadNpmTasks('grunt-jsdoc');
+
+    // Default task(s).
+    grunt.registerTask('default', ['concat', 'exec', 'jsdoc']);
+    grunt.registerTask('docs', ['jsdoc']);
+
+};

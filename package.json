@@ -1,0 +1,37 @@
+{
+  "name": "entanglement",
+  "version": "0.0.1",
+  "description": "Zentingle drawing library based on p5",
+  "main": "entanglement.js",
+  "directories": {
+    "doc": "docs",
+    "example": "example"
+  },
+  "dependencies": {
+    "grunt-contrib-uglify": "^4.0.1",
+    "grunt-terser": "^1.0.0"
+  },
+  "devDependencies": {
+    "grunt": "^1.2.1",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-exec": "^3.0.0",
+    "grunt-jsdoc": "^2.4.1",
+    "minify": "^5.1.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tektsu/entanglement.git"
+  },
+  "keywords": [
+    "zentangle"
+  ],
+  "author": "Steve Baker",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tektsu/entanglement/issues"
+  },
+  "homepage": "https://github.com/tektsu/entanglement#readme"
+}
