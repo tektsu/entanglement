@@ -36,10 +36,8 @@ All elements of the options object are optional. The values show in the example 
 {
     spacing: 400,   // The size of the enclosing polygon expressed as a
                     // percentage of the Dot's size. The minimum value is 150.
-    drawPre: function() {   // A function to be called before drawing this Dot.
-        fill(0, 0, 0);
-        stroke(0, 0, 0);
-    },
+    fillColor: 0,   // The color used to fill any shapes
+    strokeColor: 0, // The color used to draw lines
 }
 ```
 
@@ -69,10 +67,8 @@ All elements of the options object are optional. The values show in the example 
     tipDiameter: Aah.tipType.gap, // Can be a diameter in pixels or Aah.tipType.gap,
                     // Aah.tipType.gap sets the diameter to be the same as the
                     // generated gap size for that arm. 
-    drawPre: function() {   // A function to be called before drawing this Aah.
-        fill(0, 0, 0);
-        stroke(0, 0, 0);
-    },
+    fillColor: 0,   // The color used to fill any shapes
+    strokeColor: 0, // The color used to draw lines
 }
 ```
 
@@ -93,14 +89,10 @@ All elements of the options object are optional. The values show in the example 
 ```
 {
     polys: [],          // A list of existing enclosing polygons to avoid.
-    size: Math.min(box.width, box.height) / 8, The approximate size of each aah in
-                        // pixels.
-    sizeSDP: 15,        // The percentage of the requested size touse is a standard
-                        // deviation to randomize the size.
-    margin: 6,          // The number of pixels to use as a margin. Aahs are not
-                        // centered outside the margins, but my extend outside.
     avoidCollisions: true, // If false, tangle elements will be placed without regard
                         // the enclosing polygons, and will likly overlap.
+    margin: size/6,     // The percentage of the box to used as a margin. Aahs are
+                        // not centered outside the margins, but msy extend outside.
     plan: Aah.plans.zentangle, The basic settings to use when generating tangle
                         // elements. Aah.plans.zentangle is a preset, but a plan
                         // can also be built manually. See below.
@@ -111,27 +103,42 @@ One of the options fields is `plan`. This is set of extended options affecting t
 
 ```
 {
-    aahs: true,         // If false, don;t generate any Aah elements.
-    dots: true,         // If false, don;t generate and Dot elements.
-    dotSize: new Range(3,6), // The range of the allowed Dot diameters in pixels.
-    dotDrawPre: function() {    // Function to run before drawing each element.
-        fill(255, 255, 255);
-        stroke,(0, 0, 0);
-    },
-    
-    // These are not specified, but may be used to change the values of the 
-    // corresponding Aah options:
-    aahArmCount,
-    aahThetaSD,
-    aahLengthSDP,
-    aahGapSDP,
-    aahRotate,
-    aahTipDistancePercent,
-    aahTipDiameter,
+    aah: {
+        enabled: true,  // Set to false to disable aah elements
+        size: 100,      // The requested size if each aah,
+        sizeSDP: 15,    // The percentage of the requested size to use as a standard
+                        // deviation to vary the actual size.
+        desiredCount: 10, // The number of aahs to try to print. Defaults to 10 times
+                        // the number of the requested size that COULD fit.
 
-    // These are not specified, but may be used to change the values of the
-    // corresponding Dot options:
-    dotSpacing,
+        // The remainder are the same as the Aah options, above
+        armCount: 8,    // The number of arms.
+        thetaSD: 5,     // The number of degrees to use as a standard deviation
+                        // when randomizing the angle of the arms.
+        lengthSDP: 15   // The standard deviation used to vary the length of each arm
+                        // is this percentage of the length of the arm.
+        gapSDP: 10      // The standard deviation used to vary how close to the center 
+                        // each are is is this percentage of the length of the arm. 
+        rotate: true,   // If true, each generated ahh will be rotated a random amount.
+        tipDistancePercent: 100,  // The distance of the dot at the end of arm from the
+                        // center, expressed in a percantage of the arm's length. A value 
+                        // of 100 puts the dot on the end of the arm. 
+        tipDiameter: Aah.tipType.gap, // Can be a diameter in pixels or Aah.tipType.gap,
+                        // Aah.tipType.gap sets the diameter to be the same as the
+                        // generated gap size for that arm. 
+        fillColor: 0,   // The color used to fill any shapes.
+        strokeColor: 0, // The color used to draw lines.
+    },
+    dot: {
+        enabled: true,  // Set to false to disable dot elements.
+        size: 3,        // The diameter of the dot; can be a number or a Range.
+
+        // The remainder are the same as the Dot options, above
+        spacing: 400,   // The size of the enclosing polygon expressed as a
+                        // percentage of the Dot's size. The minimum value is 150.
+        fillColor: 0,   // The color used to fill any shapes.
+        strokeColor: 0, // The color used to draw lines.
+    },
 }
 ```
 
@@ -172,7 +179,11 @@ function setup() {
 function draw() {
 
     let aahs = new Aahs(Box.newFromXY(0, 0, width, height), {
-        sizeSDP: 50,
+        plan: {
+            aah: {
+                sizeSDP: 50,
+            },
+        },
     });
     aahs.draw();
     noLoop();
@@ -195,14 +206,10 @@ function setup() {
 function draw() {
     let aahs = new Aahs(Box.newFromXY(0, 0, width, height), {
         plan: {
-            aahs: true,
-            dots: true,
-            dotDrawPre: function() {
-                fill(255, 255, 255);
-                stroke(0, 0, 0);
+            aah: {
+                rotate: false,
+                thetaSD: 1,
             },
-            aahRotate: false,
-            aahThetaSD: 1,
         },
     });
     aahs.draw();
@@ -227,14 +234,10 @@ function setup() {
 function draw() {
     let aahs = new Aahs(Box.newFromXY(0, 0, width, height), {
         plan: {
-            aahs: true,
-            dots: true,
-            dotDrawPre: function() {
-                fill(255, 255, 255);
-                stroke(0, 0, 0);
+            aah: {
+                // Set the standard deviation used to generate arm lengths to 50% of the original requested length
+                lengthSDP: 50,
             },
-            // Set the standard deviation used to generate arm lengths to 50% of the original requested length
-            aahLengthSDP: 50,
         },
     });
     aahs.draw();
@@ -259,15 +262,14 @@ function setup() {
 function draw() {
     let aahs = new Aahs(Box.newFromXY(0, 0, width, height), {
         plan: {
-            aahs: true,
-            dots: true,
-            dotSize: new Range(1, 10),
-            dotSpacing: 150,
-            dotDrawPre: function() {
-                fill(255, 255, 255);
-                stroke(0, 0, 0);
+            dot: {
+                size: new Range(1,10),
+                spacing: 150,
+                fillColor: 255,
             },
-            aahArmCount: 11,
+            aah: {
+                armCount: 11,
+            }
         },
     });
     aahs.draw();

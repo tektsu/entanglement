@@ -5,7 +5,7 @@ class TangleElement {
 
     /**
      * Create a TangleElement.
-     * @param {bumber} size The size of the element. What this means depends on the implementing class.
+     * @param {number} size The size of the element. What this means depends on the implementing class.
      * @param {Point} center The location of the element.
      */
     constructor(size, center) {
@@ -13,10 +13,8 @@ class TangleElement {
         this.center = center==undefined ? Point(0,0) : center;
         this.poly = [];
         this.debug = false;
-        this.drawPre = function() {
-            fill(0, 0, 0);
-            stroke(0, 0, 0);
-        }
+        this.fillColor = 0;
+        this.strokeColor = 0;
     }
 
     /**
@@ -66,8 +64,8 @@ class TangleElement {
      * Draw the TangleElement
      */
     draw() {
-        if (this.drawPre !== undefined)
-            this.drawPre();
+        fill(this.fillColor);
+        stroke(this.strokeColor);
     }
 }
 

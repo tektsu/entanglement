@@ -13,7 +13,7 @@ class Dot extends TangleElement {
         super(size, center);
         this.spacing = 400;
         this.loadOptions(options);
-        this.spacing = Math.max(150, this.spacing);
+        this.spacing = Math.max(100, this.spacing);
 
         let dAngle = TWO_PI/8;
         for (let angle=0; angle<TWO_PI; angle+=dAngle) {
@@ -104,12 +104,11 @@ class Aahs extends Tangle {
 
     static plans = {
         zentangle: {
-            aahs: true,
-            dots: true,
-            dotSize: new Range(3, 6),
-            dotDrawPre: function() {
-                fill(255, 255, 255);
-                stroke,(0, 0, 0);
+            aah: {
+            },
+            dot: {
+                size: new Range(3, 6),
+                fillColor: 255,
             },
         },
     };
@@ -122,48 +121,53 @@ class Aahs extends Tangle {
     constructor(box, options) {
         super(box);
         this.polys = [];
-        this.size = Math.min(box.width, box.height) / 8;
-        this.sizeSDP = 15;
-        this.margin = this.size/6;
         this.avoidCollisions = true;
         this.plan = Aahs.plans.zentangle;
         this.loadOptions(options);
+        if (this.plan.aah === undefined) this.plan.aah = {};
+        if (this.plan.dot === undefined) this.plan.dot = {};
     }
 
     /**
      * Draw the Aahs.
      */
     draw() {
-        if (this.plan.aahs) {
+        if (this.plan.aah.enable === undefined || this.plan.aah.enable === true) {
             let drawCount = 0;
             let failCount = 0;
 
-            if (this.desiredCount === undefined) this.desiredCount = (this.box.width / this.size) * (this.box.height / this.size) * 10;
+            const size = this.plan.aah.size === undefined ?
+                Math.min(this.box.width, this.box.height) / 8 : this.plan.aah.size;
+            if (this.margin === undefined) this.margin = size/6;
+            const desiredCount =  this.plan.aah.desiredCount === undefined ?
+                (this.box.width / size) * (this.box.height / size) * 10 : this.plan.aah.desiredCount;
+            console.log(desiredCount);
+            const sizeSDev = this.plan.aah.sizeSDP === undefined ?
+                (this.plan.aah.sizeSDP / 100) * size : this.plan.aah.sizeSDP;
 
-            let sizeSDev = (this.sizeSDP / 100) * this.size;
-            while (drawCount < this.desiredCount) {
+            while (drawCount < desiredCount) {
                 let center = new Point(random(this.box.position.x + this.margin, this.box.width - this.margin),
                     random(this.box.position.y + this.margin, this.box.height - this.margin));
 
                 let options = {
                     debug: this.debug,
                 };
-                if (this.plan.aahDrawPre !== undefined) options.drawPre = this.plan.aahDrawPre;
-                if (this.plan.aahArmCount !== undefined) options.armCount = this.plan.aahArmCount;
-                if (this.plan.aahThetaSD !== undefined) options.thetaSD = this.plan.aahThetaSD;
-                if (this.plan.aahLengthSDP !== undefined) options.lengthSDP = this.plan.aahLengthSDP;
-                if (this.plan.aahGapSDP !== undefined) options.gapSDP = this.plan.aahGapSDP;
-                if (this.plan.aahRotate !== undefined) options.rotate = this.plan.aahRotate;
-                if (this.plan.aahTipDistancePercent !== undefined) options.tipDistancePercent = this.plan.aahTipDistancePercent;
-                if (this.plan.aahTipDiameter !== undefined) options.tipDiameter = this.plan.aahTipDiameter;
-                console.log(this.plan, options);
-                const aah = new Aah(randomGaussian(this.size, sizeSDev), center, options);
+                if (this.plan.aah.armCount !== undefined) options.armCount = this.plan.aah.armCount;
+                if (this.plan.aah.thetaSD !== undefined) options.thetaSD = this.plan.aah.thetaSD;
+                if (this.plan.aah.lengthSDP !== undefined) options.lengthSDP = this.plan.aah.lengthSDP;
+                if (this.plan.aah.gapSDP !== undefined) options.gapSDP = this.plan.aah.gapSDP;
+                if (this.plan.aah.rotate !== undefined) options.rotate = this.plan.aah.rotate;
+                if (this.plan.aah.tipDistancePercent !== undefined) options.tipDistancePercent = this.plan.aah.tipDistancePercent;
+                if (this.plan.aah.tipDiameter !== undefined) options.tip.diameter = this.plan.aahTipDiameter;
+                if (this.plan.aah.fillColor !== undefined) options.fillColor = this.plan.aah.fillColor;
+                if (this.plan.aah.strokeColor !== undefined) options.strokeColor = this.plan.aah.strokeColor;
+                const aah = new Aah(randomGaussian(size, sizeSDev), center, options);
                 const poly = aah.getPoly();
 
                 const conflict = this.collisionTest(poly);
                 if (conflict) {
                     ++failCount;
-                    if (failCount > this.desiredCount * 3) {
+                    if (failCount > desiredCount * 3) {
                         break;
                     }
                 } else {
@@ -174,20 +178,21 @@ class Aahs extends Tangle {
             }
         }
 
-        if (this.plan.dots) {
-            const dotSize = this.plan.dotSize === undefined ? 3 : this.plan.dotSize;
-            const dotSizeNum = isNaN(dotSize) ? false : true;
-            const ds = (dotSizeNum ? dotSize : dotSize.max)*2;
+        if (this.plan.dot.enable === undefined || this.plan.dot.enable === true) {
+            const size = this.plan.dot.size === undefined ? 3 : this.plan.dot.size;
+            const sizeIsNum = isNaN(size) ? false : true;
+            const ds = (sizeIsNum ? size : size.max)*2;
             const desiredCount = (this.box.width/ds) * (this.box.height/ds);
-            for (let i = 0; i < desiredCount; i++) {
+            for (let i = 0; i < desiredCount; ++i) {
                 const center = new Point(random(this.box.position.x + this.margin, this.box.width - this.margin),
                     random(this.box.position.y + this.margin, this.box.height - this.margin));
-                const diameter = dotSizeNum ? dotSize : dotSize.rand();
+                const diameter = sizeIsNum ? size : size.rand();
                 let options = {
                     debug: this.debug,
                 };
-                if (this.plan.dotDrawPre !== undefined) options.drawPre = this.plan.dotDrawPre;
-                if (this.plan.dotSpacing !== undefined) options.spacing = this.plan.dotSpacing;
+                if (this.plan.dot.spacing !== undefined) options.spacing = this.plan.dot.spacing;
+                if (this.plan.dot.fillColor !== undefined) options.fillColor = this.plan.dot.fillColor;
+                if (this.plan.dot.strokeColor !== undefined) options.strokeColor = this.plan.dot.strokeColor;
                 const dot = new Dot(diameter, center, options);
                 const poly = dot.getPoly();
 
