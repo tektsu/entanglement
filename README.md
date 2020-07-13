@@ -211,3 +211,68 @@ function draw() {
 ```
 
 ![AahsNoRotation.png](https://raw.githubusercontent.com/tektsu/entanglement/master/images/AahsNoRotation.png)
+
+### Increase the varibility of arm length
+
+```
+// Canvas size
+const height = 600;
+const width = 600;
+
+function setup() {
+    createCanvas(width, height);
+    background(240);
+}
+
+function draw() {
+    let aahs = new Aahs(Box.newFromXY(0, 0, width, height), {
+        plan: {
+            aahs: true,
+            dots: true,
+            dotDrawPre: function() {
+                fill(255, 255, 255);
+                stroke(0, 0, 0);
+            },
+            // Set the standard deviation used to generate arm lengths to 50% of the original requested length
+            aahLengthSDP: 50,
+        },
+    });
+    aahs.draw();
+    noLoop();
+}
+```
+
+![AahsVaryArmLength.png](https://raw.githubusercontent.com/tektsu/entanglement/master/images/AahsVaryArmLength.png)
+
+### Increase the arm count to 11, and allow the dots to be bigger and closer together.
+
+```
+// Canvas size
+const height = 600;
+const width = 600;
+
+function setup() {
+    createCanvas(width, height);
+    background(240);
+}
+
+function draw() {
+    let aahs = new Aahs(Box.newFromXY(0, 0, width, height), {
+        plan: {
+            aahs: true,
+            dots: true,
+            dotSize: new Range(1, 10),
+            dotSpacing: 150,
+            dotDrawPre: function() {
+                fill(255, 255, 255);
+                stroke(0, 0, 0);
+            },
+            aahArmCount: 11,
+        },
+    });
+    aahs.draw();
+    noLoop();
+}
+```
+
+![AahsEleven.png](https://raw.githubusercontent.com/tektsu/entanglement/master/images/AahsEleven.png)
