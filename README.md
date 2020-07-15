@@ -11,7 +11,7 @@ Load the 3 required libraries:
 ```
     <script src="https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/p5.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/bmoren/p5.collide2d/p5.collide2d.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/tektsu/entanglement/dist/entanglement.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/tektsu/entanglement/dist/entanglement.js"></script>
 ```
 
 Review the documentation at https://tektsu.github.io/entanglement/, as well as the example code in the examples/ directory.
@@ -78,7 +78,7 @@ Tangles are complete patterns created with multiple tangle elements. They fill a
 
 ### Aahs
 
-The Aahs tangle is a complete implementation of the AAH zentangle. _Note: the class is called Aahs, but the zentangle it implements is called AAH. Yes, it is confusing. Sorry._ Ahhs, is composed of repeating patterns of Aah and Dot, placed randomly on the screen. Aahs takes a [Box](file:///Users/steve/Development/art/entanglement/docs/Box.html) as a parameter, which defines the area on the canvas where it should draw.
+The Aahs tangle is a complete implementation of the AAH zentangle. _Note: the class is called Aahs, but the zentangle it implements is called AAH. Yes, it is confusing. Sorry._ Ahhs, is composed of repeating patterns of Aah and Dot, placed randomly on the screen. Aahs takes a [Box](https://tektsu.github.io/entanglement/Box.html) as a parameter, which defines the area on the canvas where it should draw.
 
 ![AahsTangle.png](https://raw.githubusercontent.com/tektsu/entanglement/master/images/AahsTangle.png)
 
