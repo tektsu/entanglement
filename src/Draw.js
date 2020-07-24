@@ -59,6 +59,65 @@ class Polar {
 }
 
 /**
+ * Define a line segment
+ */
+class Line {
+    /**
+     * Create a new line
+     * @param {Point} begin
+     * @param {Point} end
+     */
+    constructor(begin, end) {
+        this.begin = begin;
+        this.end = end;
+    }
+
+    /**
+     * Return the length of the line
+     * @returns {number}
+     */
+    length() {
+        return Math.sqrt(Math.pow(this.begin.x - this.end.x, 2) + Math.pow(this.begin.y - this.end.y, 2));
+    }
+
+    /**
+     * Divide the line into segments, returning a list of points.
+     * @param {number} segments
+     * @returns [Point]
+     */
+    divide(segments) {
+        let points = [ this.begin ];
+        const xDiff = this.begin.x - this.end.x;
+        const yDiff = this.begin.y - this.end.y;
+        for (let i=1; i<=segments; i++) {
+            points.push(new Point(this.begin.x - i * xDiff / segments, this.begin.y - i * yDiff / segments));
+        }
+
+        return points;
+    }
+
+    /**
+     * Find the point at which two lines intersect. The intersection point may not be on either line segment.
+     * @param {Line} l The line to intersect with
+     * @returns {Point|undefined}
+     */
+    intersection(l) {
+        const d = ((l.end.y - l.begin.y) * (this.end.x - this.begin.x)) - ((l.end.x - l.begin.x) * (this.end.y - this.begin.y));
+        if (d == 0) {
+            return undefined;
+        }
+        const a = this.begin.y - l.begin.y;
+        const b = this.begin.x - l.begin.x;
+        const n1 = ((l.end.x - l.begin.x) * a) - ((l.end.y - l.begin.y) * b);
+        const a1 = n1 / d;
+        const x = this.begin.x + (a1 * (this.end.x - this.begin.x));
+        const y = this.begin.y + (a1 * (this.end.y - this.begin.y));
+
+        return new Point(x, y);
+    }
+}
+
+/**
  * Define a rectangle.
  */
 class Box {

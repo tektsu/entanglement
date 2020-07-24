@@ -59,6 +59,65 @@ class Polar {
 }
 
 /**
+ * Define a line segment
+ */
+class Line {
+    /**
+     * Create a new line
+     * @param {Point} begin
+     * @param {Point} end
+     */
+    constructor(begin, end) {
+        this.begin = begin;
+        this.end = end;
+    }
+
+    /**
+     * Return the length of the line
+     * @returns {number}
+     */
+    length() {
+        return Math.sqrt(Math.pow(this.begin.x - this.end.x, 2) + Math.pow(this.begin.y - this.end.y, 2));
+    }
+
+    /**
+     * Divide the line into segments, returning a list of points.
+     * @param {number} segments
+     * @returns [Point]
+     */
+    divide(segments) {
+        let points = [ this.begin ];
+        const xDiff = this.begin.x - this.end.x;
+        const yDiff = this.begin.y - this.end.y;
+        for (let i=1; i<=segments; i++) {
+            points.push(new Point(this.begin.x - i * xDiff / segments, this.begin.y - i * yDiff / segments));
+        }
+
+        return points;
+    }
+
+    /**
+     * Find the point at which two lines intersect. The intersection point may not be on either line segment.
+     * @param {Line} l The line to intersect with
+     * @returns {Point|undefined}
+     */
+    intersection(l) {
+        const d = ((l.end.y - l.begin.y) * (this.end.x - this.begin.x)) - ((l.end.x - l.begin.x) * (this.end.y - this.begin.y));
+        if (d == 0) {
+            return undefined;
+        }
+        const a = this.begin.y - l.begin.y;
+        const b = this.begin.x - l.begin.x;
+        const n1 = ((l.end.x - l.begin.x) * a) - ((l.end.y - l.begin.y) * b);
+        const a1 = n1 / d;
+        const x = this.begin.x + (a1 * (this.end.x - this.begin.x));
+        const y = this.begin.y + (a1 * (this.end.y - this.begin.y));
+
+        return new Point(x, y);
+    }
+}
+
+/**
  * Define a rectangle.
  */
 class Box {
@@ -126,27 +185,52 @@ class TangleElement {
 
     /**
      * Create a TangleElement.
-     * @param {number} size The size of the element. What this means depends on the implementing class.
+     * @param {p5.Graphics} g The graphics object to write to.
      * @param {Point} center The location of the element.
      */
-    constructor(size, center) {
-        this.size = size===undefined ? 100 : size;
+    constructor(g, center, options) {
+        this.g = g;
         this.center = center==undefined ? Point(0,0) : center;
         this.poly = [];
         this.debug = false;
         this.fillColor = 0;
         this.strokeColor = 0;
-    }
 
-    /**
-     * Load the options object into instance variables. Each element becomes and instance variable of the same name.
-     * @param {object} options The map of options.
-     */
-    loadOptions(options) {
-        if (options === undefined)
-            return;
+        const optionsAllowed = [
+            'debug',
+            'fillColor',
+            'strokeColor',
+        ];
+
+        // These options are never allowed
+        const optionsDisallowed = [
+            'g',
+            'center',
+            'poly',
+        ];
+
+        // Load options
+        let notAllowable = optionsDisallowed.reduce(function(map, key) {
+            map[key] = undefined;
+            return map;
+        }, {});
+        if (typeof options === undefined) options = {};
+        if (!('allowableOptions' in options)) {
+            options.allowableOptions = [];
+        }
+        options.allowableOptions = options.allowableOptions.concat(optionsAllowed);
+        let allowable = options.allowableOptions.reduce(function(map, key) {
+            if (!(key in notAllowable))
+                map[key] = undefined;
+            return map;
+        }, {});
+        delete options.allowableOptions;
         for (const property in options) {
-            this[property] = options[property];
+            if (property in allowable) {
+                this[property] = options[property];
+            } else {
+                console.log("ERROR: Ignoring option: ", property)
+            }
         }
     }
 
@@ -169,24 +253,24 @@ class TangleElement {
     /**
      * Draw the enclosing polygon. This is done with some transparency, and is meant as a debugging aid.
      */
-    drawPoly() {
-        if (!this.debug) {
-            return;
-        }
-        fill(128,0,0,128);
-        beginShape();
-        for(let i=0; i<this.poly.length; ++i){
-            vertex(this.poly[i].x, this.poly[i].y);
-        }
-        endShape(CLOSE);
-    }
+    // drawPoly() {
+    //     if (!this.debug) {
+    //         return;
+    //     }
+    //     fill(128,0,0,128);
+    //     beginShape();
+    //     for(let i=0; i<this.poly.length; ++i){
+    //         vertex(this.poly[i].x, this.poly[i].y);
+    //     }
+    //     endShape(CLOSE);
+    // }
 
     /**
      * Draw the TangleElement
      */
     draw() {
-        fill(this.fillColor);
-        stroke(this.strokeColor);
+        this.g.fill(this.fillColor);
+        this.g.stroke(this.strokeColor);
     }
 }
 
@@ -196,23 +280,120 @@ class TangleElement {
 class Tangle {
 
     /**
-     * Create a Tangle.
-     * @param {Box} box The area to be filled.
+     * Create a new Tangle
+     * @param {number} width
+     * @param {number} height
+     * @param {object} options A map of values to be loaded into instance variables.
      */
-    constructor(box) {
-        this.box = box;
+    constructor(width, height, options) {
+        this.width = width;
+        this.height = height;
+        this.g = createGraphics(width, height);
+        this.background = undefined;
+        this.gridXSpacing = 20;
+        this.gridYSpacing = 20;
         this.debug = false;
+        this.gridPoints = [];
+        this.polys = [];
+        this.avoidCollisions = true;
+
+        // Local options allowed
+        const optionsAllowed = [
+            'background',
+            'gridSpacing',
+            'gridXSpacing',
+            'gridYSpacing',
+            'gridVary',
+            'gridXVary',
+            'gridYVary',
+            'poly',
+            'avoidCollisions',
+            'debug',
+        ];
+
+        // These options are never allowed
+        const optionsDisallowed = [
+            'g',
+            'width',
+            'height',
+            'gridPoints'
+        ];
+
+        // Load options
+        let notAllowable = optionsDisallowed.reduce(function(map, key) {
+            map[key] = undefined;
+            return map;
+        }, {});
+        if (typeof options === undefined) options = {};
+        if (!('allowableOptions' in options)) {
+            options.allowableOptions = [];
+        }
+        options.allowableOptions = options.allowableOptions.concat(optionsAllowed);
+        let allowable = options.allowableOptions.reduce(function(map, key) {
+            if (!(key in notAllowable))
+                map[key] = undefined;
+            return map;
+        }, {});
+        delete options.allowableOptions;
+        for (const property in options) {
+            if (property in allowable) {
+                this[property] = options[property];
+            } else {
+                console.log("ERROR: Ignoring option: ", property)
+            }
+        }
+
+        // Set background
+        if (this.background !== undefined) {
+            this.g.background(this.background);
+        }
+
+        // Check gridSpacing
+        if (this.gridSpacing !== undefined) {
+            this.gridXSpacing = this.gridYSpacing = this.gridSpacing;
+        }
+        if (this.gridVary !== undefined) {
+            this.gridXVary = this.gridYVary = this.gridVary;
+        }
+
+        if (this.gridXVary === undefined) {
+            this.gridXVary = .05 * this.gridXSpacing;
+        }
+        if (this.gridYVary === undefined) {
+            this.gridYVary = .05 * this.gridYSpacing;
+        }
     }
 
     /**
-     * Load the options object into instance variables. Each element becomes and instance variable of the same name.
-     * @param {object} options The map of options.
+     * Build a set of grid points using the grid* options
      */
-    loadOptions(options) {
-        if (options === undefined)
-            return;
-        for (const property in options) {
-            this[property] = options[property];
+    buildGridPoints() {
+        for(let y=-this.gridYSpacing/2; y<this.height+this.gridYSpacing; y+=this.gridYSpacing) {
+            let row = [];
+            for(let x=-this.gridXSpacing/2; x<this.width+this.gridXSpacing; x+=this.gridXSpacing) {
+                row.push(new Point(random(x-this.gridXVary, x+this.gridXVary), random(y-this.gridYVary, y+this.gridYVary)));
+            }
+            this.gridPoints.push(row);
+        }
+    }
+
+    /**
+     * Draw the grid
+     */
+    grid() {
+        if (this.gridPoints.length === 0)
+            this.buildGridPoints();
+        for(let r=0; r<this.gridPoints.length; r++) {
+            for(let c=0; c<this.gridPoints[r].length; c++) {
+                let nextPoint = this.gridPoints[r][c+1];
+                if(nextPoint !== undefined) {
+                    this.g.line(this.gridPoints[r][c].x, this.gridPoints[r][c].y, nextPoint.x, nextPoint.y);
+                }
+                if (this.gridPoints[r+1] === undefined)
+                    continue;
+                nextPoint = this.gridPoints[r+1][c];
+                this.g.line(this.gridPoints[r][c].x, this.gridPoints[r][c].y, nextPoint.x, nextPoint.y);
+            }
         }
     }
 
@@ -232,6 +413,11 @@ class Tangle {
 
         return false;
     }
+
+    paste(position) {
+        image(this.g, position.x, position.y);
+    }
+
 }
 
 /**
@@ -241,14 +427,19 @@ class Dot extends TangleElement {
 
     /**
      * Create a new Dot.
-     * @param {number} size The diameter of the dot.
+     * @param {p5.Graphics} g The graphics object to draw to.
      * @param {Point} center The position of the dot.
      * @param {object} options A map of values to be loaded into instance variables.
      */
-    constructor(size, center, options) {
-        super(size, center);
-        this.spacing = 400;
-        this.loadOptions(options);
+    constructor(g, center, options) {
+        if (typeof options == undefined) options = {};
+        options.allowableOptions = [
+            'spacing',
+            'size',
+        ];
+        options.spacing = options.spacing === undefined ? 400 : options.spacing;
+        options.size = options.size === undefined ? 3 : options.size;
+        super(g, center, options);
         this.spacing = Math.max(100, this.spacing);
 
         let dAngle = TWO_PI/8;
@@ -262,8 +453,8 @@ class Dot extends TangleElement {
      */
     draw() {
         super.draw();
-        circle(this.center.x, this.center.y, this.size);
-        this.drawPoly();
+        this.g.circle(this.center.x, this.center.y, this.size);
+        //this.drawPoly();
     }
 }
 
@@ -278,21 +469,32 @@ class Aah extends TangleElement {
 
     /**
      * Create a new Aah.
-     * @param {number} size The diameter of the aah.
+     * @param {p5.Graphics} g The graphics object to draw to.
      * @param {Point} center The position of the aah.
      * @param {object} options A map of values to be loaded into instance variables.
      */
-    constructor(size, center, options) {
-        super(size, center);
-        this.armCount = 8;
-        this.thetaSD = 5;
-        this.lengthSDP = 15;  //
-        this.gapSDP = 10;
-        this.rotate = true;
-        this.tipDistancePercent = 100;
-        this.tipDiameter = Aah.tipType.gap;
-        this.loadOptions(options);
-        this.length = size/2;
+    constructor(g, center, options) {
+        if (typeof options == undefined) options = {};
+        options.allowableOptions = [
+            'armCount',
+            'thetaSD',
+            'lengthSDP',
+            'gapSDP',
+            'rotate',
+            'tipDistancePercent',
+            'tipDiameter',
+            'size',
+        ];
+        options.armCount = options.armCount === undefined ? 8 : options.armCount;
+        options.thetaSD = options.thetaSD === undefined ? 5 : options.thetaSD;
+        options.lengthSDP = options.lengthSDP === undefined ? 15 : options.lengthSDP;
+        options.gapSDP = options.gapSDP === undefined ? 10 : options.gapSDP;
+        options.rotate = options.rotate === undefined ? true : options.rotate;
+        options.tipDistancePercent = options.tipDistancePercent === undefined ? 100 : options.tipDistancePercent;
+        options.tipDiameter = options.tipDiameter === undefined ? Aah.tipType.gap : options.tipDiameter;
+        options.size = options.size === undefined ? 100 : options.size;
+        super(g, center, options);
+        this.length = this.size/2;
         if (this.armCount < 3) this.armCount = 3;
         this.arms = [];
 
@@ -326,10 +528,10 @@ class Aah extends TangleElement {
     draw() {
         super.draw();
         this.arms.forEach(arm => {
-            line(arm.start.x, arm.start.y, arm.stop.x, arm.stop.y);
-            circle(arm.tipCenter.x, arm.tipCenter.y, arm.tipDiameter);
+            this.g.line(arm.start.x, arm.start.y, arm.stop.x, arm.stop.y);
+            this.g.circle(arm.tipCenter.x, arm.tipCenter.y, arm.tipDiameter);
         });
-        this.drawPoly();
+        // this.drawPoly();
     }
 }
 
@@ -351,42 +553,41 @@ class Aahs extends Tangle {
 
     /**
      * Create the Aahs tangle object.
-     * @param {Box} box The rectangle where the AAhs should be drawn.
+     * @param {number} width The width of the tangle.
+     * @param {number} height The height of the tangle.
      * @param {object} options A map of values to be loaded into instance variables.
      */
-    constructor(box, options) {
-        super(box);
-        this.polys = [];
-        this.avoidCollisions = true;
-        this.plan = Aahs.plans.zentangle;
-        this.loadOptions(options);
+    constructor(width, height, options) {
+        if (typeof options == undefined) options = {
+            plan: Aahs.plans.zentangle
+        };
+        options.allowableOptions = [
+            'plan',
+        ];
+        options.plan = options.plan === undefined ? Aahs.plans.zentangle : options.plan;
+        super(width, height, options);
+
         if (this.plan.aah === undefined) this.plan.aah = {};
         if (this.plan.dot === undefined) this.plan.dot = {};
-    }
 
-    /**
-     * Draw the Aahs.
-     */
-    draw() {
         if (this.plan.aah.enable === undefined || this.plan.aah.enable === true) {
             let drawCount = 0;
             let failCount = 0;
 
             const size = this.plan.aah.size === undefined ?
-                Math.min(this.box.width, this.box.height) / 8 : this.plan.aah.size;
+                Math.min(this.width, this.height) / 8 : this.plan.aah.size;
             if (this.margin === undefined) this.margin = size/6;
-            const desiredCount =  this.plan.aah.desiredCount === undefined ?
-                (this.box.width / size) * (this.box.height / size) * 10 : this.plan.aah.desiredCount;
-            console.log(desiredCount);
+            const desiredCount = this.plan.aah.desiredCount === undefined ?
+                (this.width / size) * (this.height / size) * 10 : this.plan.aah.desiredCount;
             const sizeSDev = this.plan.aah.sizeSDP === undefined ?
                 (this.plan.aah.sizeSDP / 100) * size : this.plan.aah.sizeSDP;
 
             while (drawCount < desiredCount) {
-                let center = new Point(random(this.box.position.x + this.margin, this.box.width - this.margin),
-                    random(this.box.position.y + this.margin, this.box.height - this.margin));
+                let center = new Point(random(this.margin, this.width - this.margin), random(this.margin, this.height - this.margin));
 
                 let options = {
                     debug: this.debug,
+                    size: randomGaussian(size, sizeSDev),
                 };
                 if (this.plan.aah.armCount !== undefined) options.armCount = this.plan.aah.armCount;
                 if (this.plan.aah.thetaSD !== undefined) options.thetaSD = this.plan.aah.thetaSD;
@@ -397,7 +598,7 @@ class Aahs extends Tangle {
                 if (this.plan.aah.tipDiameter !== undefined) options.tip.diameter = this.plan.aahTipDiameter;
                 if (this.plan.aah.fillColor !== undefined) options.fillColor = this.plan.aah.fillColor;
                 if (this.plan.aah.strokeColor !== undefined) options.strokeColor = this.plan.aah.strokeColor;
-                const aah = new Aah(randomGaussian(size, sizeSDev), center, options);
+                const aah = new Aah(this.g, center, options);
                 const poly = aah.getPoly();
 
                 const conflict = this.collisionTest(poly);
@@ -418,18 +619,17 @@ class Aahs extends Tangle {
             const size = this.plan.dot.size === undefined ? 3 : this.plan.dot.size;
             const sizeIsNum = isNaN(size) ? false : true;
             const ds = (sizeIsNum ? size : size.max)*2;
-            const desiredCount = (this.box.width/ds) * (this.box.height/ds);
+            const desiredCount = (this.width/ds) * (this.height/ds);
             for (let i = 0; i < desiredCount; ++i) {
-                const center = new Point(random(this.box.position.x + this.margin, this.box.width - this.margin),
-                    random(this.box.position.y + this.margin, this.box.height - this.margin));
-                const diameter = sizeIsNum ? size : size.rand();
+                const center = new Point(random(this.margin, this.width - this.margin), random(this.margin, this.height - this.margin));
                 let options = {
                     debug: this.debug,
+                    size: sizeIsNum ? size : size.rand(),
                 };
                 if (this.plan.dot.spacing !== undefined) options.spacing = this.plan.dot.spacing;
                 if (this.plan.dot.fillColor !== undefined) options.fillColor = this.plan.dot.fillColor;
                 if (this.plan.dot.strokeColor !== undefined) options.strokeColor = this.plan.dot.strokeColor;
-                const dot = new Dot(diameter, center, options);
+                const dot = new Dot(this.g, center, options);
                 const poly = dot.getPoly();
 
                 const conflict = this.collisionTest(poly);
@@ -439,7 +639,116 @@ class Aahs extends Tangle {
                 }
             }
         }
-
-        return this.polys;
     }
+}
+
+/**
+ * Define the Ambler Tangle.
+ */
+class Ambler extends Tangle {
+    /**
+     * Create a new Ambler
+     * @param {number} width The width of the tangle.
+     * @param {number} height The height of the tangle.
+     * @param {obkect} options The options list.
+     */
+    constructor(width, height, options) {
+        if (typeof options == undefined) options = {};
+        super(width, height, options);
+
+        this.grid();
+
+        let colRotate = 0;
+        let rowRotate = colRotate + 1;
+        for (let r=0; r<this.gridPoints.length-1; r++) {
+            for (let c=0; c<this.gridPoints[r].length-1; c++) {
+                const p = this._pointPool(this.gridPoints[r][c], this.gridPoints[r][c + 1],
+                    this.gridPoints[r + 1][c + 1], this.gridPoints[r + 1][c]);
+                let points = [];
+                const rotate = colRotate % 4;
+                switch(rotate) {    // Different rotations use different points from the pool
+                    case 0:
+                        points = [p[0], p[14], p[16], p[2], p[1], p[11], p[13], p[5], p[4], p[8]];
+                        break;
+                    case 1:
+                        points = [p[14], p[16], p[2], p[0], p[10], p[13], p[5], p[3], p[7], p[8]];
+                        break;
+                    case 2:
+                        points = [p[16], p[2], p[0], p[14], p[15], p[5], p[3], p[11], p[12], p[8]];
+                        break;
+                    case 3:
+                        points = [p[2], p[0], p[14], p[16], p[6], p[3], p[11], p[13], p[9], p[8]];
+                        break;
+                }
+                for (let i = 1; i < points.length; i++) {
+                    this.g.line(points[i-1].x , points[i-1].y, points[i].x, points[i].y);
+                }
+                colRotate++;
+            }
+            colRotate = rowRotate++;
+        }
+    }
+
+    /*
+     *  _pointPool() creates a grid of proportionally-spaced points inside a quadrilateral (q). The q is divided into
+     *  36 sections (6x6) and a list of interior points defining those sections is returned. There would be 25 such
+     *  points, but only 17 are needed to draw an Ambler spiral in all its rotations, so only those are calculated.
+     *
+     *      +--+--+--+--+--+--+
+     *      |                 |     This chart shows the 17 points calculated and the indexes in the
+     *      +  0  1  .  .  2  +     returned array which they occupy.
+     *      |                 |
+     *      +  .  3  4  5  6  +
+     *      |                 |
+     *      +  .  7  8  9  .  +
+     *      |                 |
+     *      + 10 11 12 13  . +
+     *      |                 |
+     *      + 14  .  . 15  16 +
+     *      |                 |
+     *      +--+--+--+--+--+--+
+     *
+     *  _pointPool() takes 4 parameters, all of type Point:
+     *  the upper-left (northwest), upper-right (northeast),
+     *  lower-right (southeast), and lower-left (southwest)
+     *  points of the quadrilateral.
+     */
+    _pointPool(nw, ne, se, sw) {
+        const segments = 6;
+
+        // Create the interior lines
+        const lwyPoints = new Line(nw, sw).divide(segments);
+        const leyPoints = new Line(ne, se).divide(segments);
+        const lnxPoints = new Line(nw, ne).divide(segments);
+        const lsxPoints = new Line(sw, se).divide(segments);
+        let vLines = [];
+        let hLines = [];
+        for (let i=1; i<segments; i++) {
+            vLines.push(new Line(lnxPoints[i], lsxPoints[i]));
+            hLines.push(new Line(lwyPoints[i], leyPoints[i]));
+        }
+
+        // Create the point pool from which the spirals will be created, using intersections of interior lines
+        return  [
+            hLines[0].intersection(vLines[0]),
+            hLines[0].intersection(vLines[1]),
+            hLines[0].intersection(vLines[4]),
+            hLines[1].intersection(vLines[1]),
+            hLines[1].intersection(vLines[2]),
+            hLines[1].intersection(vLines[3]),
+            hLines[1].intersection(vLines[4]),
+            hLines[2].intersection(vLines[1]),
+            hLines[2].intersection(vLines[2]),
+            hLines[2].intersection(vLines[3]),
+            hLines[3].intersection(vLines[0]),
+            hLines[3].intersection(vLines[1]),
+            hLines[3].intersection(vLines[2]),
+            hLines[3].intersection(vLines[3]),
+            hLines[4].intersection(vLines[0]),
+            hLines[4].intersection(vLines[3]),
+            hLines[4].intersection(vLines[4]),
+        ];
+
+    }
+
 }
