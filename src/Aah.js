@@ -1,4 +1,11 @@
 /**
+ * @typedef {Object} DotElementOptions
+ * @property {number|Range} size Dot diameter.
+ * @property {number} spacing Relative dot spacing expressed as a percentage of diameter; defines the size of the enclosing polygon.
+ * @property {value} any Any of the TangleElementOptions may be used here.
+ */
+
+/**
  * Define the Dot element.
  */
 class Dot extends TangleElement {
@@ -7,10 +14,10 @@ class Dot extends TangleElement {
      * Create a new Dot.
      * @param {p5.Graphics} g The graphics object to draw to.
      * @param {Point} center The position of the dot.
-     * @param {object} options A map of values to be loaded into instance variables.
+     * @param {DotElementOptions} options A map of values to be loaded into instance variables.
      */
     constructor(g, center, options) {
-        if (typeof options == undefined) options = {};
+        if (typeof options === 'undefined') options = {};
         options.allowableOptions = {
             spacing: 400,
             size: 3,
@@ -35,10 +42,32 @@ class Dot extends TangleElement {
 }
 
 /**
+ * @typedef {Object} AahTipTypes
+ * @property {string} any Any members of this object are preset tip types to indicate special processing
+ */
+
+/**
+ * @typedef {Object} AahElementOptions
+ * @property {number} armCount The number of arms for the Aah.
+ * @property {number} gapSDP The percentage of initial arm length (which is half the value of size) to use as a standard deviation when randomly varying central gap for each arm.
+ * @property {number} lengthSDP The percentage of initial arm length (which is half the value of size) to use as a standard deviation when randomly varying actual arm length.
+ * @property {boolean} rotate If true, rotate the final Aah a random number of degrees.
+ * @property {number} size The expected size of the Aah. The actual size will vary depending on random factors.
+ * @property {number} thetaSD The angle in degrees to use as a standard deviation when randomly varying the angles between the arms.
+ * @property {number} tipDistancePercent The percentage up the arm to place the tip. A valve if 100 puts the tip at the end of each arm.
+ * @property {number} tipDiameter The diameter of the tip. The special value of Aah.tipType.gap makes the tip for each arm the same as that arm's gap.
+ * @property {value} any Any of the TangleElementOptions may be used here.
+ */
+
+/**
  * Define the Aah element.
  */
 class Aah extends TangleElement {
 
+    /**
+     * Special setting for defining Aah tips
+     * @type {AahTipTypes}
+     */
     static tipType = {
         gap: "gap",
     };
@@ -47,10 +76,10 @@ class Aah extends TangleElement {
      * Create a new Aah.
      * @param {p5.Graphics} g The graphics object to draw to.
      * @param {Point} center The position of the aah.
-     * @param {object} options A map of values to be loaded into instance variables.
+     * @param {AahElementOptions} options A map of values to be loaded into instance variables.
      */
     constructor(g, center, options) {
-        if (typeof options === undefined) options = {};
+        if (typeof options === 'undefined') options = {};
         options.allowableOptions = {
             armCount: 8,
             thetaSD: 5,
@@ -104,10 +133,44 @@ class Aah extends TangleElement {
 }
 
 /**
+ * @typedef {Object} AahPlan
+ * @property {number} sizeSDP The percentage of initial size to use as a standard deviation when randomly varying the size of each Aah.
+ * @property {number} desiredCount The number of Aah elements to try to draw. The actual number drawn will depend on how many will fit.
+ * @property {value} any Any of the AahOptions may be used here.
+ */
+
+/**
+ * @typedef {Object} DotPlan
+ * @property {value} any Any of the DotOptions may be used here.
+ */
+
+/**
+ * @typedef {Object} AahsPlan
+ * @property {AahPlan} aah Options for generating individual Aah elements.
+ * @property {DotPlan} dot Options for generating individual Dot elements.
+ */
+
+/**
+ * @typedef {Object} AahsPlans
+ * @property {AahsPlan} any Any members of this object are named AahsPlan objects to be used as presets.
+ */
+
+/**
+ * @typedef {Object} AahsOptions
+ * @property {AahsPlan} plan A set of options for underlying elements.
+ * @property {value} any Any of the TangleOptions may be used here.
+ */
+
+/**
  * Define the Aahs tangle
  */
 class Aahs extends Tangle {
 
+    /**
+     * Preset plans for the Aah tangle.
+     * @type {AahsPlans}
+     * @static
+     */
     static plans = {
         zentangle: {
             aah: {
@@ -123,10 +186,10 @@ class Aahs extends Tangle {
      * Create the Aahs tangle object.
      * @param {number} width The width of the tangle.
      * @param {number} height The height of the tangle.
-     * @param {object} options A map of values to be loaded into instance variables.
+     * @param {AahsOptions} options A map of values to be loaded into instance variables.
      */
     constructor(width, height, options) {
-        if (typeof options == undefined) options = {};
+        if (typeof options === 'undefined') options = {};
         options.allowableOptions = {
             plan: Aahs.plans.zentangle,
         };
@@ -155,15 +218,15 @@ class Aahs extends Tangle {
                     debug: this.debug,
                     size: randomGaussian(size, sizeSDev),
                 };
-                if (this.plan.aah.armCount !== undefined) options.armCount = this.plan.aah.armCount;
-                if (this.plan.aah.thetaSD !== undefined) options.thetaSD = this.plan.aah.thetaSD;
-                if (this.plan.aah.lengthSDP !== undefined) options.lengthSDP = this.plan.aah.lengthSDP;
-                if (this.plan.aah.gapSDP !== undefined) options.gapSDP = this.plan.aah.gapSDP;
-                if (this.plan.aah.rotate !== undefined) options.rotate = this.plan.aah.rotate;
-                if (this.plan.aah.tipDistancePercent !== undefined) options.tipDistancePercent = this.plan.aah.tipDistancePercent;
-                if (this.plan.aah.tipDiameter !== undefined) options.tip.diameter = this.plan.aahTipDiameter;
-                if (this.plan.aah.fillColor !== undefined) options.fillColor = this.plan.aah.fillColor;
-                if (this.plan.aah.strokeColor !== undefined) options.strokeColor = this.plan.aah.strokeColor;
+                if (typeof this.plan.aah.armCount !== 'undefined') options.armCount = this.plan.aah.armCount;
+                if (typeof this.plan.aah.thetaSD !== 'undefined') options.thetaSD = this.plan.aah.thetaSD;
+                if (typeof this.plan.aah.lengthSDP !== 'undefined') options.lengthSDP = this.plan.aah.lengthSDP;
+                if (typeof this.plan.aah.gapSDP !== 'undefined') options.gapSDP = this.plan.aah.gapSDP;
+                if (typeof this.plan.aah.rotate !== 'undefined') options.rotate = this.plan.aah.rotate;
+                if (typeof this.plan.aah.tipDistancePercent !== 'undefined') options.tipDistancePercent = this.plan.aah.tipDistancePercent;
+                if (typeof this.plan.aah.tipDiameter !== 'undefined') options.tip.diameter = this.plan.aahTipDiameter;
+                if (typeof this.plan.aah.fillColor !== 'undefined') options.fillColor = this.plan.aah.fillColor;
+                if (typeof this.plan.aah.strokeColor !== 'undefined') options.strokeColor = this.plan.aah.strokeColor;
                 const aah = new Aah(this.g, center, options);
                 const poly = aah.getPoly();
 
@@ -192,9 +255,9 @@ class Aahs extends Tangle {
                     debug: this.debug,
                     size: sizeIsNum ? size : size.rand(),
                 };
-                if (this.plan.dot.spacing !== undefined) options.spacing = this.plan.dot.spacing;
-                if (this.plan.dot.fillColor !== undefined) options.fillColor = this.plan.dot.fillColor;
-                if (this.plan.dot.strokeColor !== undefined) options.strokeColor = this.plan.dot.strokeColor;
+                if (typeof this.plan.dot.spacing !== 'undefined') options.spacing = this.plan.dot.spacing;
+                if (typeof this.plan.dot.fillColor !== 'undefined') options.fillColor = this.plan.dot.fillColor;
+                if (typeof this.plan.dot.strokeColor !== 'undefined') options.strokeColor = this.plan.dot.strokeColor;
                 const dot = new Dot(this.g, center, options);
                 const poly = dot.getPoly();
 

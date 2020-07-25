@@ -1,4 +1,9 @@
 /**
+ * @typedef {Object} AmblerOptions
+ * @property {value} any Any of the TangleOptions may be used here.
+ */
+
+/**
  * Define the Ambler Tangle.
  */
 class Ambler extends Tangle {
@@ -6,10 +11,10 @@ class Ambler extends Tangle {
      * Create a new Ambler
      * @param {number} width The width of the tangle.
      * @param {number} height The height of the tangle.
-     * @param {object} options The options list.
+     * @param {AmblerOptions} options The options list.
      */
     constructor(width, height, options) {
-        if (typeof options == undefined) options = {};
+        if (typeof options === 'undefined') options = {};
         super(width, height, options);
 
         this.grid();
@@ -45,7 +50,7 @@ class Ambler extends Tangle {
         }
     }
 
-    /*
+    /**
      *  _pointPool() creates a grid of proportionally-spaced points inside a quadrilateral (q). The q is divided into
      *  36 sections (6x6) and a list of interior points defining those sections is returned. There would be 25 such
      *  points, but only 17 are needed to draw an Ambler spiral in all its rotations, so only those are calculated.
@@ -68,6 +73,8 @@ class Ambler extends Tangle {
      *  the upper-left (northwest), upper-right (northeast),
      *  lower-right (southeast), and lower-left (southwest)
      *  points of the quadrilateral.
+     *
+     * @private
      */
     _pointPool(nw, ne, se, sw) {
         const segments = 6;

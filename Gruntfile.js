@@ -16,6 +16,7 @@ module.exports = function(grunt) {
             src: ['src/*.js', 'README.md'],
             options: {
                 destination: 'docs',
+                configure: "./jsdoc.conf"
             },
         },
     });

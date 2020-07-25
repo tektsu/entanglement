@@ -1,5 +1,5 @@
 /**
- * Command features of TangleElement and Tangle.
+ * Common components of TangleElement and Tangle.
  */
 class TangleBase {
 
@@ -38,6 +38,13 @@ class TangleBase {
 }
 
 /**
+ * @typedef {Object} TangleElementOptions
+ * @property {number} debug The debug level.
+ * @property {p5.Color} fillColor The color with which to fill shapes.
+ * @property {p5.Color} strokeColor The color with which to draw lines.
+ */
+
+/**
  * Base class for a repeatable element of a tangle.
  */
 class TangleElement extends TangleBase {
@@ -46,18 +53,16 @@ class TangleElement extends TangleBase {
      * Create a TangleElement.
      * @param {p5.Graphics} g The graphics object to write to.
      * @param {Point} center The location of the element.
+     * @param {TangleElementOptions} options A map of values to be loaded into instance variables.
      */
     constructor(g, center, options) {
         super();
         this.g = g;
         this.center = center==undefined ? Point(0,0) : center;
         this.poly = [];
-        this.debug = false;
-        this.fillColor = 0;
-        this.strokeColor = 0;
 
         this.optionsAllowed = {
-            debug: false,
+            debug: 0,
             fillColor: 0,
             strokeColor: 0,
         };
@@ -106,6 +111,20 @@ class TangleElement extends TangleBase {
 }
 
 /**
+ * @typedef {Object} TangleOptions
+ * @property {number} debug The debug level.
+ * @property {p5.Color} background The color with which to fill the background.
+ * @property {number} gridSpacing The grid size in pixels. If used, both gridXSpacing and gridYSpacing are set to this.
+ * @property {number} gridXSpacing The horizontal grid size in pixels.
+ * @property {number} gridYSpacing The vertical grid size in pixels.
+ * @property {number} gridVary The grid point location variation in pixels. If used, both gridXVary and gridYVary are set to this.
+ * @property {number} gridXVary The horizontal grid point location variation in pixels.
+ * @property {number} gridYVary The vertical grid point location variation in pixels.
+ * @property {objects} polys Polygons already drawn.
+ * @property {boolean} avoidCollisions If true, do not draw over other elements lusted in this.polys.
+ */
+
+/**
  * Base class for a tangle, which is an area filled with TangleElements
  */
 class Tangle extends TangleBase {
@@ -114,33 +133,26 @@ class Tangle extends TangleBase {
      * Create a new Tangle
      * @param {number} width
      * @param {number} height
-     * @param {object} options A map of values to be loaded into instance variables.
+     * @param {TangleOptions} options A map of values to be loaded into instance variables.
      */
     constructor(width, height, options) {
         super();
         this.width = width;
         this.height = height;
         this.g = createGraphics(width, height);
-        this.background = undefined;
-        this.gridXSpacing = 20;
-        this.gridYSpacing = 20;
-        this.debug = false;
         this.gridPoints = [];
-        this.polys = [];
-        this.avoidCollisions = true;
 
-        // Local options allowed
         this.optionsAllowed = {
+            debug: 0,
             background: undefined,
             gridSpacing: undefined,
-            gridXSpacing: 20,
-            gridYSpacing: 20,
+            gridXSpacing: 40,
+            gridYSpacing: 40,
             gridVary: undefined,
             gridXVary: undefined,
             gridYVary: undefined,
-            poly: [],
+            polys: [],
             avoidCollisions: true,
-            debug: false,
         };
 
         this.loadOptions(options);
@@ -159,10 +171,10 @@ class Tangle extends TangleBase {
         }
 
         if (this.gridXVary === undefined) {
-            this.gridXVary = .05 * this.gridXSpacing;
+            this.gridXVary = .02 * this.gridXSpacing;
         }
         if (this.gridYVary === undefined) {
-            this.gridYVary = .05 * this.gridYSpacing;
+            this.gridYVary = .02 * this.gridYSpacing;
         }
     }
 
@@ -180,7 +192,7 @@ class Tangle extends TangleBase {
     }
 
     /**
-     * Draw the grid
+     * Draw the grid on the graphics buffer
      */
     grid() {
         if (this.gridPoints.length === 0)
@@ -201,7 +213,7 @@ class Tangle extends TangleBase {
 
     /**
      * Test an polygon for collisions with existing polygons.
-     * @param [p5.Vector] poly
+     * @param [p5.Vector] poly The polygon to test.
      * @returns {boolean} True if there is a collision.
      */
     collisionTest(poly) {
@@ -216,6 +228,10 @@ class Tangle extends TangleBase {
         return false;
     }
 
+    /**
+     * Paste the graphics buffer onto the canvas at the specified position .
+     * @param {Point} position The position at which to place the image on the canvas.
+     */
     paste(position) {
         image(this.g, position.x, position.y);
     }
