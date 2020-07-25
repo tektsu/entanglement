@@ -11,12 +11,10 @@ class Dot extends TangleElement {
      */
     constructor(g, center, options) {
         if (typeof options == undefined) options = {};
-        options.allowableOptions = [
-            'spacing',
-            'size',
-        ];
-        options.spacing = options.spacing === undefined ? 400 : options.spacing;
-        options.size = options.size === undefined ? 3 : options.size;
+        options.allowableOptions = {
+            spacing: 400,
+            size: 3,
+        };
         super(g, center, options);
         this.spacing = Math.max(100, this.spacing);
 
@@ -52,25 +50,17 @@ class Aah extends TangleElement {
      * @param {object} options A map of values to be loaded into instance variables.
      */
     constructor(g, center, options) {
-        if (typeof options == undefined) options = {};
-        options.allowableOptions = [
-            'armCount',
-            'thetaSD',
-            'lengthSDP',
-            'gapSDP',
-            'rotate',
-            'tipDistancePercent',
-            'tipDiameter',
-            'size',
-        ];
-        options.armCount = options.armCount === undefined ? 8 : options.armCount;
-        options.thetaSD = options.thetaSD === undefined ? 5 : options.thetaSD;
-        options.lengthSDP = options.lengthSDP === undefined ? 15 : options.lengthSDP;
-        options.gapSDP = options.gapSDP === undefined ? 10 : options.gapSDP;
-        options.rotate = options.rotate === undefined ? true : options.rotate;
-        options.tipDistancePercent = options.tipDistancePercent === undefined ? 100 : options.tipDistancePercent;
-        options.tipDiameter = options.tipDiameter === undefined ? Aah.tipType.gap : options.tipDiameter;
-        options.size = options.size === undefined ? 100 : options.size;
+        if (typeof options === undefined) options = {};
+        options.allowableOptions = {
+            armCount: 8,
+            thetaSD: 5,
+            lengthSDP: 15,
+            gapSDP: 10,
+            rotate: true,
+            tipDistancePercent: 100,
+            tipDiameter: Aah.tipType.gap,
+            size: 100,
+        };
         super(g, center, options);
         this.length = this.size/2;
         if (this.armCount < 3) this.armCount = 3;
@@ -136,12 +126,10 @@ class Aahs extends Tangle {
      * @param {object} options A map of values to be loaded into instance variables.
      */
     constructor(width, height, options) {
-        if (typeof options == undefined) options = {
-            plan: Aahs.plans.zentangle
+        if (typeof options == undefined) options = {};
+        options.allowableOptions = {
+            plan: Aahs.plans.zentangle,
         };
-        options.allowableOptions = [
-            'plan',
-        ];
         options.plan = options.plan === undefined ? Aahs.plans.zentangle : options.plan;
         super(width, height, options);
 

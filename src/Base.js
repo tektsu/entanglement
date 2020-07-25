@@ -1,49 +1,26 @@
 /**
- * Base class for a repeatable element of a tangle.
+ * Command features of TangleElement and Tangle.
  */
-class TangleElement {
+class TangleBase {
 
     /**
-     * Create a TangleElement.
-     * @param {p5.Graphics} g The graphics object to write to.
-     * @param {Point} center The location of the element.
+     * Create a new TangleBase
      */
-    constructor(g, center, options) {
-        this.g = g;
-        this.center = center==undefined ? Point(0,0) : center;
-        this.poly = [];
-        this.debug = false;
-        this.fillColor = 0;
-        this.strokeColor = 0;
+    constructor() {}
 
-        const optionsAllowed = [
-            'debug',
-            'fillColor',
-            'strokeColor',
-        ];
-
-        // These options are never allowed
-        const optionsDisallowed = [
-            'g',
-            'center',
-            'poly',
-        ];
-
-        // Load options
-        let notAllowable = optionsDisallowed.reduce(function(map, key) {
-            map[key] = undefined;
-            return map;
-        }, {});
-        if (typeof options === undefined) options = {};
+    /**
+     * Load options into instance variables.
+     * @param {object} options Key/Value pairs.
+     */
+    loadOptions(options) {
+        if (typeof options === 'undefined') options = {};
         if (!('allowableOptions' in options)) {
-            options.allowableOptions = [];
+            options.allowableOptions = {};
         }
-        options.allowableOptions = options.allowableOptions.concat(optionsAllowed);
-        let allowable = options.allowableOptions.reduce(function(map, key) {
-            if (!(key in notAllowable))
-                map[key] = undefined;
-            return map;
-        }, {});
+        for (const key in this.optionsAllowed) {
+            options.allowableOptions[key] = this.optionsAllowed[key];
+        }
+        let allowable = options.allowableOptions;
         delete options.allowableOptions;
         for (const property in options) {
             if (property in allowable) {
@@ -52,6 +29,40 @@ class TangleElement {
                 console.log("ERROR: Ignoring option: ", property)
             }
         }
+        for (const property in allowable) {
+            if (typeof this[property] === 'undefined' && typeof allowable[property] !== 'undefined') {
+                this[property] = allowable[property];
+            }
+        }
+    }
+}
+
+/**
+ * Base class for a repeatable element of a tangle.
+ */
+class TangleElement extends TangleBase {
+
+    /**
+     * Create a TangleElement.
+     * @param {p5.Graphics} g The graphics object to write to.
+     * @param {Point} center The location of the element.
+     */
+    constructor(g, center, options) {
+        super();
+        this.g = g;
+        this.center = center==undefined ? Point(0,0) : center;
+        this.poly = [];
+        this.debug = false;
+        this.fillColor = 0;
+        this.strokeColor = 0;
+
+        this.optionsAllowed = {
+            debug: false,
+            fillColor: 0,
+            strokeColor: 0,
+        };
+
+        this.loadOptions(options)
     }
 
     /**
@@ -97,7 +108,7 @@ class TangleElement {
 /**
  * Base class for a tangle, which is an area filled with TangleElements
  */
-class Tangle {
+class Tangle extends TangleBase {
 
     /**
      * Create a new Tangle
@@ -106,6 +117,7 @@ class Tangle {
      * @param {object} options A map of values to be loaded into instance variables.
      */
     constructor(width, height, options) {
+        super();
         this.width = width;
         this.height = height;
         this.g = createGraphics(width, height);
@@ -118,50 +130,20 @@ class Tangle {
         this.avoidCollisions = true;
 
         // Local options allowed
-        const optionsAllowed = [
-            'background',
-            'gridSpacing',
-            'gridXSpacing',
-            'gridYSpacing',
-            'gridVary',
-            'gridXVary',
-            'gridYVary',
-            'poly',
-            'avoidCollisions',
-            'debug',
-        ];
+        this.optionsAllowed = {
+            background: undefined,
+            gridSpacing: undefined,
+            gridXSpacing: 20,
+            gridYSpacing: 20,
+            gridVary: undefined,
+            gridXVary: undefined,
+            gridYVary: undefined,
+            poly: [],
+            avoidCollisions: true,
+            debug: false,
+        };
 
-        // These options are never allowed
-        const optionsDisallowed = [
-            'g',
-            'width',
-            'height',
-            'gridPoints'
-        ];
-
-        // Load options
-        let notAllowable = optionsDisallowed.reduce(function(map, key) {
-            map[key] = undefined;
-            return map;
-        }, {});
-        if (typeof options === undefined) options = {};
-        if (!('allowableOptions' in options)) {
-            options.allowableOptions = [];
-        }
-        options.allowableOptions = options.allowableOptions.concat(optionsAllowed);
-        let allowable = options.allowableOptions.reduce(function(map, key) {
-            if (!(key in notAllowable))
-                map[key] = undefined;
-            return map;
-        }, {});
-        delete options.allowableOptions;
-        for (const property in options) {
-            if (property in allowable) {
-                this[property] = options[property];
-            } else {
-                console.log("ERROR: Ignoring option: ", property)
-            }
-        }
+        this.loadOptions(options);
 
         // Set background
         if (this.background !== undefined) {

@@ -179,51 +179,28 @@ class Range {
 }
 
 /**
- * Base class for a repeatable element of a tangle.
+ * Command features of TangleElement and Tangle.
  */
-class TangleElement {
+class TangleBase {
 
     /**
-     * Create a TangleElement.
-     * @param {p5.Graphics} g The graphics object to write to.
-     * @param {Point} center The location of the element.
+     * Create a new TangleBase
      */
-    constructor(g, center, options) {
-        this.g = g;
-        this.center = center==undefined ? Point(0,0) : center;
-        this.poly = [];
-        this.debug = false;
-        this.fillColor = 0;
-        this.strokeColor = 0;
+    constructor() {}
 
-        const optionsAllowed = [
-            'debug',
-            'fillColor',
-            'strokeColor',
-        ];
-
-        // These options are never allowed
-        const optionsDisallowed = [
-            'g',
-            'center',
-            'poly',
-        ];
-
-        // Load options
-        let notAllowable = optionsDisallowed.reduce(function(map, key) {
-            map[key] = undefined;
-            return map;
-        }, {});
-        if (typeof options === undefined) options = {};
+    /**
+     * Load options into instance variables.
+     * @param {object} options Key/Value pairs.
+     */
+    loadOptions(options) {
+        if (typeof options === 'undefined') options = {};
         if (!('allowableOptions' in options)) {
-            options.allowableOptions = [];
+            options.allowableOptions = {};
         }
-        options.allowableOptions = options.allowableOptions.concat(optionsAllowed);
-        let allowable = options.allowableOptions.reduce(function(map, key) {
-            if (!(key in notAllowable))
-                map[key] = undefined;
-            return map;
-        }, {});
+        for (const key in this.optionsAllowed) {
+            options.allowableOptions[key] = this.optionsAllowed[key];
+        }
+        let allowable = options.allowableOptions;
         delete options.allowableOptions;
         for (const property in options) {
             if (property in allowable) {
@@ -232,6 +209,40 @@ class TangleElement {
                 console.log("ERROR: Ignoring option: ", property)
             }
         }
+        for (const property in allowable) {
+            if (typeof this[property] === 'undefined' && typeof allowable[property] !== 'undefined') {
+                this[property] = allowable[property];
+            }
+        }
+    }
+}
+
+/**
+ * Base class for a repeatable element of a tangle.
+ */
+class TangleElement extends TangleBase {
+
+    /**
+     * Create a TangleElement.
+     * @param {p5.Graphics} g The graphics object to write to.
+     * @param {Point} center The location of the element.
+     */
+    constructor(g, center, options) {
+        super();
+        this.g = g;
+        this.center = center==undefined ? Point(0,0) : center;
+        this.poly = [];
+        this.debug = false;
+        this.fillColor = 0;
+        this.strokeColor = 0;
+
+        this.optionsAllowed = {
+            debug: false,
+            fillColor: 0,
+            strokeColor: 0,
+        };
+
+        this.loadOptions(options)
     }
 
     /**
@@ -277,7 +288,7 @@ class TangleElement {
 /**
  * Base class for a tangle, which is an area filled with TangleElements
  */
-class Tangle {
+class Tangle extends TangleBase {
 
     /**
      * Create a new Tangle
@@ -286,6 +297,7 @@ class Tangle {
      * @param {object} options A map of values to be loaded into instance variables.
      */
     constructor(width, height, options) {
+        super();
         this.width = width;
         this.height = height;
         this.g = createGraphics(width, height);
@@ -298,50 +310,20 @@ class Tangle {
         this.avoidCollisions = true;
 
         // Local options allowed
-        const optionsAllowed = [
-            'background',
-            'gridSpacing',
-            'gridXSpacing',
-            'gridYSpacing',
-            'gridVary',
-            'gridXVary',
-            'gridYVary',
-            'poly',
-            'avoidCollisions',
-            'debug',
-        ];
+        this.optionsAllowed = {
+            background: undefined,
+            gridSpacing: undefined,
+            gridXSpacing: 20,
+            gridYSpacing: 20,
+            gridVary: undefined,
+            gridXVary: undefined,
+            gridYVary: undefined,
+            poly: [],
+            avoidCollisions: true,
+            debug: false,
+        };
 
-        // These options are never allowed
-        const optionsDisallowed = [
-            'g',
-            'width',
-            'height',
-            'gridPoints'
-        ];
-
-        // Load options
-        let notAllowable = optionsDisallowed.reduce(function(map, key) {
-            map[key] = undefined;
-            return map;
-        }, {});
-        if (typeof options === undefined) options = {};
-        if (!('allowableOptions' in options)) {
-            options.allowableOptions = [];
-        }
-        options.allowableOptions = options.allowableOptions.concat(optionsAllowed);
-        let allowable = options.allowableOptions.reduce(function(map, key) {
-            if (!(key in notAllowable))
-                map[key] = undefined;
-            return map;
-        }, {});
-        delete options.allowableOptions;
-        for (const property in options) {
-            if (property in allowable) {
-                this[property] = options[property];
-            } else {
-                console.log("ERROR: Ignoring option: ", property)
-            }
-        }
+        this.loadOptions(options);
 
         // Set background
         if (this.background !== undefined) {
@@ -433,12 +415,10 @@ class Dot extends TangleElement {
      */
     constructor(g, center, options) {
         if (typeof options == undefined) options = {};
-        options.allowableOptions = [
-            'spacing',
-            'size',
-        ];
-        options.spacing = options.spacing === undefined ? 400 : options.spacing;
-        options.size = options.size === undefined ? 3 : options.size;
+        options.allowableOptions = {
+            spacing: 400,
+            size: 3,
+        };
         super(g, center, options);
         this.spacing = Math.max(100, this.spacing);
 
@@ -474,25 +454,17 @@ class Aah extends TangleElement {
      * @param {object} options A map of values to be loaded into instance variables.
      */
     constructor(g, center, options) {
-        if (typeof options == undefined) options = {};
-        options.allowableOptions = [
-            'armCount',
-            'thetaSD',
-            'lengthSDP',
-            'gapSDP',
-            'rotate',
-            'tipDistancePercent',
-            'tipDiameter',
-            'size',
-        ];
-        options.armCount = options.armCount === undefined ? 8 : options.armCount;
-        options.thetaSD = options.thetaSD === undefined ? 5 : options.thetaSD;
-        options.lengthSDP = options.lengthSDP === undefined ? 15 : options.lengthSDP;
-        options.gapSDP = options.gapSDP === undefined ? 10 : options.gapSDP;
-        options.rotate = options.rotate === undefined ? true : options.rotate;
-        options.tipDistancePercent = options.tipDistancePercent === undefined ? 100 : options.tipDistancePercent;
-        options.tipDiameter = options.tipDiameter === undefined ? Aah.tipType.gap : options.tipDiameter;
-        options.size = options.size === undefined ? 100 : options.size;
+        if (typeof options === undefined) options = {};
+        options.allowableOptions = {
+            armCount: 8,
+            thetaSD: 5,
+            lengthSDP: 15,
+            gapSDP: 10,
+            rotate: true,
+            tipDistancePercent: 100,
+            tipDiameter: Aah.tipType.gap,
+            size: 100,
+        };
         super(g, center, options);
         this.length = this.size/2;
         if (this.armCount < 3) this.armCount = 3;
@@ -558,12 +530,10 @@ class Aahs extends Tangle {
      * @param {object} options A map of values to be loaded into instance variables.
      */
     constructor(width, height, options) {
-        if (typeof options == undefined) options = {
-            plan: Aahs.plans.zentangle
+        if (typeof options == undefined) options = {};
+        options.allowableOptions = {
+            plan: Aahs.plans.zentangle,
         };
-        options.allowableOptions = [
-            'plan',
-        ];
         options.plan = options.plan === undefined ? Aahs.plans.zentangle : options.plan;
         super(width, height, options);
 
@@ -650,7 +620,7 @@ class Ambler extends Tangle {
      * Create a new Ambler
      * @param {number} width The width of the tangle.
      * @param {number} height The height of the tangle.
-     * @param {obkect} options The options list.
+     * @param {object} options The options list.
      */
     constructor(width, height, options) {
         if (typeof options == undefined) options = {};

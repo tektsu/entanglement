@@ -6,7 +6,7 @@ class Ambler extends Tangle {
      * Create a new Ambler
      * @param {number} width The width of the tangle.
      * @param {number} height The height of the tangle.
-     * @param {obkect} options The options list.
+     * @param {object} options The options list.
      */
     constructor(width, height, options) {
         if (typeof options == undefined) options = {};
