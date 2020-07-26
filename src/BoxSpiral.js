@@ -8,6 +8,7 @@
  * @property {Point} ne The northeast corner of the quadrilateral. Overrides size.
  * @property {Point} se The southeast corner of the quadrilateral. Overrides size.
  * @property {Point} sw The southwest corner of the quadrilateral. Overrides size.
+ * @property {boolean} interior If true, do not touch the sides of the quadrilateral, draw the spiral inside the quadrilateral with two fewer divisions than specified. The default is false.
  * @property {value} any Any of the TangleElementOptions may be used here.
  */
 
@@ -33,6 +34,7 @@ class BoxSpiralElement extends TangleElement {
             rotation: 'ccw',
             size: 50,
             startCorner: 'nw',
+            interior: false,
         };
         if (!('fillColor' in options)) {
             options.fillColor = color(0, 0, 0, 0);
@@ -42,7 +44,7 @@ class BoxSpiralElement extends TangleElement {
             this.divisions.max += 1;
             this.divisions = Math.floor(this.divisions.rand());
         }
-        this.divisions = Math.max(2, this.divisions);
+        this.divisions = Math.max(this.interior ? 3 : 2, this.divisions);
         if (this.rotation === 'random') {
             this.rotation = ['cw', 'ccw'][Math.floor(random(0, 2))];
         }
@@ -158,22 +160,22 @@ class BoxSpiralElement extends TangleElement {
         if (this.rotation === 'cw') {
             this.direction++; // if cw, the initial direction is 1.
         }
-        this.current = 0;       // Index of first point
-        this.step = 0;
-        this.levelCount = 3;    // We need thre strokes at the first level, 2 for each subsequent level
+        this.current = this.interior ? this.divisions + 2 : 0;       // Index of first point
+        this.step =  this.interior ? 2 : 0;
+        this.levelCount = 3;    // We need three strokes at the first level, 2 for each subsequent level
 
         // Modifications if the starting corner is other than nw
         switch(this.startCorner) {
             case 'ne':
-                this.current = this.divisions;
+                this.current = this.interior ? 2 * this.divisions : this.divisions;
                 this.direction += 3;
                 break;
             case 'se':
-                this.current = Math.pow(this.divisions+1, 2) - 1;
+                this.current = this.interior ? Math.pow(this.divisions, 2) + this.divisions - 2 : Math.pow(this.divisions+1, 2) - 1;
                 this.direction += 2;
                 break;
             case 'sw':
-                this.current = this.divisions * (this.divisions+1);
+                this.current = this.interior ? Math.pow(this.divisions, 2) : this.divisions * (this.divisions+1);
                 this.direction += 1;
                 break;
         }
