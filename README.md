@@ -26,9 +26,15 @@ Tangle elements are shapes that make up tangle. Generally, a tangle will have a 
 
 ### Aah
 
-An [Aah](https://tektsu.github.io/entanglement/Aah.html) element is star-shaped. It needs an approximate size and a position. The size is approximate because the aah's components are buikt with some size variations. In addition, an aah can be rotated randomly, and the angle between the arms can vary.
+An [Aah](https://tektsu.github.io/entanglement/Aah.html) element is star-shaped. It needs an approximate size and a position. The size is approximate because the aah's components are built with some size variations. In addition, an aah can be rotated randomly, and the angle between the arms can vary.
 
 ![AAH.png](https://raw.githubusercontent.com/tektsu/entanglement/master/images/AAH.png)
+
+### BoxSpiralElement
+
+The BoxSpiral element is a square spiral which is used in several tangles. It's size and direction of rotation (cw or ccw) can be specified in the options. The spiral can be made to fit any quarilateral; it need not be limited to a square.
+
+![BoxSpiralElement.png](https://raw.githubusercontent.com/tektsu/entanglement/master/images/BoxSpiralElement.png)
 
 ### Dot
 
@@ -36,11 +42,11 @@ The [Dot](https://tektsu.github.io/entanglement/Dot.html) element is a simple do
 
 ## Tangles
 
-Tangles are complete patterns created with multiple tangle elements. They fill an area, and me extend outside that area at times.
+Tangles are complete patterns created with multiple tangle elements which fill an area.
 
 ### Aahs
 
-The Aahs tangle is a complete implementation of the AAH zentangle. _Note: the class is called Aahs, but the zentangle it implements is called AAH. Yes, it is confusing. Sorry._ Ahhs, is composed of repeating patterns of Aah and Dot, placed randomly on the screen. Aahs takes a width, a height and an [AahsOptions](https://tektsu.github.io/entanglement/global.html#AahsOptions) as a parameters.
+The Aahs tangle is a complete implementation of the AAH zentangle. _Note: the class is called Aahs, but the zentangle it implements is called AAH. Yes, it is confusing. Sorry._ Aahs, is composed of repeating patterns of Aah and Dot, placed randomly on the screen. Aahs takes a width, a height and an [AahsOptions](https://tektsu.github.io/entanglement/global.html#AahsOptions) as a parameters.
 
 #### Aahs Examples
 
@@ -133,7 +139,7 @@ Turning off random rotation and reducing the theta standard deviation resulting 
 
 ### Ambler
 
-Ambler is an implementation of the AMBLER zentangle. It consists of a grid containing rotated box spirals. Aahs takes a width, a height and an [AmblerOptions](https://tektsu.github.io/entanglement/global.html#AmblerOptions) as a parameters.
+Ambler is an implementation of the AMBLER zentangle. It consists of a grid containing rotated box spirals. Aahs takes a width, a height and an [AmblerOptions](https://tektsu.github.io/entanglement/global.html#AmblerOptions) as parameters.
 
 #### Ambler Examples
 
@@ -170,3 +176,49 @@ The gridVary option will randomly move each point in the grid by up to the speci
 ```
 
 ![AmblerCubes.png](https://raw.githubusercontent.com/tektsu/entanglement/master/images/AmblerCubes.png)
+
+### BoxSpiral
+
+The BoxSpiral tangle, an implementation of the standard BOXSPIRAL zentangle, is a collection of BoxSpiralElements placed randomly. It is expected that some elements will partially or completely cover other elements. Generally, enough elements are placed in the area to ensure the area background is completely covered. The spirals may vary in size and rotation. BoxSpiral takes a width, a height and a [BoxSpiralOptions](https://tektsu.github.io/entanglement/global.html#BoxSpiralOptions) as parameters.
+
+#### BoxSpiral Examples
+
+It is important to specify a fillColor with this tangle to avoid patterns beneath the spirals from showing through.
+
+##### Similar spirals
+
+```
+const height = 200;
+const width = 200;
+
+function setup() {
+    createCanvas(width, height);
+    background(255);
+}
+
+function draw() {
+    let bs = new BoxSpiral(width, height, {
+        background: 'white',
+        divisions: 8,
+        rotation: 'random',
+    });
+    bs.paste(new Point(0, 0));
+    noLoop();
+}
+```
+
+![BoxSpiralSimilarTangle.png](https://raw.githubusercontent.com/tektsu/entanglement/master/images/BoxSpiralSimilarTangle.png)
+
+##### Vary the startCorner and the size
+
+```
+    let bs = new BoxSpiral(width, height, {
+       background: 'white',
+       divisions: 8,
+       rotation: 'random',
+       startCorner: 'random',
+       size: new Range(30, 60),
+    });
+```
+
+![BoxSpiralTangle.png](https://raw.githubusercontent.com/tektsu/entanglement/master/images/BoxSpiralTangle.png)
