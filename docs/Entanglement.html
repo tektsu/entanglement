@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Polar</title>
+    <title>JSDoc: Class: Entanglement</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Polar</h1>
+    <h1 class="page-title">Class: Entanglement</h1>
 
     
 
@@ -28,9 +28,9 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>Polar<span class="signature">(r, a)</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>Entanglement<span class="signature">()</span><span class="type-signature"></span></h2>
         
-            <div class="class-description"><p>Define a point with polar coordinates.</p></div>
+            <div class="class-description"><p>Utilities routines for the Entanglement library.</p></div>
         
     
 </header>
@@ -45,95 +45,19 @@
     
 
     
-    <h4 class="name" id="Polar"><span class="type-signature"></span>new Polar<span class="signature">(r, a)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="Entanglement"><span class="type-signature"></span>new Entanglement<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
 
 
 
-<div class="description">
-    <p>Create a new point.</p>
-</div>
 
 
 
 
 
 
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>r</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The distance for the origin.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>a</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The angle in radians.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
 
 
 
@@ -169,7 +93,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Draw.js.html">Draw.js</a>, <a href="Draw.js.html#line49">line 49</a>
+        <a href="Entanglement.js.html">Entanglement.js</a>, <a href="Entanglement.js.html#line4">line 4</a>
     </li></ul></dd>
     
 
@@ -225,7 +149,7 @@
     
 
     
-    <h4 class="name" id="toPoint"><span class="type-signature"></span>toPoint<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Point.html">Point</a>}</span></h4>
+    <h4 class="name" id=".getInt"><span class="type-signature">(static) </span>getInt<span class="signature">(v)</span><span class="type-signature"></span></h4>
     
 
     
@@ -233,113 +157,7 @@
 
 
 <div class="description">
-    <p>Convert a Polar to a Point.</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Draw.js.html">Draw.js</a>, <a href="Draw.js.html#line58">line 58</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="Point.html">Point</a></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="toPointCenter"><span class="type-signature"></span>toPointCenter<span class="signature">(center)</span><span class="type-signature"> &rarr; {<a href="Point.html">Point</a>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>Convert a Polar to a Point, specifying the origin.</p>
+    <p>Choose an integer value</p>
 </div>
 
 
@@ -375,13 +193,16 @@
 
         <tr>
             
-                <td class="name"><code>center</code></td>
+                <td class="name"><code>v</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><a href="Point.html">Point</a></span>
+<span class="param-type">number</span>
+|
+
+<span class="param-type"><a href="Range.html">Range</a></span>
 
 
             
@@ -391,7 +212,7 @@
 
             
 
-            <td class="description last"><p>The origin.</p></td>
+            <td class="description last"><p>A value or value range.</p></td>
         </tr>
 
     
@@ -432,7 +253,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Draw.js.html">Draw.js</a>, <a href="Draw.js.html#line67">line 67</a>
+        <a href="Entanglement.js.html">Entanglement.js</a>, <a href="Entanglement.js.html#line24">line 24</a>
     </li></ul></dd>
     
 
@@ -457,24 +278,146 @@
 
 
 
-<h5>Returns:</h5>
+
+
+
+
 
         
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="Point.html">Point</a></span>
-
-
-    </dd>
-</dl>
+            
 
     
+
+    
+    <h4 class="name" id=".getValue"><span class="type-signature">(static) </span>getValue<span class="signature">(v)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Choose a value</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+|
+
+<span class="param-type"><a href="Range.html">Range</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A value or value range.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Entanglement.js.html">Entanglement.js</a>, <a href="Entanglement.js.html#line12">line 12</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

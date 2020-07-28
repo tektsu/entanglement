@@ -1,4 +1,36 @@
 /**
+ * Utilities routines for the Entanglement library.
+ */
+class Entanglement {
+
+    static version = '0.0.3';
+
+    /**
+     * Choose a value
+     * @param {number|Range} v A value or value range.
+     */
+    static getValue(v) {
+        let ret = v;
+        if (isNaN(v)) {
+            ret = v.rand();
+        }
+        return ret;
+    }
+
+    /**
+     * Choose an integer value
+     * @param {number|Range} v A value or value range.
+     */
+    static getInt(v) {
+        let ret = v;
+        if (isNaN(v)) {
+            ret = random(v.min, v.max+1);
+        }
+        return Math.floor(ret);
+    }
+}
+
+/**
  * Define a point with cartesian coordinates.
  */
 class Point {
@@ -20,6 +52,19 @@ class Point {
     add(p) {
         this.x += p.x;
         this.y += p.y;
+    }
+
+    /**
+     * Rotate the point in the coordinate system around another point
+     * @param degrees
+     * @param center
+     */
+    rotate(degrees, center) {
+        const r = radians(degrees);
+        const x = this.x - center.x;
+        const y = this.y - center.y;
+        this.x = x*cos(r)-y*sin(r) + center.x;
+        this.y = x*sin(r)+y*cos(r) + center.y;
     }
 }
 
@@ -702,6 +747,7 @@ class Aahs extends Tangle {
  * @property {Point} se The southeast corner of the quadrilateral. Overrides size.
  * @property {Point} sw The southwest corner of the quadrilateral. Overrides size.
  * @property {boolean} interior If true, do not touch the sides of the quadrilateral, draw the spiral inside the quadrilateral with two fewer divisions than specified. The default is false.
+ * @property {number|Range} rotate Number of degress to rotate the spiral.
  * @property {value} any Any of the TangleElementOptions may be used here.
  */
 
@@ -728,15 +774,13 @@ class BoxSpiralElement extends TangleElement {
             size: 50,
             startCorner: 'nw',
             interior: false,
+            rotate: undefined,
         };
         if (!('fillColor' in options)) {
             options.fillColor = color(0, 0, 0, 0);
         }
         super(g, center, options);
-        if (isNaN(this.divisions)) {    // If not a number, this should be a Range
-            this.divisions.max += 1;
-            this.divisions = Math.floor(this.divisions.rand());
-        }
+        this.divisions = Entanglement.getInt(this.divisions);
         this.divisions = Math.max(this.interior ? 3 : 2, this.divisions);
         if (this.rotation === 'random') {
             this.rotation = ['cw', 'ccw'][Math.floor(random(0, 2))];
@@ -744,10 +788,27 @@ class BoxSpiralElement extends TangleElement {
         if (this.startCorner === 'random') {
             this.startCorner = ['nw', 'ne', 'se', 'sw'][Math.floor(random(0, 4))];
         }
+
+        // If any corners are undefined at this point, create them from the size parameter
         if (this.nw === undefined) this.nw = new Point(center.x-this.size/2, center.y-this.size/2);
         if (this.ne === undefined) this.ne = new Point(center.x+this.size/2, center.y-this.size/2);
         if (this.se === undefined) this.se = new Point(center.x+this.size/2, center.y+this.size/2);
         if (this.sw === undefined) this.sw = new Point(center.x-this.size/2, center.y+this.size/2);
+
+        // Do any requested rotation
+        if (this.rotate !== undefined) {
+            const degrees = Entanglement.getValue(this.rotate);
+            this.nw.rotate(degrees, this.center);
+            this.ne.rotate(degrees, this.center);
+            this.se.rotate(degrees, this.center);
+            this.sw.rotate(degrees, this.center);
+        }
+
+        // Create the enclosing polygon
+        this.addVertex(this.nw);
+        this.addVertex(this.ne);
+        this.addVertex(this.se);
+        this.addVertex(this.sw);
 
         this.pointPool = this._pointPool();
     }
@@ -909,6 +970,57 @@ class BoxSpiralElement extends TangleElement {
         this._nextDirection();
 
         return p;
+    }
+}
+
+/**
+ * @typedef {Object} BoxSpiralOptions
+ * @property {number} desiredCount The number of spirals to generate.
+ * @property {number|Range} size Size or size range of spirals to generate. The default is 50.
+ * @property (number|Range} divisions Number of divisions for each spiral.
+ * @property {value} any Any of the TangleOptions may be used here.
+ */
+
+/**
+ * Define the BoxSpiral Tangle.
+ */
+class BoxSpiral extends Tangle {
+
+    /**
+     * Create a new BoxSpiral
+     * @param {number} width The width of the tangle.
+     * @param {number} height The height of the tangle.
+     * @param {BoxSpiralOptions} options The options list.
+     */
+    constructor(width, height, options) {
+        if (typeof options === 'undefined') options = {};
+        options.allowableOptions = {
+            size: 50,
+            desiredCount: undefined,
+            divisions: undefined,
+            rotation: undefined,
+            startCorner: undefined,
+            rotate: new Range(0, 90),
+        };
+        super(width, height, options);
+
+        if (this.desiredCount === undefined) {
+            const s = isNaN(this.size) ? this.size.min : this.size;
+            this.desiredCount = this.width/s * this.height/s * 10; // An amount that should cover the buffer
+        }
+
+        for (let i=0; i<this.desiredCount; i++) {
+            let bseOpt = {
+                size: Entanglement.getInt(this.size),
+                fillColor: this.background,
+            };
+            if (this.divisions) bseOpt.divisions = this.divisions;
+            if (this.rotation) bseOpt.rotation = this.rotation;
+            if (this.rotate) bseOpt.rotate = this.rotate;
+            if (this.startCorner) bseOpt.startCorner = this.startCorner;
+            const bse = new BoxSpiralElement(this.g, new Point(random(0, this.width), random(0, this.height)), bseOpt);
+            bse.draw();
+        }
     }
 }
 

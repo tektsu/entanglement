@@ -21,6 +21,19 @@ class Point {
         this.x += p.x;
         this.y += p.y;
     }
+
+    /**
+     * Rotate the point in the coordinate system around another point
+     * @param degrees
+     * @param center
+     */
+    rotate(degrees, center) {
+        const r = radians(degrees);
+        const x = this.x - center.x;
+        const y = this.y - center.y;
+        this.x = x*cos(r)-y*sin(r) + center.x;
+        this.y = x*sin(r)+y*cos(r) + center.y;
+    }
 }
 
 /**

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: Ambler.js</title>
+    <title>JSDoc: Source: Entanglement.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: Ambler.js</h1>
+    <h1 class="page-title">Source: Entanglement.js</h1>
 
     
 
@@ -27,47 +27,34 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * @typedef {Object} AmblerOptions
- * @property {value} any Any of the TangleOptions may be used here.
+ * Utilities routines for the Entanglement library.
  */
+class Entanglement {
 
-/**
- * Define the Ambler Tangle.
- */
-class Ambler extends Tangle {
+    static version = '0.0.3';
+
     /**
-     * Create a new Ambler
-     * @param {number} width The width of the tangle.
-     * @param {number} height The height of the tangle.
-     * @param {AmblerOptions} options The options list.
+     * Choose a value
+     * @param {number|Range} v A value or value range.
      */
-    constructor(width, height, options) {
-        if (typeof options === 'undefined') options = {};
-        super(width, height, options);
-
-        this.buildGridPoints();
-
-        const starts = ['nw', 'sw', 'se', 'ne'];
-        let colRotate = 0;
-        let rowRotate = colRotate + 1;
-        for (let r = 0; r &lt; this.gridPoints.length - 1; r++) {
-            for (let c = 0; c &lt; this.gridPoints[r].length - 1; c++) {
-                const nw = this.gridPoints[r][c];
-                const ne = this.gridPoints[r][c + 1];
-                const se = this.gridPoints[r + 1][c + 1];
-                const sw = this.gridPoints[r + 1][c];
-                const bse = BoxSpiralElement.newFromCoordinates(this.g, nw, ne, se, sw, {
-                    startCorner: starts[colRotate % 4],
-                    divisions: 6,
-                    interior: true,
-                });
-                bse.draw();
-                colRotate++;
-            }
-            colRotate = rowRotate++;
+    static getValue(v) {
+        let ret = v;
+        if (isNaN(v)) {
+            ret = v.rand();
         }
+        return ret;
+    }
 
-        this.grid();
+    /**
+     * Choose an integer value
+     * @param {number|Range} v A value or value range.
+     */
+    static getInt(v) {
+        let ret = v;
+        if (isNaN(v)) {
+            ret = random(v.min, v.max+1);
+        }
+        return Math.floor(ret);
     }
 }
 </code></pre>
