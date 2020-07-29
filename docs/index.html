@@ -58,14 +58,17 @@
 <h2>Tangle Elements</h2>
 <p>Tangle elements are shapes that make up tangle. Generally, a tangle will have a one or more tangle elements repeated over its area. Tangle elements generally have an enclosing polygon defining their local space. Tangle can use these to avoid overlapping the elements.</p>
 <h3>Aah</h3>
-<p>An <a href="https://tektsu.github.io/entanglement/Aah.html">Aah</a> element is star-shaped. It needs an approximate size and a position. The size is approximate because the aah's components are buikt with some size variations. In addition, an aah can be rotated randomly, and the angle between the arms can vary.</p>
+<p>An <a href="https://tektsu.github.io/entanglement/Aah.html">Aah</a> element is star-shaped. It needs an approximate size and a position. The size is approximate because the aah's components are built with some size variations. In addition, an aah can be rotated randomly, and the angle between the arms can vary.</p>
 <p><img src="https://raw.githubusercontent.com/tektsu/entanglement/master/images/AAH.png" alt="AAH.png"></p>
+<h3>BoxSpiralElement</h3>
+<p>The BoxSpiral element is a square spiral which is used in several tangles. It's size and direction of rotation (cw or ccw) can be specified in the options. The spiral can be made to fit any quarilateral; it need not be limited to a square.</p>
+<p><img src="https://raw.githubusercontent.com/tektsu/entanglement/master/images/BoxSpiralElement.png" alt="BoxSpiralElement.png"></p>
 <h3>Dot</h3>
 <p>The <a href="https://tektsu.github.io/entanglement/Dot.html">Dot</a> element is a simple dot or circle on the canvas. A Dot is created with a size (diameter), a position, and an options object.</p>
 <h2>Tangles</h2>
-<p>Tangles are complete patterns created with multiple tangle elements. They fill an area, and me extend outside that area at times.</p>
+<p>Tangles are complete patterns created with multiple tangle elements which fill an area.</p>
 <h3>Aahs</h3>
-<p>The Aahs tangle is a complete implementation of the AAH zentangle. <em>Note: the class is called Aahs, but the zentangle it implements is called AAH. Yes, it is confusing. Sorry.</em> Ahhs, is composed of repeating patterns of Aah and Dot, placed randomly on the screen. Aahs takes a width, a height and an <a href="https://tektsu.github.io/entanglement/global.html#AahsOptions">AahsOptions</a> as a parameters.</p>
+<p>The Aahs tangle is a complete implementation of the AAH zentangle. <em>Note: the class is called Aahs, but the zentangle it implements is called AAH. Yes, it is confusing. Sorry.</em> Aahs, is composed of repeating patterns of Aah and Dot, placed randomly on the screen. Aahs takes a width, a height and an <a href="https://tektsu.github.io/entanglement/global.html#AahsOptions">AahsOptions</a> as a parameters.</p>
 <h4>Aahs Examples</h4>
 <h5>Draw a traditional AAH tangle.</h5>
 <p>No options are passed in, since a traditional AAH is the default.</p>
@@ -134,7 +137,7 @@ function draw() {
 </code></pre>
 <p><img src="https://raw.githubusercontent.com/tektsu/entanglement/master/images/AahsEleven.png" alt="AahsEleven.png"></p>
 <h3>Ambler</h3>
-<p>Ambler is an implementation of the AMBLER zentangle. It consists of a grid containing rotated box spirals. Aahs takes a width, a height and an <a href="https://tektsu.github.io/entanglement/global.html#AmblerOptions">AmblerOptions</a> as a parameters.</p>
+<p>Ambler is an implementation of the AMBLER zentangle. It consists of a grid containing rotated box spirals. Aahs takes a width, a height and an <a href="https://tektsu.github.io/entanglement/global.html#AmblerOptions">AmblerOptions</a> as parameters.</p>
 <h4>Ambler Examples</h4>
 <h5>A traditional Ambler</h5>
 <p>A traditional Amber requires no options.</p>
@@ -159,7 +162,41 @@ function draw() {
         gridVary: 20,
     });
 </code></pre>
-<p><img src="https://raw.githubusercontent.com/tektsu/entanglement/master/images/AmblerCubes.png" alt="AmblerCubes.png"></p></article>
+<p><img src="https://raw.githubusercontent.com/tektsu/entanglement/master/images/AmblerCubes.png" alt="AmblerCubes.png"></p>
+<h3>BoxSpiral</h3>
+<p>The BoxSpiral tangle, an implementation of the standard BOXSPIRAL zentangle, is a collection of BoxSpiralElements placed randomly. It is expected that some elements will partially or completely cover other elements. Generally, enough elements are placed in the area to ensure the area background is completely covered. The spirals may vary in size and rotation. BoxSpiral takes a width, a height and a <a href="https://tektsu.github.io/entanglement/global.html#BoxSpiralOptions">BoxSpiralOptions</a> as parameters.</p>
+<h4>BoxSpiral Examples</h4>
+<p>It is important to specify a fillColor with this tangle to avoid patterns beneath the spirals from showing through.</p>
+<h5>Similar spirals</h5>
+<pre class="prettyprint source"><code>const height = 200;
+const width = 200;
+
+function setup() {
+    createCanvas(width, height);
+    background(255);
+}
+
+function draw() {
+    let bs = new BoxSpiral(width, height, {
+        background: 'white',
+        divisions: 8,
+        rotation: 'random',
+    });
+    bs.paste(new Point(0, 0));
+    noLoop();
+}
+</code></pre>
+<p><img src="https://raw.githubusercontent.com/tektsu/entanglement/master/images/BoxSpiralSimilarTangle.png" alt="BoxSpiralSimilarTangle.png"></p>
+<h5>Vary the startCorner and the size</h5>
+<pre class="prettyprint source"><code>    let bs = new BoxSpiral(width, height, {
+       background: 'white',
+       divisions: 8,
+       rotation: 'random',
+       startCorner: 'random',
+       size: new Range(30, 60),
+    });
+</code></pre>
+<p><img src="https://raw.githubusercontent.com/tektsu/entanglement/master/images/BoxSpiralTangle.png" alt="BoxSpiralTangle.png"></p></article>
     </section>
 
 
@@ -176,7 +213,7 @@ function draw() {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Mon Jul 27 2020 18:05:18 GMT-0700 (Mountain Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Tue Jul 28 2020 18:57:28 GMT-0700 (Mountain Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
