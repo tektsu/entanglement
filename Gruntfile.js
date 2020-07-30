@@ -5,7 +5,7 @@ module.exports = function(grunt) {
         concat: {
             separator: ';\n',
             dist: {
-                src: ['src/Entanglement.js', 'src/Draw.js', 'src/Base.js', 'src/Aah.js', `src/BoxSpiral.js`, 'src/Ambler.js'],
+                src: ['src/Entanglement.js', 'src/Draw.js', 'src/Base.js', 'src/Aah.js', `src/BoxSpiral.js`, 'src/Ambler.js', 'src/Zentangle.js'],
                 dest: 'dist/entanglement.js',
             },
         },

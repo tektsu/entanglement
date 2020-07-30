@@ -67,7 +67,7 @@ class TangleElement extends TangleBase {
             strokeColor: 0,
         };
 
-        this.loadOptions(options)
+        this.loadOptions(options);
     }
 
     /**
