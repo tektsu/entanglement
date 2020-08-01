@@ -34,6 +34,17 @@ class Point {
         this.x = x*cos(r)-y*sin(r) + center.x;
         this.y = x*sin(r)+y*cos(r) + center.y;
     }
+
+    /**
+     * Vary the point location (both x and y) by up to v.
+     * @param {number} v The number of pixels to vary the point.
+     * @returns {Point} This point, after being modified.
+     */
+    vary(v) {
+        this.x += random(-v, v);
+        this.y += random(-v, v);
+        return this;
+    }
 }
 
 /**
