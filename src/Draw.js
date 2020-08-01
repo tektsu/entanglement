@@ -120,6 +120,30 @@ class Line {
         return points;
     }
 
+    handDrawn(divisions, variation) {
+        if (divisions === undefined) {
+            divisions = Math.floor(this.length()/6);
+        }
+        if (divisions === 0) {
+            return [this.begin, this.end];
+        }
+        if (variation === undefined) {
+            variation = 1;
+        }
+
+        let variedPoints = [];
+        const points = this.divide(divisions);
+        for (let p=0; p<points.length; p++) {
+            if (p===0 || p===points.length-1) {
+                variedPoints.push(points[p])
+            } else {
+                variedPoints.push(points[p].vary(variation));
+            }
+        }
+
+        return variedPoints;
+    }
+
     /**
      * Find the point at which two lines intersect. The intersection point may not be on either line segment.
      * @param {Line} l The line to intersect with

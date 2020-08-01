@@ -1,3 +1,15 @@
+class ZentangleArea extends TangleBase {
+    constructor(origin, tangle, options) {
+        super();
+        this.origin = origin;
+        this.tangle = tangle;
+        if (typeof options === 'undefined') options = {};
+        options.allowableOptions = {
+        };
+        this.loadOptions(options);
+    }
+}
+
 class Zentangle extends TangleBase {
 
     constructor(size, shape, options) {
@@ -57,19 +69,16 @@ class Zentangle extends TangleBase {
                 ]);
                 break;
         }
-        this.tangles = [];
+        this.areas = [];
 
         createCanvas(this.width, this.height);
         background(this.background);
     }
 
-    addTangle(nw, tangle, mask) {
-        this.tangles.push({
-            nw: nw,
-            tangle: tangle,
-            mask: mask,
-        });
-        this.g.image(tangle.g, nw.x, nw.y);
+    addArea(origin, tangle, options) {
+        const area = new ZentangleArea(origin, tangle, options);
+        this.areas.push(area);
+        this.g.image(area.tangle.g, area.origin.x, area.origin.y);
     }
 
     draw() {
@@ -119,10 +128,7 @@ class Zentangle extends TangleBase {
             if (end === lines.length) {
                 end = 0;
             }
-            const points = new Line(lines[start], lines[end]).divide(100);
-            for (let p=0; p<points.length; p++) {
-                poly.push(points[p].vary(1));
-            }
+            poly = poly.concat(new Line(lines[start], lines[end]).handDrawn());
         }
 
         return poly;
