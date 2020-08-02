@@ -283,5 +283,7 @@ class BoxSpiral extends Tangle {
             const bse = new BoxSpiralElement(this.g, new Point(random(0, this.width), random(0, this.height)), bseOpt);
             bse.draw();
         }
+
+        this.applyMask();
     }
 }

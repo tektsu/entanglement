@@ -268,5 +268,7 @@ class Aahs extends Tangle {
                 }
             }
         }
+
+        this.applyMask();
     }
 }

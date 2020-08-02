@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: BoxSpiral</title>
+    <title>JSDoc: Class: ZentangleArea</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: BoxSpiral</h1>
+    <h1 class="page-title">Class: ZentangleArea</h1>
 
     
 
@@ -28,9 +28,9 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>BoxSpiral<span class="signature">(width, height, options)</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>ZentangleArea<span class="signature">(origin, tangle, options)</span><span class="type-signature"></span></h2>
         
-            <div class="class-description"><p>Define the BoxSpiral Tangle.</p></div>
+            <div class="class-description"><p>Define an area in the Zentangle which contains a tangle.</p></div>
         
     
 </header>
@@ -45,7 +45,7 @@
     
 
     
-    <h4 class="name" id="BoxSpiral"><span class="type-signature"></span>new BoxSpiral<span class="signature">(width, height, options)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="ZentangleArea"><span class="type-signature"></span>new ZentangleArea<span class="signature">(origin, tangle, options)</span><span class="type-signature"></span></h4>
     
 
     
@@ -53,7 +53,7 @@
 
 
 <div class="description">
-    <p>Create a new BoxSpiral</p>
+    <p>Create the ZentangleArea object</p>
 </div>
 
 
@@ -89,13 +89,13 @@
 
         <tr>
             
-                <td class="name"><code>width</code></td>
+                <td class="name"><code>origin</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type"><a href="Point.html">Point</a></span>
 
 
             
@@ -105,20 +105,20 @@
 
             
 
-            <td class="description last"><p>The width of the tangle.</p></td>
+            <td class="description last"><p>The upper left corner of the area.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>height</code></td>
+                <td class="name"><code>tangle</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type"><a href="Tangle.html">Tangle</a></span>
 
 
             
@@ -128,7 +128,7 @@
 
             
 
-            <td class="description last"><p>The height of the tangle.</p></td>
+            <td class="description last"><p>The pattern to draw in this area.</p></td>
         </tr>
 
     
@@ -141,7 +141,7 @@
             <td class="type">
             
                 
-<span class="param-type"><a href="global.html#BoxSpiralOptions">BoxSpiralOptions</a></span>
+<span class="param-type"><a href="global.html#ZentangleAreaOptions">ZentangleAreaOptions</a></span>
 
 
             
@@ -151,7 +151,7 @@
 
             
 
-            <td class="description last"><p>The options list.</p></td>
+            <td class="description last"></td>
         </tr>
 
     
@@ -192,7 +192,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="BoxSpiral.js.html">BoxSpiral.js</a>, <a href="BoxSpiral.js.html#line257">line 257</a>
+        <a href="Zentangle.js.html">Zentangle.js</a>, <a href="Zentangle.js.html#line17">line 17</a>
     </li></ul></dd>
     
 

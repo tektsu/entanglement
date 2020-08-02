@@ -122,6 +122,8 @@ class TangleElement extends TangleBase {
  * @property {number} gridYVary The vertical grid point location variation in pixels.
  * @property {objects} polys Polygons already drawn.
  * @property {boolean} avoidCollisions If true, do not draw over other elements lusted in this.polys.
+ * @property [Point] maskPoly A set of points defining a polygon. Only the portion of the image inside the polygon will be displayed.
+ * @property {boolean} addStrings If true, the boundaries of the maskPoly are drawn.
  */
 
 /**
@@ -153,6 +155,8 @@ class Tangle extends TangleBase {
             gridYVary: undefined,
             polys: [],
             avoidCollisions: true,
+            maskPoly: [],
+            addStrings: true,
         };
 
         this.loadOptions(options);
@@ -236,4 +240,41 @@ class Tangle extends TangleBase {
         image(this.g, position.x, position.y);
     }
 
+    /**
+     * Apply the mask polygon to this tangle. Only the portion of the tangle inside the mask polygon will be displayed.
+     */
+    applyMask() {
+        if (this.maskPoly.length < 1) {
+            return;
+        }
+
+        // Create the mask from the maskPoly
+        let mask = createGraphics(this.width, this.height);
+        mask.noStroke();
+        mask.fill(255, 255, 255, 255);
+        mask.beginShape();
+        for (let p = 0; p < this.maskPoly.length; p++) {
+            mask.vertex(this.maskPoly[p].x, this.maskPoly[p].y);
+        }
+        mask.endShape(CLOSE);
+
+        // Create a masked cloned image
+        let clone;
+        (clone = this.g.get()).mask(mask.get());
+
+        // Recreate the renderer with the cloned image
+        this.g = createGraphics(this.width, this.height);
+        this.g.image(clone, 0, 0);
+
+        // If we are drawing strings, do so now
+        if (this.addStrings) {
+            this.g.stroke(0);
+            this.g.fill(0, 0, 0, 0);
+            this.g.beginShape();
+            for (let p = 0; p < this.maskPoly.length; p++) {
+                this.g.vertex(this.maskPoly[p].x, this.maskPoly[p].y);
+            }
+            this.g.endShape(CLOSE);
+        }
+    }
 }

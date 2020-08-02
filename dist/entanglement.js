@@ -382,6 +382,8 @@ class TangleElement extends TangleBase {
  * @property {number} gridYVary The vertical grid point location variation in pixels.
  * @property {objects} polys Polygons already drawn.
  * @property {boolean} avoidCollisions If true, do not draw over other elements lusted in this.polys.
+ * @property [Point] maskPoly A set of points defining a polygon. Only the portion of the image inside the polygon will be displayed.
+ * @property {boolean} addStrings If true, the boundaries of the maskPoly are drawn.
  */
 
 /**
@@ -413,6 +415,8 @@ class Tangle extends TangleBase {
             gridYVary: undefined,
             polys: [],
             avoidCollisions: true,
+            maskPoly: [],
+            addStrings: true,
         };
 
         this.loadOptions(options);
@@ -496,6 +500,43 @@ class Tangle extends TangleBase {
         image(this.g, position.x, position.y);
     }
 
+    /**
+     * Apply the mask polygon to this tangle. Only the portion of the tangle inside the mask polygon will be displayed.
+     */
+    applyMask() {
+        if (this.maskPoly.length < 1) {
+            return;
+        }
+
+        // Create the mask from the maskPoly
+        let mask = createGraphics(this.width, this.height);
+        mask.noStroke();
+        mask.fill(255, 255, 255, 255);
+        mask.beginShape();
+        for (let p = 0; p < this.maskPoly.length; p++) {
+            mask.vertex(this.maskPoly[p].x, this.maskPoly[p].y);
+        }
+        mask.endShape(CLOSE);
+
+        // Create a masked cloned image
+        let clone;
+        (clone = this.g.get()).mask(mask.get());
+
+        // Recreate the renderer with the cloned image
+        this.g = createGraphics(this.width, this.height);
+        this.g.image(clone, 0, 0);
+
+        // If we are drawing strings, do so now
+        if (this.addStrings) {
+            this.g.stroke(0);
+            this.g.fill(0, 0, 0, 0);
+            this.g.beginShape();
+            for (let p = 0; p < this.maskPoly.length; p++) {
+                this.g.vertex(this.maskPoly[p].x, this.maskPoly[p].y);
+            }
+            this.g.endShape(CLOSE);
+        }
+    }
 }
 
 /**
@@ -768,6 +809,8 @@ class Aahs extends Tangle {
                 }
             }
         }
+
+        this.applyMask();
     }
 }
 
@@ -1056,6 +1099,8 @@ class BoxSpiral extends Tangle {
             const bse = new BoxSpiralElement(this.g, new Point(random(0, this.width), random(0, this.height)), bseOpt);
             bse.draw();
         }
+
+        this.applyMask();
     }
 }
 
@@ -1101,10 +1146,27 @@ class Ambler extends Tangle {
         }
 
         this.grid();
+
+        this.applyMask();
     }
 }
 
+/**
+ * @typedef {Object} ZentangleAreaOptions
+ * @property {value} any Any of the TangleElementOptions may be used here.
+ */
+
+/**
+ * Define an area in the Zentangle which contains a tangle.
+ */
 class ZentangleArea extends TangleBase {
+
+    /**
+     * Create the ZentangleArea object
+     * @param {Point} origin The upper left corner of the area.
+     * @param {Tangle} tangle The pattern to draw in this area.
+     * @param {ZentangleAreaOptions} options
+     */
     constructor(origin, tangle, options) {
         super();
         this.origin = origin;
@@ -1116,8 +1178,24 @@ class ZentangleArea extends TangleBase {
     }
 }
 
+/**
+ * @typedef {Object} ZentangleOptions
+ * @property {p5.Color} background The background of the Zentangle canvas.
+ * @property {number} The average width of the border in pixels.
+ * @property {value} any Any of the TangleElementOptions may be used here.
+ */
+
+/**
+ * Define a complete Zentangle.
+ */
 class Zentangle extends TangleBase {
 
+    /**
+     * Create a Zentangle object.
+     * @param {number} size The size of the Zentangle in pixels. There is only one number, as Zentagles are a square or a triangle (in which case size is the length of the side), or a circle (in which case the size is the diameter.
+     * @param {string} shape The shape of the Zentangle. Can be 'square' (the default), 'triangle' or 'circle'.
+     * @param {ZentangleOptions} options
+     */
     constructor(size, shape, options) {
         super();
         if (typeof options === 'undefined') options = {};
@@ -1181,12 +1259,21 @@ class Zentangle extends TangleBase {
         background(this.background);
     }
 
+    /**
+     * Add an area to this Zentangle.
+     * @param {Point} origin The upper left corner of the area.
+     * @param {Tangle} tangle The pattern to draw in this area.
+     * @param {ZentangleAreaOptions} options
+     */
     addArea(origin, tangle, options) {
         const area = new ZentangleArea(origin, tangle, options);
         this.areas.push(area);
         this.g.image(area.tangle.g, area.origin.x, area.origin.y);
     }
 
+    /**
+     * Draw the complete Zentangle on the canvas.
+     */
     draw() {
 
         // Create border mask
@@ -1227,14 +1314,20 @@ class Zentangle extends TangleBase {
         endShape(CLOSE);
     }
 
-    _createBorderPolyFromLines(lines) {
+    /**
+     * Extend and randomize vertices. This is intended to make the border look hand-drawn.
+     * @param [Point] vertices List of points defining thr border.
+     * @returns [Point] New vertex list.
+     * @private
+     */
+    _createBorderPolyFromLines(vertices) {
         let poly = [];
-        for (let start=0; start<lines.length; start++) {
+        for (let start=0; start<vertices.length; start++) {
             let end = start+1;
-            if (end === lines.length) {
+            if (end === vertices.length) {
                 end = 0;
             }
-            poly = poly.concat(new Line(lines[start], lines[end]).handDrawn());
+            poly = poly.concat(new Line(vertices[start], vertices[end]).handDrawn());
         }
 
         return poly;

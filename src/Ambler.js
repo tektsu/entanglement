@@ -40,5 +40,7 @@ class Ambler extends Tangle {
         }
 
         this.grid();
+
+        this.applyMask();
     }
 }
