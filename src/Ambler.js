@@ -9,13 +9,12 @@
 class Ambler extends Tangle {
     /**
      * Create a new Ambler
-     * @param {number} width The width of the tangle.
-     * @param {number} height The height of the tangle.
+     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {AmblerOptions} options The options list.
      */
-    constructor(width, height, options) {
+    constructor(mask, options) {
         if (typeof options === 'undefined') options = {};
-        super(width, height, options);
+        super(mask, options);
 
         this.buildGridPoints();
 

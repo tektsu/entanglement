@@ -393,15 +393,20 @@ class Tangle extends TangleBase {
 
     /**
      * Create a new Tangle
-     * @param {number} width
-     * @param {number} height
+     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {TangleOptions} options A map of values to be loaded into instance variables.
      */
-    constructor(width, height, options) {
+    constructor(mask, options) {
         super();
-        this.width = width;
-        this.height = height;
-        this.g = createGraphics(width, height);
+        this.origin = new Point(0, 0);
+        this.width = 0;
+        this.height = 0;
+        for (let i=1; i<mask.length; i++) {
+            if (mask[i].x > this.width) this.width = mask[i].x;
+            if (mask[i].y > this.height) this.height = mask[i].y;
+        }
+        this.maskPoly = mask;
+        this.g = createGraphics(this.width, this.height);
         this.gridPoints = [];
 
         this.optionsAllowed = {
@@ -415,7 +420,6 @@ class Tangle extends TangleBase {
             gridYVary: undefined,
             polys: [],
             avoidCollisions: true,
-            maskPoly: [],
             addStrings: true,
         };
 
@@ -725,17 +729,16 @@ class Aahs extends Tangle {
 
     /**
      * Create the Aahs tangle object.
-     * @param {number} width The width of the tangle.
-     * @param {number} height The height of the tangle.
+     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {AahsOptions} options A map of values to be loaded into instance variables.
      */
-    constructor(width, height, options) {
+    constructor(mask, options) {
         if (typeof options === 'undefined') options = {};
         options.allowableOptions = {
             plan: Aahs.plans.zentangle,
         };
         options.plan = options.plan === undefined ? Aahs.plans.zentangle : options.plan;
-        super(width, height, options);
+        super(mask, options);
 
         if (this.plan.aah === undefined) this.plan.aah = {};
         if (this.plan.dot === undefined) this.plan.dot = {};
@@ -1066,11 +1069,10 @@ class BoxSpiral extends Tangle {
 
     /**
      * Create a new BoxSpiral
-     * @param {number} width The width of the tangle.
-     * @param {number} height The height of the tangle.
+     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {BoxSpiralOptions} options The options list.
      */
-    constructor(width, height, options) {
+    constructor(mask, options) {
         if (typeof options === 'undefined') options = {};
         options.allowableOptions = {
             size: 50,
@@ -1080,7 +1082,7 @@ class BoxSpiral extends Tangle {
             startCorner: undefined,
             rotate: new Range(0, 90),
         };
-        super(width, height, options);
+        super(mask, options);
 
         if (this.desiredCount === undefined) {
             const s = isNaN(this.size) ? this.size.min : this.size;
@@ -1115,13 +1117,12 @@ class BoxSpiral extends Tangle {
 class Ambler extends Tangle {
     /**
      * Create a new Ambler
-     * @param {number} width The width of the tangle.
-     * @param {number} height The height of the tangle.
+     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {AmblerOptions} options The options list.
      */
-    constructor(width, height, options) {
+    constructor(mask, options) {
         if (typeof options === 'undefined') options = {};
-        super(width, height, options);
+        super(mask, options);
 
         this.buildGridPoints();
 
@@ -1148,33 +1149,6 @@ class Ambler extends Tangle {
         this.grid();
 
         this.applyMask();
-    }
-}
-
-/**
- * @typedef {Object} ZentangleAreaOptions
- * @property {value} any Any of the TangleElementOptions may be used here.
- */
-
-/**
- * Define an area in the Zentangle which contains a tangle.
- */
-class ZentangleArea extends TangleBase {
-
-    /**
-     * Create the ZentangleArea object
-     * @param {Point} origin The upper left corner of the area.
-     * @param {Tangle} tangle The pattern to draw in this area.
-     * @param {ZentangleAreaOptions} options
-     */
-    constructor(origin, tangle, options) {
-        super();
-        this.origin = origin;
-        this.tangle = tangle;
-        if (typeof options === 'undefined') options = {};
-        options.allowableOptions = {
-        };
-        this.loadOptions(options);
     }
 }
 
@@ -1260,15 +1234,26 @@ class Zentangle extends TangleBase {
     }
 
     /**
-     * Add an area to this Zentangle.
-     * @param {Point} origin The upper left corner of the area.
+     * Get a mask covering the entire zentangle.
+     * @returns [Point]
+     */
+    getFullMask() {
+        return [
+            new Point(0, 0),
+            new Point(this.width, 0),
+            new Point(this.width, this.height),
+            new Point(0, this.height),
+        ];
+    }
+
+    /**
+     * Add a tangle to this Zentangle.
      * @param {Tangle} tangle The pattern to draw in this area.
      * @param {ZentangleAreaOptions} options
      */
-    addArea(origin, tangle, options) {
-        const area = new ZentangleArea(origin, tangle, options);
-        this.areas.push(area);
-        this.g.image(area.tangle.g, area.origin.x, area.origin.y);
+    addTangle(tangle, options) {
+        this.areas.push(tangle);
+        this.g.image(tangle.g, tangle.origin.x, tangle.origin.y);
     }
 
     /**

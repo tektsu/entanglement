@@ -250,11 +250,10 @@ class BoxSpiral extends Tangle {
 
     /**
      * Create a new BoxSpiral
-     * @param {number} width The width of the tangle.
-     * @param {number} height The height of the tangle.
+     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {BoxSpiralOptions} options The options list.
      */
-    constructor(width, height, options) {
+    constructor(mask, options) {
         if (typeof options === 'undefined') options = {};
         options.allowableOptions = {
             size: 50,
@@ -264,7 +263,7 @@ class BoxSpiral extends Tangle {
             startCorner: undefined,
             rotate: new Range(0, 90),
         };
-        super(width, height, options);
+        super(mask, options);
 
         if (this.desiredCount === undefined) {
             const s = isNaN(this.size) ? this.size.min : this.size;

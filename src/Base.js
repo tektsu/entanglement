@@ -133,15 +133,20 @@ class Tangle extends TangleBase {
 
     /**
      * Create a new Tangle
-     * @param {number} width
-     * @param {number} height
+     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {TangleOptions} options A map of values to be loaded into instance variables.
      */
-    constructor(width, height, options) {
+    constructor(mask, options) {
         super();
-        this.width = width;
-        this.height = height;
-        this.g = createGraphics(width, height);
+        this.origin = new Point(0, 0);
+        this.width = 0;
+        this.height = 0;
+        for (let i=1; i<mask.length; i++) {
+            if (mask[i].x > this.width) this.width = mask[i].x;
+            if (mask[i].y > this.height) this.height = mask[i].y;
+        }
+        this.maskPoly = mask;
+        this.g = createGraphics(this.width, this.height);
         this.gridPoints = [];
 
         this.optionsAllowed = {
@@ -155,7 +160,6 @@ class Tangle extends TangleBase {
             gridYVary: undefined,
             polys: [],
             avoidCollisions: true,
-            maskPoly: [],
             addStrings: true,
         };
 

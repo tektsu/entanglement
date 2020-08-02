@@ -184,17 +184,16 @@ class Aahs extends Tangle {
 
     /**
      * Create the Aahs tangle object.
-     * @param {number} width The width of the tangle.
-     * @param {number} height The height of the tangle.
+     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {AahsOptions} options A map of values to be loaded into instance variables.
      */
-    constructor(width, height, options) {
+    constructor(mask, options) {
         if (typeof options === 'undefined') options = {};
         options.allowableOptions = {
             plan: Aahs.plans.zentangle,
         };
         options.plan = options.plan === undefined ? Aahs.plans.zentangle : options.plan;
-        super(width, height, options);
+        super(mask, options);
 
         if (this.plan.aah === undefined) this.plan.aah = {};
         if (this.plan.dot === undefined) this.plan.dot = {};

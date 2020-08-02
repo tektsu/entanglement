@@ -1,31 +1,4 @@
 /**
- * @typedef {Object} ZentangleAreaOptions
- * @property {value} any Any of the TangleElementOptions may be used here.
- */
-
-/**
- * Define an area in the Zentangle which contains a tangle.
- */
-class ZentangleArea extends TangleBase {
-
-    /**
-     * Create the ZentangleArea object
-     * @param {Point} origin The upper left corner of the area.
-     * @param {Tangle} tangle The pattern to draw in this area.
-     * @param {ZentangleAreaOptions} options
-     */
-    constructor(origin, tangle, options) {
-        super();
-        this.origin = origin;
-        this.tangle = tangle;
-        if (typeof options === 'undefined') options = {};
-        options.allowableOptions = {
-        };
-        this.loadOptions(options);
-    }
-}
-
-/**
  * @typedef {Object} ZentangleOptions
  * @property {p5.Color} background The background of the Zentangle canvas.
  * @property {number} The average width of the border in pixels.
@@ -107,15 +80,26 @@ class Zentangle extends TangleBase {
     }
 
     /**
-     * Add an area to this Zentangle.
-     * @param {Point} origin The upper left corner of the area.
+     * Get a mask covering the entire zentangle.
+     * @returns [Point]
+     */
+    getFullMask() {
+        return [
+            new Point(0, 0),
+            new Point(this.width, 0),
+            new Point(this.width, this.height),
+            new Point(0, this.height),
+        ];
+    }
+
+    /**
+     * Add a tangle to this Zentangle.
      * @param {Tangle} tangle The pattern to draw in this area.
      * @param {ZentangleAreaOptions} options
      */
-    addArea(origin, tangle, options) {
-        const area = new ZentangleArea(origin, tangle, options);
-        this.areas.push(area);
-        this.g.image(area.tangle.g, area.origin.x, area.origin.y);
+    addTangle(tangle, options) {
+        this.areas.push(tangle);
+        this.g.image(tangle.g, tangle.origin.x, tangle.origin.y);
     }
 
     /**
