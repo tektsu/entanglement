@@ -398,13 +398,19 @@ class Tangle extends TangleBase {
      */
     constructor(mask, options) {
         super();
-        this.origin = new Point(0, 0);
-        this.width = 0;
-        this.height = 0;
+        let originX = mask[0].x;
+        let originY = mask[0].y;
+        let extentX = originX;
+        let extentY = originY;
         for (let i=1; i<mask.length; i++) {
-            if (mask[i].x > this.width) this.width = mask[i].x;
-            if (mask[i].y > this.height) this.height = mask[i].y;
+            if (mask[i].x > extentX) extentX = mask[i].x;
+            if (mask[i].y > extentY) extentY = mask[i].y;
+            if (mask[i].x < originX) originX = mask[i].x;
+            if (mask[i].y < originY) originY = mask[i].y;
         }
+        this.origin = new Point(originX, originY);
+        this.width = Math.floor(extentX - originX);
+        this.height = Math.floor(extentY - originY);
         this.maskPoly = mask;
         this.g = createGraphics(this.width, this.height);
         this.gridPoints = [];
@@ -518,7 +524,7 @@ class Tangle extends TangleBase {
         mask.fill(255, 255, 255, 255);
         mask.beginShape();
         for (let p = 0; p < this.maskPoly.length; p++) {
-            mask.vertex(this.maskPoly[p].x, this.maskPoly[p].y);
+            mask.vertex(this.maskPoly[p].x-this.origin.x, this.maskPoly[p].y-this.origin.y);
         }
         mask.endShape(CLOSE);
 
@@ -536,7 +542,7 @@ class Tangle extends TangleBase {
             this.g.fill(0, 0, 0, 0);
             this.g.beginShape();
             for (let p = 0; p < this.maskPoly.length; p++) {
-                this.g.vertex(this.maskPoly[p].x, this.maskPoly[p].y);
+                this.g.vertex(this.maskPoly[p].x-this.origin.x, this.maskPoly[p].y-this.origin.y);
             }
             this.g.endShape(CLOSE);
         }
@@ -1086,7 +1092,7 @@ class BoxSpiral extends Tangle {
 
         if (this.desiredCount === undefined) {
             const s = isNaN(this.size) ? this.size.min : this.size;
-            this.desiredCount = this.width/s * this.height/s * 10; // An amount that should cover the buffer
+            this.desiredCount = Math.floor(this.width/s * this.height/s * 10); // An amount that should cover the buffer
         }
 
         for (let i=0; i<this.desiredCount; i++) {
@@ -1249,9 +1255,8 @@ class Zentangle extends TangleBase {
     /**
      * Add a tangle to this Zentangle.
      * @param {Tangle} tangle The pattern to draw in this area.
-     * @param {ZentangleAreaOptions} options
      */
-    addTangle(tangle, options) {
+    addTangle(tangle) {
         this.areas.push(tangle);
         this.g.image(tangle.g, tangle.origin.x, tangle.origin.y);
     }

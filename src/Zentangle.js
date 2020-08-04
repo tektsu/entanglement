@@ -95,9 +95,8 @@ class Zentangle extends TangleBase {
     /**
      * Add a tangle to this Zentangle.
      * @param {Tangle} tangle The pattern to draw in this area.
-     * @param {ZentangleAreaOptions} options
      */
-    addTangle(tangle, options) {
+    addTangle(tangle) {
         this.areas.push(tangle);
         this.g.image(tangle.g, tangle.origin.x, tangle.origin.y);
     }

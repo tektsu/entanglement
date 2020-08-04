@@ -267,7 +267,7 @@ class BoxSpiral extends Tangle {
 
         if (this.desiredCount === undefined) {
             const s = isNaN(this.size) ? this.size.min : this.size;
-            this.desiredCount = this.width/s * this.height/s * 10; // An amount that should cover the buffer
+            this.desiredCount = Math.floor(this.width/s * this.height/s * 10); // An amount that should cover the buffer
         }
 
         for (let i=0; i<this.desiredCount; i++) {
