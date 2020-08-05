@@ -381,7 +381,7 @@ class TangleElement extends TangleBase {
  * @property {number} gridXVary The horizontal grid point location variation in pixels.
  * @property {number} gridYVary The vertical grid point location variation in pixels.
  * @property {objects} polys Polygons already drawn.
- * @property {boolean} avoidCollisions If true, do not draw over other elements lusted in this.polys.
+ * @property {boolean} avoidCollisions If true, do not draw over other elements listed in this.polys.
  * @property [Point] maskPoly A set of points defining a polygon. Only the portion of the image inside the polygon will be displayed.
  * @property {boolean} addStrings If true, the boundaries of the maskPoly are drawn.
  */
@@ -557,12 +557,14 @@ class Tangle extends TangleBase {
  */
 
 /**
- * Define the Dot element.
+ * Define the Dot element. . The Dot element is a simple dot or circle on the canvas.
+ * <br />
+ * <img src='images/DotElement.png' />
  */
-class Dot extends TangleElement {
+class DotElement extends TangleElement {
 
     /**
-     * Create a new Dot.
+     * Create a new DotElement
      * @param {p5.Graphics} g The graphics object to draw to.
      * @param {Point} center The position of the dot.
      * @param {DotElementOptions} options A map of values to be loaded into instance variables.
@@ -593,7 +595,7 @@ class Dot extends TangleElement {
 }
 
 /**
- * @typedef {Object} AahTipTypes
+ * @typedef {Object} AahElementTipTypes
  * @property {string} any Any members of this object are preset tip types to indicate special processing
  */
 
@@ -606,18 +608,22 @@ class Dot extends TangleElement {
  * @property {number} size The expected size of the Aah. The actual size will vary depending on random factors.
  * @property {number} thetaSD The angle in degrees to use as a standard deviation when randomly varying the angles between the arms.
  * @property {number} tipDistancePercent The percentage up the arm to place the tip. A valve if 100 puts the tip at the end of each arm.
- * @property {number} tipDiameter The diameter of the tip. The special value of Aah.tipType.gap makes the tip for each arm the same as that arm's gap.
+ * @property {number} tipDiameter The diameter of the tip. The special value of AahElement.tipType.gap makes the tip for each arm the same as that arm's gap.
  * @property {value} any Any of the TangleElementOptions may be used here.
  */
 
 /**
- * Define the Aah element.
+ * Define the Aah element. An Aah element is star-shaped. It needs an approximate size and a position.
+ * The size is approximate because the aah's components are built with some size variations.
+ * In addition, an Aah can be rotated randomly, and the angle between the arms can vary.
+ * <br />
+ * <img src='images/AahElement.png' />
  */
-class Aah extends TangleElement {
+class AahElement extends TangleElement {
 
     /**
      * Special setting for defining Aah tips
-     * @type {AahTipTypes}
+     * @type {AahElementTipTypes}
      */
     static tipType = {
         gap: "gap",
@@ -638,7 +644,7 @@ class Aah extends TangleElement {
             gapSDP: 10,
             rotate: true,
             tipDistancePercent: 100,
-            tipDiameter: Aah.tipType.gap,
+            tipDiameter: AahElement.tipType.gap,
             size: 100,
         };
         super(g, center, options);
@@ -657,7 +663,7 @@ class Aah extends TangleElement {
                 start: new Polar(gap, c.a).toPointCenter(this.center),  // Draw line from here...
                 stop: c.toPointCenter(this.center),                     // ...to here
                 tipCenter: new Polar(c.r * (this.tipDistancePercent / 100), c.a).toPointCenter(this.center),
-                tipDiameter: !isNaN(this.tipDiameter) ? this.tipDiameter : this.tipDiameter === Aah.tipType.gap ? gap : 10,
+                tipDiameter: !isNaN(this.tipDiameter) ? this.tipDiameter : this.tipDiameter === AahElement.tipType.gap ? gap : 10,
             };
             this.arms.push(arm);
 
@@ -671,7 +677,7 @@ class Aah extends TangleElement {
 
 
     /**
-     * Draw the Aah.
+     * Draw the AahElement to the buffer.
      */
     draw() {
         super.draw();
@@ -684,42 +690,45 @@ class Aah extends TangleElement {
 }
 
 /**
- * @typedef {Object} AahPlan
+ * @typedef {Object} AahElementPlan
  * @property {number} sizeSDP The percentage of initial size to use as a standard deviation when randomly varying the size of each Aah.
  * @property {number} desiredCount The number of Aah elements to try to draw. The actual number drawn will depend on how many will fit.
  * @property {value} any Any of the AahOptions may be used here.
  */
 
 /**
- * @typedef {Object} DotPlan
+ * @typedef {Object} DotElementPlan
  * @property {value} any Any of the DotOptions may be used here.
  */
 
 /**
- * @typedef {Object} AahsPlan
- * @property {AahPlan} aah Options for generating individual Aah elements.
- * @property {DotPlan} dot Options for generating individual Dot elements.
+ * @typedef {Object} AahPlan
+ * @property {AahElementPlan} aah Options for generating individual Aah elements.
+ * @property {DotElementPlan} dot Options for generating individual Dot elements.
  */
 
 /**
- * @typedef {Object} AahsPlans
- * @property {AahsPlan} any Any members of this object are named AahsPlan objects to be used as presets.
+ * @typedef {Object} AahPlans
+ * @property {AahPlan} any Any members of this object are named AahPlan objects to be used as presets.
  */
 
 /**
- * @typedef {Object} AahsOptions
- * @property {AahsPlan} plan A set of options for underlying elements.
+ * @typedef {Object} AahOptions
+ * @property {AahPlan} plan A set of options for underlying elements.
  * @property {value} any Any of the TangleOptions may be used here.
  */
 
 /**
- * Define the Aahs tangle
+ * Define the Aah tangle.
+ * Aah is composed of repeating patterns of AahElement and DotElement, placed randomly on the screen.
+ * <br />
+ * <img src='images/AahTangle.png' />
  */
-class Aahs extends Tangle {
+class Aah extends Tangle {
 
     /**
      * Preset plans for the Aah tangle.
-     * @type {AahsPlans}
+     * @type {AahPlans}
      * @static
      */
     static plans = {
@@ -734,16 +743,16 @@ class Aahs extends Tangle {
     };
 
     /**
-     * Create the Aahs tangle object.
+     * Create the Aah tangle object.
      * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
-     * @param {AahsOptions} options A map of values to be loaded into instance variables.
+     * @param {AahOptions} options A map of values to be loaded into instance variables.
      */
     constructor(mask, options) {
         if (typeof options === 'undefined') options = {};
         options.allowableOptions = {
-            plan: Aahs.plans.zentangle,
+            plan: Aah.plans.zentangle,
         };
-        options.plan = options.plan === undefined ? Aahs.plans.zentangle : options.plan;
+        options.plan = options.plan === undefined ? Aah.plans.zentangle : options.plan;
         super(mask, options);
 
         if (this.plan.aah === undefined) this.plan.aah = {};
@@ -777,7 +786,7 @@ class Aahs extends Tangle {
                 if (typeof this.plan.aah.tipDiameter !== 'undefined') options.tip.diameter = this.plan.aahTipDiameter;
                 if (typeof this.plan.aah.fillColor !== 'undefined') options.fillColor = this.plan.aah.fillColor;
                 if (typeof this.plan.aah.strokeColor !== 'undefined') options.strokeColor = this.plan.aah.strokeColor;
-                const aah = new Aah(this.g, center, options);
+                const aah = new AahElement(this.g, center, options);
                 const poly = aah.getPoly();
 
                 const conflict = this.collisionTest(poly);
@@ -808,7 +817,7 @@ class Aahs extends Tangle {
                 if (typeof this.plan.dot.spacing !== 'undefined') options.spacing = this.plan.dot.spacing;
                 if (typeof this.plan.dot.fillColor !== 'undefined') options.fillColor = this.plan.dot.fillColor;
                 if (typeof this.plan.dot.strokeColor !== 'undefined') options.strokeColor = this.plan.dot.strokeColor;
-                const dot = new Dot(this.g, center, options);
+                const dot = new DotElement(this.g, center, options);
                 const poly = dot.getPoly();
 
                 const conflict = this.collisionTest(poly);
@@ -839,12 +848,16 @@ class Aahs extends Tangle {
  */
 
 /**
- * Define the BoxSpiral Element.
+ * Define the BoxSpiral Element. The BoxSpiral element is a square spiral which is used in several tangles.
+ * Its size and direction of rotation (cw or ccw) can be specified in the options.
+ * The spiral can be made to fit any quarilateral; it need not be limited to a square.
+ * <br />
+ * <img src='images/BoxSpiralElement.png' />
  */
 class BoxSpiralElement extends TangleElement {
 
     /**
-     * Create a box spiral element
+     * Create a box spiral element.
      * @param {p5.Graphics} g The graphics buffer on which to draw.
      * @param {Point} center The center of the spiral.
      * @param {BoxSpiralElementOptions} options The options list.
@@ -1069,9 +1082,14 @@ class BoxSpiralElement extends TangleElement {
  */
 
 /**
- * Define the BoxSpiral Tangle.
+ * Define the BoxSpiral Tangle. The BoxSpiral tangle is a collection of BoxSpiralElements placed randomly.
+ * It is expected that some elements will partially or completely cover other elements.
+ * Generally, enough elements are placed in the area to ensure the area background is completely covered.
+ * The spirals may vary in size and rotation.
+ * <br />
+ * <img src='images/BoxSpiralsTangle.png' />
  */
-class BoxSpiral extends Tangle {
+class BoxSpirals extends Tangle {
 
     /**
      * Create a new BoxSpiral
@@ -1118,7 +1136,9 @@ class BoxSpiral extends Tangle {
  */
 
 /**
- * Define the Ambler Tangle.
+ * Define the Ambler Tangle. Ambler consists of a grid containing rotated box spirals.
+ * <br />
+ * <img src='images/AmblerTangle.png' />
  */
 class Ambler extends Tangle {
     /**
@@ -1161,7 +1181,7 @@ class Ambler extends Tangle {
 /**
  * @typedef {Object} ZentangleOptions
  * @property {p5.Color} background The background of the Zentangle canvas.
- * @property {number} The average width of the border in pixels.
+ * @property {number} borderSize The average width of the border in pixels.
  * @property {value} any Any of the TangleElementOptions may be used here.
  */
 

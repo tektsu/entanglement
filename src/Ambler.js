@@ -4,7 +4,9 @@
  */
 
 /**
- * Define the Ambler Tangle.
+ * Define the Ambler Tangle. Ambler consists of a grid containing rotated box spirals.
+ * <br />
+ * <img src='images/AmblerTangle.png' />
  */
 class Ambler extends Tangle {
     /**

@@ -1,7 +1,7 @@
 /**
  * @typedef {Object} ZentangleOptions
  * @property {p5.Color} background The background of the Zentangle canvas.
- * @property {number} The average width of the border in pixels.
+ * @property {number} borderSize The average width of the border in pixels.
  * @property {value} any Any of the TangleElementOptions may be used here.
  */
 

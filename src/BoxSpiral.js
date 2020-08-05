@@ -14,12 +14,16 @@
  */
 
 /**
- * Define the BoxSpiral Element.
+ * Define the BoxSpiral Element. The BoxSpiral element is a square spiral which is used in several tangles.
+ * Its size and direction of rotation (cw or ccw) can be specified in the options.
+ * The spiral can be made to fit any quarilateral; it need not be limited to a square.
+ * <br />
+ * <img src='images/BoxSpiralElement.png' />
  */
 class BoxSpiralElement extends TangleElement {
 
     /**
-     * Create a box spiral element
+     * Create a box spiral element.
      * @param {p5.Graphics} g The graphics buffer on which to draw.
      * @param {Point} center The center of the spiral.
      * @param {BoxSpiralElementOptions} options The options list.
@@ -244,9 +248,14 @@ class BoxSpiralElement extends TangleElement {
  */
 
 /**
- * Define the BoxSpiral Tangle.
+ * Define the BoxSpiral Tangle. The BoxSpiral tangle is a collection of BoxSpiralElements placed randomly.
+ * It is expected that some elements will partially or completely cover other elements.
+ * Generally, enough elements are placed in the area to ensure the area background is completely covered.
+ * The spirals may vary in size and rotation.
+ * <br />
+ * <img src='images/BoxSpiralsTangle.png' />
  */
-class BoxSpiral extends Tangle {
+class BoxSpirals extends Tangle {
 
     /**
      * Create a new BoxSpiral

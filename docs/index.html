@@ -50,43 +50,91 @@
 <p>Load the 3 required libraries:</p>
 <pre class="prettyprint source"><code>    &lt;script src=&quot;https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/p5.js&quot;>&lt;/script>
     &lt;script src=&quot;https://cdn.jsdelivr.net/gh/bmoren/p5.collide2d/p5.collide2d.min.js&quot;>&lt;/script>
-    &lt;script src=&quot;https://cdn.jsdelivr.net/gh/tektsu/entanglement/dist/entanglement.js&quot;>&lt;/script>
+    &lt;script src=&quot;https://cdn.jsdelivr.net/gh/tektsu/entanglement@0.0.4/dist/entanglement.js&quot;>&lt;/script>
 </code></pre>
 <p>Review the documentation at https://tektsu.github.io/entanglement/, as well as the example code in the examples/ directory.</p>
 <h3>Source Code</h3>
 <p>The source code can be found in GitHub as https://github.com/tektsu/entanglement.</p>
-<h2>Tangle Elements</h2>
-<p>Tangle elements are shapes that make up tangle. Generally, a tangle will have a one or more tangle elements repeated over its area. Tangle elements generally have an enclosing polygon defining their local space. Tangle can use these to avoid overlapping the elements.</p>
-<h3>Aah</h3>
-<p>An <a href="https://tektsu.github.io/entanglement/Aah.html">Aah</a> element is star-shaped. It needs an approximate size and a position. The size is approximate because the aah's components are built with some size variations. In addition, an aah can be rotated randomly, and the angle between the arms can vary.</p>
-<p><img src="https://raw.githubusercontent.com/tektsu/entanglement/master/images/AAH.png" alt="AAH.png"></p>
-<h3>BoxSpiralElement</h3>
-<p>The BoxSpiral element is a square spiral which is used in several tangles. It's size and direction of rotation (cw or ccw) can be specified in the options. The spiral can be made to fit any quarilateral; it need not be limited to a square.</p>
-<p><img src="https://raw.githubusercontent.com/tektsu/entanglement/master/images/BoxSpiralElement.png" alt="BoxSpiralElement.png"></p>
-<h3>Dot</h3>
-<p>The <a href="https://tektsu.github.io/entanglement/Dot.html">Dot</a> element is a simple dot or circle on the canvas. A Dot is created with a size (diameter), a position, and an options object.</p>
+<h2>Zentangles</h2>
+<p>The Zentangle, as implemented by the <a href="https://tektsu.github.io/entanglement/Zentangle.html">Zentangle</a> class represents the finished work. A Zentangle creates the canvas and writes its various components to it. It also creates a border around the work.</p>
+<p>A Zentangle requires a size in pixels and a shape. There are three shapes: 'square' or 'triangle', in which case the size is the length of each side, or 'circle', which the size representing the diameter. Zentangles can also be passed a <a href="https://tektsu.github.io/entanglement/global.html#ZentangleOptions">ZentangleOptions</a> object with additional instructions for creating the Zentangle.</p>
+<p>A program using this library to create a Zentangle would instantiate the Zentangle class, call the addTangle method one or more times to add tangles. Tangles are drawn in the order they are added.</p>
 <h2>Tangles</h2>
-<p>Tangles are complete patterns created with multiple tangle elements which fill an area.</p>
-<h3>Aahs</h3>
-<p>The Aahs tangle is a complete implementation of the AAH zentangle. <em>Note: the class is called Aahs, but the zentangle it implements is called AAH. Yes, it is confusing. Sorry.</em> Aahs, is composed of repeating patterns of Aah and Dot, placed randomly on the screen. Aahs takes a width, a height and an <a href="https://tektsu.github.io/entanglement/global.html#AahsOptions">AahsOptions</a> as a parameters.</p>
-<h4>Aahs Examples</h4>
-<h5>Draw a traditional AAH tangle.</h5>
-<p>No options are passed in, since a traditional AAH is the default.</p>
-<pre class="prettyprint source"><code>const height = 600;
-const width = 600;
+<p>The Tangle is based on the <a href="https://tektsu.github.io/entanglement/Tangle.html">Tangle</a> class. Tangles are predefined patterns that can be placed on the Zentangle canvas. They correspond roughly to tangle patterns used in the <a href="https://zentangle.com/pages/what-is-the-zentangle-method">Zentangle Method</a>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Tangle</th>
+<th style="text-align:left">Contains Elements</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="https://tektsu.github.io/entanglement/Aah.html">Aah</a></td>
+<td style="text-align:left"><a href="https://tektsu.github.io/entanglement/AahElement.html">AahElement</a> <br><a href="https://tektsu.github.io/entanglement/DotElement.html">DotElement</a></td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://tektsu.github.io/entanglement/Ambler.html">Ambler</a></td>
+<td style="text-align:left"><a href="https://tektsu.github.io/entanglement/BoxSpiralElement.html">BoxSpiralElement</a></td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://tektsu.github.io/entanglement/BoxSpirals.html">BoxSpirals</a></td>
+<td style="text-align:left"><a href="https://tektsu.github.io/entanglement/BoxSpiralElement.html">BoxSpiralElement</a></td>
+</tr>
+</tbody>
+</table>
+<h2>Tangle Elements</h2>
+<p>Tangle elements are shapes that make up tangle. Generally, a tangle will have a one or more tangle elements repeated over its area. Tangle elements generally have an enclosing polygon defining their local space. Tangle can use these to avoid overlapping the elements. Tangle elements are based on the <a href="https://tektsu.github.io/entanglement/TangleElement.html">TangleElement</a> class. Not all Tangles use a TangleElement, as they may not be drawn by repeating a design. Other Tangles may use more than one TangleElement.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Tangle Element</th>
+<th style="text-align:left">Used in Tangles</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="https://tektsu.github.io/entanglement/AahElement.html">AahElement</a></td>
+<td style="text-align:left"><a href="https://tektsu.github.io/entanglement/Aah.html">Aah</a></td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://tektsu.github.io/entanglement/BoxSpiralElement.html">BoxSpiralElement</a></td>
+<td style="text-align:left"><a href="https://tektsu.github.io/entanglement/Ambler.html">Ambler</a> <br /><a href="https://tektsu.github.io/entanglement/BoxSpirals.html">BoxSpirals</a></td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://tektsu.github.io/entanglement/DotElement.html">DotElement</a></td>
+<td style="text-align:left"><a href="https://tektsu.github.io/entanglement/Aah.html">Aah</a></td>
+</tr>
+</tbody>
+</table>
+<h2>Examples</h2>
+<p>A Zentangle using Aah for the background, and with several areas of BoxSpirals with increasing brightness.</p>
+<pre class="prettyprint source"><code>function setup() {
+    const z = new Zentangle(600, 'square', {
+    });
+    z.addTangle(new Aah(z.getFullMask(), {
+            background: z.background,
+    }));
+    for (let i=0; i&lt;12; i++) {
+        const a = 20+i*30;
+        z.addTangle(new BoxSpiral([
+            new Point(z.width/2, z.height/2),
+            new Polar(100+10*i, radians(a)).toPointCenter(new Point(z.width/2, z.height/2)),
+            new Polar(120+10*i, radians(a+30)).toPointCenter(new Point(z.width/2, z.height/2)),
+        ], {
+            background: 111+12*i,
+            divisions: new Range(6, 10),
+            rotation: 'random',
+            startCorner: 'random',
+            size: new Range(30, 60),
+        }));
+    }
 
-function setup() {
-    createCanvas(width, height);
-    background(255);
-}
-
-function draw() {
-    const aahs = new Aahs(width, height, {});
-    aahs.paste(new Point(0, 0));
-    noLoop();
+    z.draw();
 }
 </code></pre>
-<p><img src="https://raw.githubusercontent.com/tektsu/entanglement/master/images/AahsTangle.png" alt="AahsTangle.png"></p>
+<p><img src="https://raw.githubusercontent.com/tektsu/entanglement/master/docs/images/nautilus.png" alt="nautilus.png"></p>
+<h4>Aahs Examples</h4>
 <h5>Increase the aah size variation</h5>
 <p>Increasing the standard deviation of the aah size, here expressed as a percentage, increases the range of aah sizes in the resulting image.</p>
 <pre class="prettyprint source"><code>    const aahs = new Aahs(width, height, {
@@ -207,13 +255,13 @@ function draw() {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Aah.html">Aah</a></li><li><a href="Aahs.html">Aahs</a></li><li><a href="Ambler.html">Ambler</a></li><li><a href="Box.html">Box</a></li><li><a href="BoxSpiral.html">BoxSpiral</a></li><li><a href="BoxSpiralElement.html">BoxSpiralElement</a></li><li><a href="Dot.html">Dot</a></li><li><a href="Entanglement.html">Entanglement</a></li><li><a href="Line.html">Line</a></li><li><a href="Point.html">Point</a></li><li><a href="Polar.html">Polar</a></li><li><a href="Range.html">Range</a></li><li><a href="Tangle.html">Tangle</a></li><li><a href="TangleBase.html">TangleBase</a></li><li><a href="TangleElement.html">TangleElement</a></li><li><a href="Zentangle.html">Zentangle</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Aah.html">Aah</a></li><li><a href="AahElement.html">AahElement</a></li><li><a href="Ambler.html">Ambler</a></li><li><a href="Box.html">Box</a></li><li><a href="BoxSpiralElement.html">BoxSpiralElement</a></li><li><a href="BoxSpirals.html">BoxSpirals</a></li><li><a href="DotElement.html">DotElement</a></li><li><a href="Entanglement.html">Entanglement</a></li><li><a href="Line.html">Line</a></li><li><a href="Point.html">Point</a></li><li><a href="Polar.html">Polar</a></li><li><a href="Range.html">Range</a></li><li><a href="Tangle.html">Tangle</a></li><li><a href="TangleBase.html">TangleBase</a></li><li><a href="TangleElement.html">TangleElement</a></li><li><a href="Zentangle.html">Zentangle</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Mon Aug 03 2020 18:45:24 GMT-0700 (Mountain Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Tue Aug 04 2020 19:05:28 GMT-0700 (Mountain Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

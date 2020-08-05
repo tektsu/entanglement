@@ -121,7 +121,7 @@ class TangleElement extends TangleBase {
  * @property {number} gridXVary The horizontal grid point location variation in pixels.
  * @property {number} gridYVary The vertical grid point location variation in pixels.
  * @property {objects} polys Polygons already drawn.
- * @property {boolean} avoidCollisions If true, do not draw over other elements lusted in this.polys.
+ * @property {boolean} avoidCollisions If true, do not draw over other elements listed in this.polys.
  * @property [Point] maskPoly A set of points defining a polygon. Only the portion of the image inside the polygon will be displayed.
  * @property {boolean} addStrings If true, the boundaries of the maskPoly are drawn.
  */

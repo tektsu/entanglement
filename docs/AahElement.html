@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Aah</title>
+    <title>JSDoc: Class: AahElement</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Aah</h1>
+    <h1 class="page-title">Class: AahElement</h1>
 
     
 
@@ -28,12 +28,13 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>Aah<span class="signature">(Point<span class="signature-attributes">opt</span>, options)</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>AahElement<span class="signature">(g, center, options)</span><span class="type-signature"></span></h2>
         
-            <div class="class-description"><p>Define the Aah tangle.
-Aah is composed of repeating patterns of AahElement and DotElement, placed randomly on the screen.
+            <div class="class-description"><p>Define the Aah element. An Aah element is star-shaped. It needs an approximate size and a position.
+The size is approximate because the aah's components are built with some size variations.
+In addition, an Aah can be rotated randomly, and the angle between the arms can vary.
 <br />
-<img src='images/AahTangle.png' /></p></div>
+<img src='images/AahElement.png' /></p></div>
         
     
 </header>
@@ -48,7 +49,7 @@ Aah is composed of repeating patterns of AahElement and DotElement, placed rando
     
 
     
-    <h4 class="name" id="Aah"><span class="type-signature"></span>new Aah<span class="signature">(Point<span class="signature-attributes">opt</span>, options)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="AahElement"><span class="type-signature"></span>new AahElement<span class="signature">(g, center, options)</span><span class="type-signature"></span></h4>
     
 
     
@@ -56,7 +57,7 @@ Aah is composed of repeating patterns of AahElement and DotElement, placed rando
 
 
 <div class="description">
-    <p>Create the Aah tangle object.</p>
+    <p>Create a new Aah.</p>
 </div>
 
 
@@ -80,8 +81,6 @@ Aah is composed of repeating patterns of AahElement and DotElement, placed rando
         <th>Type</th>
 
         
-        <th>Attributes</th>
-        
 
         
 
@@ -94,28 +93,46 @@ Aah is composed of repeating patterns of AahElement and DotElement, placed rando
 
         <tr>
             
-                <td class="name"><code>Point</code></td>
+                <td class="name"><code>g</code></td>
             
 
             <td class="type">
             
+                
+<span class="param-type">p5.Graphics</span>
+
+
+            
             </td>
 
             
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
 
-                
+            
 
+            <td class="description last"><p>The graphics object to draw to.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>center</code></td>
+            
+
+            <td class="type">
+            
                 
-                </td>
+<span class="param-type"><a href="Point.html">Point</a></span>
+
+
+            
+            </td>
+
             
 
             
 
-            <td class="description last"><p>mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.</p></td>
+            <td class="description last"><p>The position of the aah.</p></td>
         </tr>
 
     
@@ -128,20 +145,12 @@ Aah is composed of repeating patterns of AahElement and DotElement, placed rando
             <td class="type">
             
                 
-<span class="param-type"><a href="global.html#AahOptions">AahOptions</a></span>
+<span class="param-type"><a href="global.html#AahElementOptions">AahElementOptions</a></span>
 
 
             
             </td>
 
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
             
 
             
@@ -187,7 +196,7 @@ Aah is composed of repeating patterns of AahElement and DotElement, placed rando
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Aah.js.html">Aah.js</a>, <a href="Aah.js.html#line199">line 199</a>
+        <a href="Aah.js.html">Aah.js</a>, <a href="Aah.js.html#line87">line 87</a>
     </li></ul></dd>
     
 
@@ -237,13 +246,13 @@ Aah is composed of repeating patterns of AahElement and DotElement, placed rando
 
         
             
-<h4 class="name" id="plans"><span class="type-signature"></span>plans<span class="type-signature"> :<a href="global.html#AahPlans">AahPlans</a></span></h4>
+<h4 class="name" id="tipType"><span class="type-signature"></span>tipType<span class="type-signature"> :<a href="global.html#AahElementTipTypes">AahElementTipTypes</a></span></h4>
 
 
 
 
 <div class="description">
-    <p>Preset plans for the Aah tangle.</p>
+    <p>Special setting for defining Aah tips</p>
 </div>
 
 
@@ -252,7 +261,7 @@ Aah is composed of repeating patterns of AahElement and DotElement, placed rando
     <ul>
         <li>
             
-<span class="param-type"><a href="global.html#AahPlans">AahPlans</a></span>
+<span class="param-type"><a href="global.html#AahElementTipTypes">AahElementTipTypes</a></span>
 
 
         </li>
@@ -291,7 +300,7 @@ Aah is composed of repeating patterns of AahElement and DotElement, placed rando
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Aah.js.html">Aah.js</a>, <a href="Aah.js.html#line183">line 183</a>
+        <a href="Aah.js.html">Aah.js</a>, <a href="Aah.js.html#line77">line 77</a>
     </li></ul></dd>
     
 
@@ -310,6 +319,98 @@ Aah is composed of repeating patterns of AahElement and DotElement, placed rando
         
     
 
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="draw"><span class="type-signature"></span>draw<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Draw the AahElement to the buffer.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Aah.js.html">Aah.js</a>, <a href="Aah.js.html#line131">line 131</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
     
 
     
