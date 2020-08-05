@@ -19,11 +19,11 @@
 
     <h1 class="page-title">Home</h1>
 
+    
 
 
 
-
-
+    
 
 
     <h3> </h3>
@@ -37,7 +37,7 @@
 
 
 
-
+    
 
 
 
@@ -133,118 +133,7 @@
     z.draw();
 }
 </code></pre>
-<p><img src="https://raw.githubusercontent.com/tektsu/entanglement/master/docs/images/nautilus.png" alt="nautilus.png"></p>
-<h4>Aahs Examples</h4>
-<h5>Increase the aah size variation</h5>
-<p>Increasing the standard deviation of the aah size, here expressed as a percentage, increases the range of aah sizes in the resulting image.</p>
-<pre class="prettyprint source"><code>    const aahs = new Aahs(width, height, {
-        plan: {
-            aah: {
-                sizeSDP: 50,
-            },
-        },
-    });
-</code></pre>
-<p><img src="https://raw.githubusercontent.com/tektsu/entanglement/master/images/AahsSizeVariation.png" alt="AahsSizeVariation.png"></p>
-<h5>Turn off Aah rotation and reduce the variation of the arm angles</h5>
-<p>Turning off random rotation and reducing the theta standard deviation resulting in all the aah elements being oriented in the same direction.</p>
-<pre class="prettyprint source"><code>    const aahs = new Aahs(width, height, {
-        plan: {
-            aah: {
-                rotate: false,
-                thetaSD: 1,
-            },
-        },
-    });
-</code></pre>
-<p><img src="https://raw.githubusercontent.com/tektsu/entanglement/master/images/AahsNoRotation.png" alt="AahsNoRotation.png"></p>
-<h5>Increase the varibility of arm length</h5>
-<pre class="prettyprint source"><code>    const aahs = new Aahs(width, height, {
-        plan: {
-            aah: {
-                // Set the standard deviation used to generate arm lengths to 50% of the original requested length
-                lengthSDP: 50,
-            },
-        },
-    });
-</code></pre>
-<p><img src="https://raw.githubusercontent.com/tektsu/entanglement/master/images/AahsVaryArmLength.png" alt="AahsVaryArmLength.png"></p>
-<h5>Increase the arm count to 11, and allow the dots to be bigger and closer together.</h5>
-<pre class="prettyprint source"><code>    const aahs = new Aahs(width, height, {
-        plan: {
-            dot: {
-                size: new Range(1,10),
-                spacing: 150,
-                fillColor: 255,
-            },
-            aah: {
-                armCount: 11,
-            }
-        },
-    });
-</code></pre>
-<p><img src="https://raw.githubusercontent.com/tektsu/entanglement/master/images/AahsEleven.png" alt="AahsEleven.png"></p>
-<h3>Ambler</h3>
-<p>Ambler is an implementation of the AMBLER zentangle. It consists of a grid containing rotated box spirals. Aahs takes a width, a height and an <a href="https://tektsu.github.io/entanglement/global.html#AmblerOptions">AmblerOptions</a> as parameters.</p>
-<h4>Ambler Examples</h4>
-<h5>A traditional Ambler</h5>
-<p>A traditional Amber requires no options.</p>
-<pre class="prettyprint source"><code>const height = 600;
-const width = 600;
-
-function setup() {
-    createCanvas(width, height);
-    background(255);
-}
-
-function draw() {
-    let amb = new Ambler(width, height, {});
-    amb.paste(new Point(0, 0));
-    noLoop();
-}
-</code></pre>
-<p><img src="https://raw.githubusercontent.com/tektsu/entanglement/master/images/AmblerTangle.png" alt="AmblerTangle.png"></p>
-<h5>Warp the grid</h5>
-<p>The gridVary option will randomly move each point in the grid by up to the specified number of pixels. A value greater than the gridSpacing, which defaults to 40 pixels, will tend to deteriorate the image since the corners ot some grid &quot;squares&quot; may end up inside other squares.</p>
-<pre class="prettyprint source"><code>    const amb = new Ambler(width, height, {
-        gridVary: 20,
-    });
-</code></pre>
-<p><img src="https://raw.githubusercontent.com/tektsu/entanglement/master/images/AmblerCubes.png" alt="AmblerCubes.png"></p>
-<h3>BoxSpiral</h3>
-<p>The BoxSpiral tangle, an implementation of the standard BOXSPIRAL zentangle, is a collection of BoxSpiralElements placed randomly. It is expected that some elements will partially or completely cover other elements. Generally, enough elements are placed in the area to ensure the area background is completely covered. The spirals may vary in size and rotation. BoxSpiral takes a width, a height and a <a href="https://tektsu.github.io/entanglement/global.html#BoxSpiralOptions">BoxSpiralOptions</a> as parameters.</p>
-<h4>BoxSpiral Examples</h4>
-<p>It is important to specify a fillColor with this tangle to avoid patterns beneath the spirals from showing through.</p>
-<h5>Similar spirals</h5>
-<pre class="prettyprint source"><code>const height = 200;
-const width = 200;
-
-function setup() {
-    createCanvas(width, height);
-    background(255);
-}
-
-function draw() {
-    let bs = new BoxSpiral(width, height, {
-        background: 'white',
-        divisions: 8,
-        rotation: 'random',
-    });
-    bs.paste(new Point(0, 0));
-    noLoop();
-}
-</code></pre>
-<p><img src="https://raw.githubusercontent.com/tektsu/entanglement/master/images/BoxSpiralSimilarTangle.png" alt="BoxSpiralSimilarTangle.png"></p>
-<h5>Vary the startCorner and the size</h5>
-<pre class="prettyprint source"><code>    let bs = new BoxSpiral(width, height, {
-       background: 'white',
-       divisions: 8,
-       rotation: 'random',
-       startCorner: 'random',
-       size: new Range(30, 60),
-    });
-</code></pre>
-<p><img src="https://raw.githubusercontent.com/tektsu/entanglement/master/images/BoxSpiralTangle.png" alt="BoxSpiralTangle.png"></p></article>
+<p><img src="https://raw.githubusercontent.com/tektsu/entanglement/master/docs/images/nautilus.png" alt="nautilus.png"></p></article>
     </section>
 
 
@@ -261,7 +150,7 @@ function draw() {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Tue Aug 04 2020 19:05:28 GMT-0700 (Mountain Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Tue Aug 04 2020 19:22:06 GMT-0700 (Mountain Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
