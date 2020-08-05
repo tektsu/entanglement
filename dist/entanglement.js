@@ -3,7 +3,7 @@
  */
 class Entanglement {
 
-    static version = '0.0.3';
+    static version = '0.0.4';
 
     /**
      * Choose a value
@@ -65,6 +65,17 @@ class Point {
         const y = this.y - center.y;
         this.x = x*cos(r)-y*sin(r) + center.x;
         this.y = x*sin(r)+y*cos(r) + center.y;
+    }
+
+    /**
+     * Vary the point location (both x and y) by up to v.
+     * @param {number} v The number of pixels to vary the point.
+     * @returns {Point} This point, after being modified.
+     */
+    vary(v) {
+        this.x += random(-v, v);
+        this.y += random(-v, v);
+        return this;
     }
 }
 
@@ -139,6 +150,30 @@ class Line {
         }
 
         return points;
+    }
+
+    handDrawn(divisions, variation) {
+        if (divisions === undefined) {
+            divisions = Math.floor(this.length()/6);
+        }
+        if (divisions === 0) {
+            return [this.begin, this.end];
+        }
+        if (variation === undefined) {
+            variation = 1;
+        }
+
+        let variedPoints = [];
+        const points = this.divide(divisions);
+        for (let p=0; p<points.length; p++) {
+            if (p===0 || p===points.length-1) {
+                variedPoints.push(points[p])
+            } else {
+                variedPoints.push(points[p].vary(variation));
+            }
+        }
+
+        return variedPoints;
     }
 
     /**
@@ -292,7 +327,7 @@ class TangleElement extends TangleBase {
             strokeColor: 0,
         };
 
-        this.loadOptions(options)
+        this.loadOptions(options);
     }
 
     /**
@@ -346,7 +381,9 @@ class TangleElement extends TangleBase {
  * @property {number} gridXVary The horizontal grid point location variation in pixels.
  * @property {number} gridYVary The vertical grid point location variation in pixels.
  * @property {objects} polys Polygons already drawn.
- * @property {boolean} avoidCollisions If true, do not draw over other elements lusted in this.polys.
+ * @property {boolean} avoidCollisions If true, do not draw over other elements listed in this.polys.
+ * @property [Point] maskPoly A set of points defining a polygon. Only the portion of the image inside the polygon will be displayed.
+ * @property {boolean} addStrings If true, the boundaries of the maskPoly are drawn.
  */
 
 /**
@@ -356,15 +393,26 @@ class Tangle extends TangleBase {
 
     /**
      * Create a new Tangle
-     * @param {number} width
-     * @param {number} height
+     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {TangleOptions} options A map of values to be loaded into instance variables.
      */
-    constructor(width, height, options) {
+    constructor(mask, options) {
         super();
-        this.width = width;
-        this.height = height;
-        this.g = createGraphics(width, height);
+        let originX = mask[0].x;
+        let originY = mask[0].y;
+        let extentX = originX;
+        let extentY = originY;
+        for (let i=1; i<mask.length; i++) {
+            if (mask[i].x > extentX) extentX = mask[i].x;
+            if (mask[i].y > extentY) extentY = mask[i].y;
+            if (mask[i].x < originX) originX = mask[i].x;
+            if (mask[i].y < originY) originY = mask[i].y;
+        }
+        this.origin = new Point(originX, originY);
+        this.width = Math.floor(extentX - originX);
+        this.height = Math.floor(extentY - originY);
+        this.maskPoly = mask;
+        this.g = createGraphics(this.width, this.height);
         this.gridPoints = [];
 
         this.optionsAllowed = {
@@ -378,6 +426,7 @@ class Tangle extends TangleBase {
             gridYVary: undefined,
             polys: [],
             avoidCollisions: true,
+            addStrings: true,
         };
 
         this.loadOptions(options);
@@ -461,6 +510,43 @@ class Tangle extends TangleBase {
         image(this.g, position.x, position.y);
     }
 
+    /**
+     * Apply the mask polygon to this tangle. Only the portion of the tangle inside the mask polygon will be displayed.
+     */
+    applyMask() {
+        if (this.maskPoly.length < 1) {
+            return;
+        }
+
+        // Create the mask from the maskPoly
+        let mask = createGraphics(this.width, this.height);
+        mask.noStroke();
+        mask.fill(255, 255, 255, 255);
+        mask.beginShape();
+        for (let p = 0; p < this.maskPoly.length; p++) {
+            mask.vertex(this.maskPoly[p].x-this.origin.x, this.maskPoly[p].y-this.origin.y);
+        }
+        mask.endShape(CLOSE);
+
+        // Create a masked cloned image
+        let clone;
+        (clone = this.g.get()).mask(mask.get());
+
+        // Recreate the renderer with the cloned image
+        this.g = createGraphics(this.width, this.height);
+        this.g.image(clone, 0, 0);
+
+        // If we are drawing strings, do so now
+        if (this.addStrings) {
+            this.g.stroke(0);
+            this.g.fill(0, 0, 0, 0);
+            this.g.beginShape();
+            for (let p = 0; p < this.maskPoly.length; p++) {
+                this.g.vertex(this.maskPoly[p].x-this.origin.x, this.maskPoly[p].y-this.origin.y);
+            }
+            this.g.endShape(CLOSE);
+        }
+    }
 }
 
 /**
@@ -471,12 +557,14 @@ class Tangle extends TangleBase {
  */
 
 /**
- * Define the Dot element.
+ * Define the Dot element. . The Dot element is a simple dot or circle on the canvas.
+ * <br />
+ * <img src='images/DotElement.png' />
  */
-class Dot extends TangleElement {
+class DotElement extends TangleElement {
 
     /**
-     * Create a new Dot.
+     * Create a new DotElement
      * @param {p5.Graphics} g The graphics object to draw to.
      * @param {Point} center The position of the dot.
      * @param {DotElementOptions} options A map of values to be loaded into instance variables.
@@ -507,7 +595,7 @@ class Dot extends TangleElement {
 }
 
 /**
- * @typedef {Object} AahTipTypes
+ * @typedef {Object} AahElementTipTypes
  * @property {string} any Any members of this object are preset tip types to indicate special processing
  */
 
@@ -520,18 +608,22 @@ class Dot extends TangleElement {
  * @property {number} size The expected size of the Aah. The actual size will vary depending on random factors.
  * @property {number} thetaSD The angle in degrees to use as a standard deviation when randomly varying the angles between the arms.
  * @property {number} tipDistancePercent The percentage up the arm to place the tip. A valve if 100 puts the tip at the end of each arm.
- * @property {number} tipDiameter The diameter of the tip. The special value of Aah.tipType.gap makes the tip for each arm the same as that arm's gap.
+ * @property {number} tipDiameter The diameter of the tip. The special value of AahElement.tipType.gap makes the tip for each arm the same as that arm's gap.
  * @property {value} any Any of the TangleElementOptions may be used here.
  */
 
 /**
- * Define the Aah element.
+ * Define the Aah element. An Aah element is star-shaped. It needs an approximate size and a position.
+ * The size is approximate because the aah's components are built with some size variations.
+ * In addition, an Aah can be rotated randomly, and the angle between the arms can vary.
+ * <br />
+ * <img src='images/AahElement.png' />
  */
-class Aah extends TangleElement {
+class AahElement extends TangleElement {
 
     /**
      * Special setting for defining Aah tips
-     * @type {AahTipTypes}
+     * @type {AahElementTipTypes}
      */
     static tipType = {
         gap: "gap",
@@ -552,7 +644,7 @@ class Aah extends TangleElement {
             gapSDP: 10,
             rotate: true,
             tipDistancePercent: 100,
-            tipDiameter: Aah.tipType.gap,
+            tipDiameter: AahElement.tipType.gap,
             size: 100,
         };
         super(g, center, options);
@@ -571,7 +663,7 @@ class Aah extends TangleElement {
                 start: new Polar(gap, c.a).toPointCenter(this.center),  // Draw line from here...
                 stop: c.toPointCenter(this.center),                     // ...to here
                 tipCenter: new Polar(c.r * (this.tipDistancePercent / 100), c.a).toPointCenter(this.center),
-                tipDiameter: !isNaN(this.tipDiameter) ? this.tipDiameter : this.tipDiameter === Aah.tipType.gap ? gap : 10,
+                tipDiameter: !isNaN(this.tipDiameter) ? this.tipDiameter : this.tipDiameter === AahElement.tipType.gap ? gap : 10,
             };
             this.arms.push(arm);
 
@@ -585,7 +677,7 @@ class Aah extends TangleElement {
 
 
     /**
-     * Draw the Aah.
+     * Draw the AahElement to the buffer.
      */
     draw() {
         super.draw();
@@ -598,42 +690,45 @@ class Aah extends TangleElement {
 }
 
 /**
- * @typedef {Object} AahPlan
+ * @typedef {Object} AahElementPlan
  * @property {number} sizeSDP The percentage of initial size to use as a standard deviation when randomly varying the size of each Aah.
  * @property {number} desiredCount The number of Aah elements to try to draw. The actual number drawn will depend on how many will fit.
  * @property {value} any Any of the AahOptions may be used here.
  */
 
 /**
- * @typedef {Object} DotPlan
+ * @typedef {Object} DotElementPlan
  * @property {value} any Any of the DotOptions may be used here.
  */
 
 /**
- * @typedef {Object} AahsPlan
- * @property {AahPlan} aah Options for generating individual Aah elements.
- * @property {DotPlan} dot Options for generating individual Dot elements.
+ * @typedef {Object} AahPlan
+ * @property {AahElementPlan} aah Options for generating individual Aah elements.
+ * @property {DotElementPlan} dot Options for generating individual Dot elements.
  */
 
 /**
- * @typedef {Object} AahsPlans
- * @property {AahsPlan} any Any members of this object are named AahsPlan objects to be used as presets.
+ * @typedef {Object} AahPlans
+ * @property {AahPlan} any Any members of this object are named AahPlan objects to be used as presets.
  */
 
 /**
- * @typedef {Object} AahsOptions
- * @property {AahsPlan} plan A set of options for underlying elements.
+ * @typedef {Object} AahOptions
+ * @property {AahPlan} plan A set of options for underlying elements.
  * @property {value} any Any of the TangleOptions may be used here.
  */
 
 /**
- * Define the Aahs tangle
+ * Define the Aah tangle.
+ * Aah is composed of repeating patterns of AahElement and DotElement, placed randomly on the screen.
+ * <br />
+ * <img src='images/AahTangle.png' />
  */
-class Aahs extends Tangle {
+class Aah extends Tangle {
 
     /**
      * Preset plans for the Aah tangle.
-     * @type {AahsPlans}
+     * @type {AahPlans}
      * @static
      */
     static plans = {
@@ -648,18 +743,17 @@ class Aahs extends Tangle {
     };
 
     /**
-     * Create the Aahs tangle object.
-     * @param {number} width The width of the tangle.
-     * @param {number} height The height of the tangle.
-     * @param {AahsOptions} options A map of values to be loaded into instance variables.
+     * Create the Aah tangle object.
+     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
+     * @param {AahOptions} options A map of values to be loaded into instance variables.
      */
-    constructor(width, height, options) {
+    constructor(mask, options) {
         if (typeof options === 'undefined') options = {};
         options.allowableOptions = {
-            plan: Aahs.plans.zentangle,
+            plan: Aah.plans.zentangle,
         };
-        options.plan = options.plan === undefined ? Aahs.plans.zentangle : options.plan;
-        super(width, height, options);
+        options.plan = options.plan === undefined ? Aah.plans.zentangle : options.plan;
+        super(mask, options);
 
         if (this.plan.aah === undefined) this.plan.aah = {};
         if (this.plan.dot === undefined) this.plan.dot = {};
@@ -692,7 +786,7 @@ class Aahs extends Tangle {
                 if (typeof this.plan.aah.tipDiameter !== 'undefined') options.tip.diameter = this.plan.aahTipDiameter;
                 if (typeof this.plan.aah.fillColor !== 'undefined') options.fillColor = this.plan.aah.fillColor;
                 if (typeof this.plan.aah.strokeColor !== 'undefined') options.strokeColor = this.plan.aah.strokeColor;
-                const aah = new Aah(this.g, center, options);
+                const aah = new AahElement(this.g, center, options);
                 const poly = aah.getPoly();
 
                 const conflict = this.collisionTest(poly);
@@ -723,7 +817,7 @@ class Aahs extends Tangle {
                 if (typeof this.plan.dot.spacing !== 'undefined') options.spacing = this.plan.dot.spacing;
                 if (typeof this.plan.dot.fillColor !== 'undefined') options.fillColor = this.plan.dot.fillColor;
                 if (typeof this.plan.dot.strokeColor !== 'undefined') options.strokeColor = this.plan.dot.strokeColor;
-                const dot = new Dot(this.g, center, options);
+                const dot = new DotElement(this.g, center, options);
                 const poly = dot.getPoly();
 
                 const conflict = this.collisionTest(poly);
@@ -733,6 +827,8 @@ class Aahs extends Tangle {
                 }
             }
         }
+
+        this.applyMask();
     }
 }
 
@@ -752,12 +848,16 @@ class Aahs extends Tangle {
  */
 
 /**
- * Define the BoxSpiral Element.
+ * Define the BoxSpiral Element. The BoxSpiral element is a square spiral which is used in several tangles.
+ * Its size and direction of rotation (cw or ccw) can be specified in the options.
+ * The spiral can be made to fit any quarilateral; it need not be limited to a square.
+ * <br />
+ * <img src='images/BoxSpiralElement.png' />
  */
 class BoxSpiralElement extends TangleElement {
 
     /**
-     * Create a box spiral element
+     * Create a box spiral element.
      * @param {p5.Graphics} g The graphics buffer on which to draw.
      * @param {Point} center The center of the spiral.
      * @param {BoxSpiralElementOptions} options The options list.
@@ -982,17 +1082,21 @@ class BoxSpiralElement extends TangleElement {
  */
 
 /**
- * Define the BoxSpiral Tangle.
+ * Define the BoxSpiral Tangle. The BoxSpiral tangle is a collection of BoxSpiralElements placed randomly.
+ * It is expected that some elements will partially or completely cover other elements.
+ * Generally, enough elements are placed in the area to ensure the area background is completely covered.
+ * The spirals may vary in size and rotation.
+ * <br />
+ * <img src='images/BoxSpiralsTangle.png' />
  */
-class BoxSpiral extends Tangle {
+class BoxSpirals extends Tangle {
 
     /**
      * Create a new BoxSpiral
-     * @param {number} width The width of the tangle.
-     * @param {number} height The height of the tangle.
+     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {BoxSpiralOptions} options The options list.
      */
-    constructor(width, height, options) {
+    constructor(mask, options) {
         if (typeof options === 'undefined') options = {};
         options.allowableOptions = {
             size: 50,
@@ -1002,11 +1106,11 @@ class BoxSpiral extends Tangle {
             startCorner: undefined,
             rotate: new Range(0, 90),
         };
-        super(width, height, options);
+        super(mask, options);
 
         if (this.desiredCount === undefined) {
             const s = isNaN(this.size) ? this.size.min : this.size;
-            this.desiredCount = this.width/s * this.height/s * 10; // An amount that should cover the buffer
+            this.desiredCount = Math.floor(this.width/s * this.height/s * 10); // An amount that should cover the buffer
         }
 
         for (let i=0; i<this.desiredCount; i++) {
@@ -1021,6 +1125,8 @@ class BoxSpiral extends Tangle {
             const bse = new BoxSpiralElement(this.g, new Point(random(0, this.width), random(0, this.height)), bseOpt);
             bse.draw();
         }
+
+        this.applyMask();
     }
 }
 
@@ -1030,18 +1136,19 @@ class BoxSpiral extends Tangle {
  */
 
 /**
- * Define the Ambler Tangle.
+ * Define the Ambler Tangle. Ambler consists of a grid containing rotated box spirals.
+ * <br />
+ * <img src='images/AmblerTangle.png' />
  */
 class Ambler extends Tangle {
     /**
      * Create a new Ambler
-     * @param {number} width The width of the tangle.
-     * @param {number} height The height of the tangle.
+     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {AmblerOptions} options The options list.
      */
-    constructor(width, height, options) {
+    constructor(mask, options) {
         if (typeof options === 'undefined') options = {};
-        super(width, height, options);
+        super(mask, options);
 
         this.buildGridPoints();
 
@@ -1066,5 +1173,173 @@ class Ambler extends Tangle {
         }
 
         this.grid();
+
+        this.applyMask();
+    }
+}
+
+/**
+ * @typedef {Object} ZentangleOptions
+ * @property {p5.Color} background The background of the Zentangle canvas.
+ * @property {number} borderSize The average width of the border in pixels.
+ * @property {value} any Any of the TangleElementOptions may be used here.
+ */
+
+/**
+ * Define a complete Zentangle.
+ */
+class Zentangle extends TangleBase {
+
+    /**
+     * Create a Zentangle object.
+     * @param {number} size The size of the Zentangle in pixels. There is only one number, as Zentagles are a square or a triangle (in which case size is the length of the side), or a circle (in which case the size is the diameter.
+     * @param {string} shape The shape of the Zentangle. Can be 'square' (the default), 'triangle' or 'circle'.
+     * @param {ZentangleOptions} options
+     */
+    constructor(size, shape, options) {
+        super();
+        if (typeof options === 'undefined') options = {};
+        options.allowableOptions = {
+            background: 255,
+            borderSize: 20,
+        };
+        this.loadOptions(options);
+
+        this.width = size;
+        this.height = size;
+        this.shape = shape === undefined ? 'square' : shape;
+        if (this.shape === 'triangle') {
+            this.height *= 0.87;
+        }
+        this.g = createGraphics(this.width, this.height);
+        let center = new Point(this.width/2, this.height/2);
+        switch(this.shape) {
+            case 'circle':
+                this.edgePoly = [];
+                for (let d=0; d<360; d++) {
+                    this.edgePoly.push(new Polar(this.width/2-1, radians(d)).toPointCenter(center));
+                }
+                this.borderPoly = [];
+                for (let d=0; d<360; d++) {
+                    this.borderPoly.push(new Polar(this.width/2-this.borderSize, radians(d)).toPointCenter(center).vary(1));
+                }
+                break;
+            case 'triangle':
+                center = new Point(this.width/2, 2*this.height/3);
+                this.edgePoly = [
+                    new Point(0, this.height),
+                    new Point(this.width/2, 0),
+                    new Point(this.width, this.height),
+                ];
+                const distance = 2*this.height/3 - 2*this.borderSize;
+                this.borderPoly = this._createBorderPolyFromLines([
+                    new Polar(distance, radians(270)).toPointCenter(center),
+                    new Polar(distance, radians(30)).toPointCenter(center),
+                    new Polar(distance, radians(150)).toPointCenter(center),
+                ]);
+                break;
+            default:    // square
+                this.edgePoly = [
+                    new Point(0, 0),
+                    new Point(this.width, 0),
+                    new Point(this.width, this.height),
+                    new Point(0, this.height),
+                ];
+                this.borderPoly = this._createBorderPolyFromLines([
+                    new Point(this.borderSize, this.borderSize),
+                    new Point(this.width-this.borderSize, this.borderSize),
+                    new Point(this.width-this.borderSize, this.height-this.borderSize),
+                    new Point(this.borderSize, this.height-this.borderSize),
+                ]);
+                break;
+        }
+        this.areas = [];
+
+        createCanvas(this.width, this.height);
+        background(this.background);
+    }
+
+    /**
+     * Get a mask covering the entire zentangle.
+     * @returns [Point]
+     */
+    getFullMask() {
+        return [
+            new Point(0, 0),
+            new Point(this.width, 0),
+            new Point(this.width, this.height),
+            new Point(0, this.height),
+        ];
+    }
+
+    /**
+     * Add a tangle to this Zentangle.
+     * @param {Tangle} tangle The pattern to draw in this area.
+     */
+    addTangle(tangle) {
+        this.areas.push(tangle);
+        this.g.image(tangle.g, tangle.origin.x, tangle.origin.y);
+    }
+
+    /**
+     * Draw the complete Zentangle on the canvas.
+     */
+    draw() {
+
+        // Create border mask
+        let border = createGraphics(this.width, this.height);
+        border.noStroke();
+        border.fill(255, 255, 255, 0);
+        border.beginShape();
+        for (let p = 0; p < this.edgePoly.length; p++) {
+            border.vertex(this.edgePoly[p].x, this.edgePoly[p].y);
+        }
+        border.endShape(CLOSE);
+        border.fill(255, 255, 255, 255);
+        border.beginShape();
+        for (let p = 0; p < this.borderPoly.length; p++) {
+            border.vertex(this.borderPoly[p].x, this.borderPoly[p].y);
+        }
+        border.endShape(CLOSE);
+
+        // Draw the zentangle
+        let clone;
+        (clone = this.g.get()).mask(border.get());
+        image(clone, 0, 0);
+
+        // Draw the border
+        stroke(0);
+        fill(255, 255, 255, 0);
+        beginShape();
+        for (let p = 0; p < this.borderPoly.length; p++) {
+            vertex(this.borderPoly[p].x, this.borderPoly[p].y);
+        }
+        endShape(CLOSE);
+
+        // Draw the edge
+        beginShape();
+        for (let p = 0; p < this.edgePoly.length; p++) {
+            vertex(this.edgePoly[p].x, this.edgePoly[p].y);
+        }
+        endShape(CLOSE);
+    }
+
+    /**
+     * Extend and randomize vertices. This is intended to make the border look hand-drawn.
+     * @param [Point] vertices List of points defining thr border.
+     * @returns [Point] New vertex list.
+     * @private
+     */
+    _createBorderPolyFromLines(vertices) {
+        let poly = [];
+        for (let start=0; start<vertices.length; start++) {
+            let end = start+1;
+            if (end === vertices.length) {
+                end = 0;
+            }
+            poly = poly.concat(new Line(vertices[start], vertices[end]).handDrawn());
+        }
+
+        return poly;
     }
 }

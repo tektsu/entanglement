@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Aah</title>
+    <title>JSDoc: Class: BoxSpirals</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,9 +17,9 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Aah</h1>
+    <h1 class="page-title">Class: BoxSpirals</h1>
 
-
+    
 
 
 
@@ -27,36 +27,38 @@
 <section>
 
 <header>
-
-        <h2><span class="attribs"><span class="type-signature"></span></span>Aah<span class="signature">(Point<span class="signature-attributes">opt</span>, options)</span><span class="type-signature"></span></h2>
-
-            <div class="class-description"><p>Define the Aah tangle.
-Aah is composed of repeating patterns of AahElement and DotElement, placed randomly on the screen.
+    
+        <h2><span class="attribs"><span class="type-signature"></span></span>BoxSpirals<span class="signature">(Point<span class="signature-attributes">opt</span>, options)</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description"><p>Define the BoxSpiral Tangle. The BoxSpiral tangle is a collection of BoxSpiralElements placed randomly.
+It is expected that some elements will partially or completely cover other elements.
+Generally, enough elements are placed in the area to ensure the area background is completely covered.
+The spirals may vary in size and rotation.
 <br />
-<img src='images/AahTangle.png' /></p></div>
-
-
+<img src='images/BoxSpiralsTangle.png' /></p></div>
+        
+    
 </header>
 
 <article>
     <div class="container-overview">
+    
+        
 
-
-
-
+    
     <h2>Constructor</h2>
+    
 
+    
+    <h4 class="name" id="BoxSpirals"><span class="type-signature"></span>new BoxSpirals<span class="signature">(Point<span class="signature-attributes">opt</span>, options)</span><span class="type-signature"></span></h4>
+    
 
-
-    <h4 class="name" id="Aah"><span class="type-signature"></span>new Aah<span class="signature">(Point<span class="signature-attributes">opt</span>, options)</span><span class="type-signature"></span></h4>
-
-
-
+    
 
 
 
 <div class="description">
-    <p>Create the Aah tangle object.</p>
+    <p>Create a new BoxSpiral</p>
 </div>
 
 
@@ -68,88 +70,88 @@ Aah is composed of repeating patterns of AahElement and DotElement, placed rando
 
 
     <h5>Parameters:</h5>
-
+    
 
 <table class="params">
     <thead>
     <tr>
-
+        
         <th>Name</th>
-
+        
 
         <th>Type</th>
 
-
+        
         <th>Attributes</th>
+        
 
-
-
+        
 
         <th class="last">Description</th>
     </tr>
     </thead>
 
     <tbody>
-
+    
 
         <tr>
-
+            
                 <td class="name"><code>Point</code></td>
-
+            
 
             <td class="type">
-
+            
             </td>
 
-
+            
                 <td class="attributes">
-
+                
                     &lt;optional><br>
+                
 
+                
 
-
-
-
+                
                 </td>
+            
 
-
-
+            
 
             <td class="description last"><p>mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.</p></td>
         </tr>
 
-
+    
 
         <tr>
-
+            
                 <td class="name"><code>options</code></td>
-
+            
 
             <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#BoxSpiralOptions">BoxSpiralOptions</a></span>
 
 
-<span class="param-type"><a href="global.html#AahOptions">AahOptions</a></span>
-
-
-
+            
             </td>
 
-
+            
                 <td class="attributes">
+                
 
+                
 
-
-
-
+                
                 </td>
+            
 
+            
 
-
-
-            <td class="description last"><p>A map of values to be loaded into instance variables.</p></td>
+            <td class="description last"><p>The options list.</p></td>
         </tr>
 
-
+    
     </tbody>
 </table>
 
@@ -160,42 +162,42 @@ Aah is composed of repeating patterns of AahElement and DotElement, placed rando
 
 <dl class="details">
 
+    
 
+    
 
+    
 
+    
 
+    
 
+    
 
+    
 
+    
 
+    
 
+    
 
+    
 
+    
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Aah.js.html">Aah.js</a>, <a href="Aah.js.html#line199">line 199</a>
+        <a href="BoxSpiral.js.html">BoxSpiral.js</a>, <a href="BoxSpiral.js.html#line265">line 265</a>
     </li></ul></dd>
+    
 
+    
 
+    
 
-
-
-
-
+    
 </dl>
 
 
@@ -217,104 +219,28 @@ Aah is composed of repeating patterns of AahElement and DotElement, placed rando
 
 
 
-
+    
     </div>
 
+    
 
+    
 
+    
 
+    
 
+    
 
+    
 
+    
 
+    
 
+    
 
-
-
-
-
-        <h3 class="subsection-title">Members</h3>
-
-
-
-<h4 class="name" id="plans"><span class="type-signature"></span>plans<span class="type-signature"> :<a href="global.html#AahPlans">AahPlans</a></span></h4>
-
-
-
-
-<div class="description">
-    <p>Preset plans for the Aah tangle.</p>
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-
-<span class="param-type"><a href="global.html#AahPlans">AahPlans</a></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-<dl class="details">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Aah.js.html">Aah.js</a>, <a href="Aah.js.html#line183">line 183</a>
-    </li></ul></dd>
-
-
-
-
-
-
-
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
 </article>
 
 </section>

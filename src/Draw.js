@@ -34,6 +34,17 @@ class Point {
         this.x = x*cos(r)-y*sin(r) + center.x;
         this.y = x*sin(r)+y*cos(r) + center.y;
     }
+
+    /**
+     * Vary the point location (both x and y) by up to v.
+     * @param {number} v The number of pixels to vary the point.
+     * @returns {Point} This point, after being modified.
+     */
+    vary(v) {
+        this.x += random(-v, v);
+        this.y += random(-v, v);
+        return this;
+    }
 }
 
 /**
@@ -107,6 +118,30 @@ class Line {
         }
 
         return points;
+    }
+
+    handDrawn(divisions, variation) {
+        if (divisions === undefined) {
+            divisions = Math.floor(this.length()/6);
+        }
+        if (divisions === 0) {
+            return [this.begin, this.end];
+        }
+        if (variation === undefined) {
+            variation = 1;
+        }
+
+        let variedPoints = [];
+        const points = this.divide(divisions);
+        for (let p=0; p<points.length; p++) {
+            if (p===0 || p===points.length-1) {
+                variedPoints.push(points[p])
+            } else {
+                variedPoints.push(points[p].vary(variation));
+            }
+        }
+
+        return variedPoints;
     }
 
     /**

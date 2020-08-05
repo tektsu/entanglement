@@ -14,12 +14,16 @@
  */
 
 /**
- * Define the BoxSpiral Element.
+ * Define the BoxSpiral Element. The BoxSpiral element is a square spiral which is used in several tangles.
+ * Its size and direction of rotation (cw or ccw) can be specified in the options.
+ * The spiral can be made to fit any quarilateral; it need not be limited to a square.
+ * <br />
+ * <img src='images/BoxSpiralElement.png' />
  */
 class BoxSpiralElement extends TangleElement {
 
     /**
-     * Create a box spiral element
+     * Create a box spiral element.
      * @param {p5.Graphics} g The graphics buffer on which to draw.
      * @param {Point} center The center of the spiral.
      * @param {BoxSpiralElementOptions} options The options list.
@@ -244,17 +248,21 @@ class BoxSpiralElement extends TangleElement {
  */
 
 /**
- * Define the BoxSpiral Tangle.
+ * Define the BoxSpiral Tangle. The BoxSpiral tangle is a collection of BoxSpiralElements placed randomly.
+ * It is expected that some elements will partially or completely cover other elements.
+ * Generally, enough elements are placed in the area to ensure the area background is completely covered.
+ * The spirals may vary in size and rotation.
+ * <br />
+ * <img src='images/BoxSpiralsTangle.png' />
  */
-class BoxSpiral extends Tangle {
+class BoxSpirals extends Tangle {
 
     /**
      * Create a new BoxSpiral
-     * @param {number} width The width of the tangle.
-     * @param {number} height The height of the tangle.
+     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {BoxSpiralOptions} options The options list.
      */
-    constructor(width, height, options) {
+    constructor(mask, options) {
         if (typeof options === 'undefined') options = {};
         options.allowableOptions = {
             size: 50,
@@ -264,11 +272,11 @@ class BoxSpiral extends Tangle {
             startCorner: undefined,
             rotate: new Range(0, 90),
         };
-        super(width, height, options);
+        super(mask, options);
 
         if (this.desiredCount === undefined) {
             const s = isNaN(this.size) ? this.size.min : this.size;
-            this.desiredCount = this.width/s * this.height/s * 10; // An amount that should cover the buffer
+            this.desiredCount = Math.floor(this.width/s * this.height/s * 10); // An amount that should cover the buffer
         }
 
         for (let i=0; i<this.desiredCount; i++) {
@@ -283,5 +291,7 @@ class BoxSpiral extends Tangle {
             const bse = new BoxSpiralElement(this.g, new Point(random(0, this.width), random(0, this.height)), bseOpt);
             bse.draw();
         }
+
+        this.applyMask();
     }
 }
