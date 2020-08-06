@@ -61,7 +61,7 @@ function setup() {
     }));
     for (let i=0; i<12; i++) {
         const a = 20+i*30;
-        z.addTangle(new BoxSpiral([
+        z.addTangle(new BoxSpirals([
             new Point(z.width/2, z.height/2),
             new Polar(100+10*i, radians(a)).toPointCenter(new Point(z.width/2, z.height/2)),
             new Polar(120+10*i, radians(a+30)).toPointCenter(new Point(z.width/2, z.height/2)),
