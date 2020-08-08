@@ -12,7 +12,7 @@
 class Emingle extends Tangle {
     /**
      * Create a new Emingle.
-     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
+     * @param {Point[] | Polygon} mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {EmingleOptions} options The options list.
      */
     constructor(mask, options) {

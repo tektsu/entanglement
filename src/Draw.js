@@ -23,9 +23,9 @@ class Point {
     }
 
     /**
-     * Rotate the point in the coordinate system around another point
-     * @param degrees
-     * @param center
+     * Rotate the point in the coordinate system around another point.
+     * @param {number} degrees The nunber of degrees clockwise to rotate.
+     * @param {Point} center The point around which to rotate.
      */
     rotate(degrees, center) {
         const r = radians(degrees);
@@ -106,8 +106,8 @@ class Line {
 
     /**
      * Divide the line into segments, returning a list of points.
-     * @param {number} segments
-     * @returns [Point]
+     * @param {number} segments Number of segments.
+     * @returns {Point[]} List of points.
      */
     divide(segments) {
         let points = [ this.begin ];
@@ -120,6 +120,12 @@ class Line {
         return points;
     }
 
+    /**
+     * Convert a line into an array of Points with slight variations.
+     * @param {number} divisions The number of lines to divide the Line into.
+     * @param {number} variation The number of pixels of variation in X and Y to allow.
+     * @returns {Point[]}
+     */
     handDrawn(divisions, variation) {
         if (divisions === undefined) {
             divisions = Math.floor(this.length()/6);
@@ -166,34 +172,128 @@ class Line {
 }
 
 /**
- * Define a rectangle.
+ * Define a Polygon.
  */
-class Box {
+class Polygon {
 
     /**
-     * Create a new Box.
-     * @param {Point} position The position of the upper left corner.
-     * @param {number} width The width of the box.
-     * @param {number} height The height of the box.
+     * Create a polygon.
+     * @param {Point[] | Polygon} vertices The vertices of the polygon.
      */
-    constructor(position, width, height) {
-        this.position = position;
-        this.width = width === undefined ? 100 : width;
-        this.height = height === undefined ? 100 : height;
+    constructor(vertices) {
+        this.boundingRectangle = undefined;
+        this.vertices = []
+        if (typeof vertices !== 'undefined') {
+            this.vertices = vertices;
+        }
     }
 
     /**
-     * Create a new Box. This is an alternate constructor that accepts discrete x and y coordinates instead of a Point to define position.
-     * @param {number} x The X position of the upper left corner.
-     * @param {number} y The y position of the upper left corner.
-     * @param {number} width The width of the box.
-     * @param {number} height The height of the box.
-     * @returns {Box}
+     * Add a vertex to the polygon.
+     * @param {Point} v The vertex to add.
      */
-    static newFromXY(x, y, width, height) {
-        if (x === undefined) x=0;
-        if (y === undefined) y=0;
-        return new Box(new Point(x, y), width, height);
+    addVertex(v) {
+        this.vertices.push(v);
+        this.boundingRectangle = undefined;
+    }
+
+    /**
+     * Calculates the bounding rectangle. It's worth noting that the first point in the bounding rectangle is the
+     * upper left corner, and subsequent points proceed clockwise. Certain methods rely on this ordering.
+     * @returns {Polygon} The bounding rectangle for this polygon.
+     */
+    getBoundingRectangle() {
+        if (this.boundingRectangle === undefined) {
+            let minX = this.vertices[0].x;
+            let minY = this.vertices[0].y;
+            let maxX = minX;
+            let maxY = minY;
+            for (let i = 1; i < this.vertices.length; i++) {
+                if (this.vertices[i].x < minX)
+                    minX = this.vertices[i].x;
+                if (this.vertices[i].y < minY)
+                    minY = this.vertices[i].y;
+                if (this.vertices[i].x > maxX)
+                    maxX = this.vertices[i].x;
+                if (this.vertices[i].y > maxY)
+                    maxY = this.vertices[i].y;
+            }
+            this.boundingRectangle = new Polygon([
+                new Point(minX, minY),
+                new Point(maxX, minY),
+                new Point(maxX, maxY),
+                new Point(minX, maxY),
+            ]);
+        }
+
+        return this.boundingRectangle;
+    }
+
+    /**
+     * Calculate the center of the polygon.
+     * @returns {Point} The center.
+     */
+    getCenter() {
+        this.getBoundingRectangle();
+        return new Point(
+            (this.boundingRectangle.vertices[0].x + this.boundingRectangle.vertices[1].x)/2,
+            (this.boundingRectangle.vertices[0].y + this.boundingRectangle.vertices[3].y)/2,
+        );
+    }
+
+    /**
+     * Get the upper left corner (origin) of the bounding rectangle.
+     * @returns {Point} The upper left corner.
+     */
+    getOrigin() {
+        this.getBoundingRectangle();
+        return this.boundingRectangle.vertices[0];
+    }
+
+    /**
+     * Get the width of the bounding rectangle.
+     * @returns {number} The difference between max and min X values.
+     */
+    getWidth() {
+        this.getBoundingRectangle();
+        return Math.ceil(this.boundingRectangle.vertices[2].x - this.boundingRectangle.vertices[0].x);
+    }
+
+    /**
+     * Get the height of the bounding rectangle.
+     * @returns {number} The difference between max and min Y values.
+     */
+    getHeight() {
+        this.getBoundingRectangle();
+        return Math.ceil(this.boundingRectangle.vertices[2].y - this.boundingRectangle.vertices[0].y);
+    }
+
+    /**
+     * Rotate the polygon around a point.
+     * @param {number} degrees The number of degrees to rotate.
+     * @param {Point} center The point around which to rotate. If not supplied, the physical center of the polygon is used.
+     */
+    rotate(degrees, center) {
+        if (typeof(center) === 'undefined') {
+            center = this.getCenter();
+        }
+        for (let i=0; i<this.vertices.length; i++) {
+            this.vertices[i].rotate(degrees, center);
+        }
+        this.boundingRectangle = undefined;
+    }
+
+    /**
+     * Make a copy of the polygon.
+     * @returns {Polygon} New Polygon.
+     */
+    copy() {
+        const poly = new Polygon();
+        for (let i=0; i<this.vertices.length; i++) {
+            poly.addVertex(new Point(this.vertices[i].x, this.vertices[i].y));
+        }
+
+        return poly;
     }
 }
 

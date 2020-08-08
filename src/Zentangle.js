@@ -21,7 +21,7 @@ class Zentangle extends TangleBase {
         if (typeof options === 'undefined') options = {};
         options.allowableOptions = {
             background: 255,
-            borderSize: 20,
+            borderSize: 30,
         };
         this.loadOptions(options);
 
@@ -80,8 +80,8 @@ class Zentangle extends TangleBase {
     }
 
     /**
-     * Get a mask covering the entire zentangle.
-     * @returns [Point]
+     * Get a mask covering the entire Zentangle.
+     * @returns {Point[]} A rectangular mask covering the entire Zentangle canvas.
      */
     getFullMask() {
         return [
@@ -146,8 +146,8 @@ class Zentangle extends TangleBase {
 
     /**
      * Extend and randomize vertices. This is intended to make the border look hand-drawn.
-     * @param [Point] vertices List of points defining thr border.
-     * @returns [Point] New vertex list.
+     * @param {Point[]} vertices List of points defining thr border.
+     * @returns {Point[]} New vertex list.
      * @private
      */
     _createBorderPolyFromLines(vertices) {

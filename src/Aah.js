@@ -193,7 +193,7 @@ class Aah extends Tangle {
 
     /**
      * Create the Aah tangle object.
-     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
+     * @param {Point[] | Polygon} mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {AahOptions} options A map of values to be loaded into instance variables.
      */
     constructor(mask, options) {

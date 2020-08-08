@@ -55,9 +55,9 @@ class Point {
     }
 
     /**
-     * Rotate the point in the coordinate system around another point
-     * @param degrees
-     * @param center
+     * Rotate the point in the coordinate system around another point.
+     * @param {number} degrees The nunber of degrees clockwise to rotate.
+     * @param {Point} center The point around which to rotate.
      */
     rotate(degrees, center) {
         const r = radians(degrees);
@@ -138,8 +138,8 @@ class Line {
 
     /**
      * Divide the line into segments, returning a list of points.
-     * @param {number} segments
-     * @returns [Point]
+     * @param {number} segments Number of segments.
+     * @returns {Point[]} List of points.
      */
     divide(segments) {
         let points = [ this.begin ];
@@ -152,6 +152,12 @@ class Line {
         return points;
     }
 
+    /**
+     * Convert a line into an array of Points with slight variations.
+     * @param {number} divisions The number of lines to divide the Line into.
+     * @param {number} variation The number of pixels of variation in X and Y to allow.
+     * @returns {Point[]}
+     */
     handDrawn(divisions, variation) {
         if (divisions === undefined) {
             divisions = Math.floor(this.length()/6);
@@ -198,34 +204,128 @@ class Line {
 }
 
 /**
- * Define a rectangle.
+ * Define a Polygon.
  */
-class Box {
+class Polygon {
 
     /**
-     * Create a new Box.
-     * @param {Point} position The position of the upper left corner.
-     * @param {number} width The width of the box.
-     * @param {number} height The height of the box.
+     * Create a polygon.
+     * @param {Point[] | Polygon} vertices The vertices of the polygon.
      */
-    constructor(position, width, height) {
-        this.position = position;
-        this.width = width === undefined ? 100 : width;
-        this.height = height === undefined ? 100 : height;
+    constructor(vertices) {
+        this.boundingRectangle = undefined;
+        this.vertices = []
+        if (typeof vertices !== 'undefined') {
+            this.vertices = vertices;
+        }
     }
 
     /**
-     * Create a new Box. This is an alternate constructor that accepts discrete x and y coordinates instead of a Point to define position.
-     * @param {number} x The X position of the upper left corner.
-     * @param {number} y The y position of the upper left corner.
-     * @param {number} width The width of the box.
-     * @param {number} height The height of the box.
-     * @returns {Box}
+     * Add a vertex to the polygon.
+     * @param {Point} v The vertex to add.
      */
-    static newFromXY(x, y, width, height) {
-        if (x === undefined) x=0;
-        if (y === undefined) y=0;
-        return new Box(new Point(x, y), width, height);
+    addVertex(v) {
+        this.vertices.push(v);
+        this.boundingRectangle = undefined;
+    }
+
+    /**
+     * Calculates the bounding rectangle. It's worth noting that the first point in the bounding rectangle is the
+     * upper left corner, and subsequent points proceed clockwise. Certain methods rely on this ordering.
+     * @returns {Polygon} The bounding rectangle for this polygon.
+     */
+    getBoundingRectangle() {
+        if (this.boundingRectangle === undefined) {
+            let minX = this.vertices[0].x;
+            let minY = this.vertices[0].y;
+            let maxX = minX;
+            let maxY = minY;
+            for (let i = 1; i < this.vertices.length; i++) {
+                if (this.vertices[i].x < minX)
+                    minX = this.vertices[i].x;
+                if (this.vertices[i].y < minY)
+                    minY = this.vertices[i].y;
+                if (this.vertices[i].x > maxX)
+                    maxX = this.vertices[i].x;
+                if (this.vertices[i].y > maxY)
+                    maxY = this.vertices[i].y;
+            }
+            this.boundingRectangle = new Polygon([
+                new Point(minX, minY),
+                new Point(maxX, minY),
+                new Point(maxX, maxY),
+                new Point(minX, maxY),
+            ]);
+        }
+
+        return this.boundingRectangle;
+    }
+
+    /**
+     * Calculate the center of the polygon.
+     * @returns {Point} The center.
+     */
+    getCenter() {
+        this.getBoundingRectangle();
+        return new Point(
+            (this.boundingRectangle.vertices[0].x + this.boundingRectangle.vertices[1].x)/2,
+            (this.boundingRectangle.vertices[0].y + this.boundingRectangle.vertices[3].y)/2,
+        );
+    }
+
+    /**
+     * Get the upper left corner (origin) of the bounding rectangle.
+     * @returns {Point} The upper left corner.
+     */
+    getOrigin() {
+        this.getBoundingRectangle();
+        return this.boundingRectangle.vertices[0];
+    }
+
+    /**
+     * Get the width of the bounding rectangle.
+     * @returns {number} The difference between max and min X values.
+     */
+    getWidth() {
+        this.getBoundingRectangle();
+        return Math.ceil(this.boundingRectangle.vertices[2].x - this.boundingRectangle.vertices[0].x);
+    }
+
+    /**
+     * Get the height of the bounding rectangle.
+     * @returns {number} The difference between max and min Y values.
+     */
+    getHeight() {
+        this.getBoundingRectangle();
+        return Math.ceil(this.boundingRectangle.vertices[2].y - this.boundingRectangle.vertices[0].y);
+    }
+
+    /**
+     * Rotate the polygon around a point.
+     * @param {number} degrees The number of degrees to rotate.
+     * @param {Point} center The point around which to rotate. If not supplied, the physical center of the polygon is used.
+     */
+    rotate(degrees, center) {
+        if (typeof(center) === 'undefined') {
+            center = this.getCenter();
+        }
+        for (let i=0; i<this.vertices.length; i++) {
+            this.vertices[i].rotate(degrees, center);
+        }
+        this.boundingRectangle = undefined;
+    }
+
+    /**
+     * Make a copy of the polygon.
+     * @returns {Polygon} New Polygon.
+     */
+    copy() {
+        const poly = new Polygon();
+        for (let i=0; i<this.vertices.length; i++) {
+            poly.addVertex(new Point(this.vertices[i].x, this.vertices[i].y));
+        }
+
+        return poly;
     }
 }
 
@@ -382,7 +482,7 @@ class TangleElement extends TangleBase {
  * @property {number} gridYVary The vertical grid point location variation in pixels.
  * @property {objects} polys Polygons already drawn.
  * @property {boolean} avoidCollisions If true, do not draw over other elements listed in this.polys.
- * @property [Point] maskPoly A set of points defining a polygon. Only the portion of the image inside the polygon will be displayed, unless ignoreMask is true.
+ * @property {Point[]} maskPoly A set of points defining a polygon. Only the portion of the image inside the polygon will be displayed, unless ignoreMask is true.
  * @property {boolean} addStrings If true, the boundaries of the maskPoly are drawn. Default is true.
  * @property {boolean} ignoreMask If true, do not mask the result, drawn the entire rectangle. Default is false.
  */
@@ -394,25 +494,19 @@ class Tangle extends TangleBase {
 
     /**
      * Create a new Tangle
-     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
+     * @param {Point[] | Polygon} mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {TangleOptions} options A map of values to be loaded into instance variables.
      */
     constructor(mask, options) {
         super();
-        let originX = mask[0].x;
-        let originY = mask[0].y;
-        let extentX = originX;
-        let extentY = originY;
-        for (let i=1; i<mask.length; i++) {
-            if (mask[i].x > extentX) extentX = mask[i].x;
-            if (mask[i].y > extentY) extentY = mask[i].y;
-            if (mask[i].x < originX) originX = mask[i].x;
-            if (mask[i].y < originY) originY = mask[i].y;
-        }
-        this.origin = new Point(originX, originY);
-        this.width = Math.floor(extentX - originX);
-        this.height = Math.floor(extentY - originY);
         this.maskPoly = mask;
+        if (Array.isArray(mask)) {
+            this.maskPoly = new Polygon(mask);
+        }
+        const br = this.maskPoly.getBoundingRectangle();
+        this.origin = br.getOrigin();
+        this.width = br.getWidth();
+        this.height = br.getHeight();
         this.g = createGraphics(this.width, this.height);
         this.gridPoints = [];
 
@@ -489,7 +583,7 @@ class Tangle extends TangleBase {
 
     /**
      * Test an polygon for collisions with existing polygons.
-     * @param [p5.Vector] poly The polygon to test.
+     * @param {p5.Vector[]} poly The polygon to test.
      * @returns {boolean} True if there is a collision.
      */
     collisionTest(poly) {
@@ -516,7 +610,7 @@ class Tangle extends TangleBase {
      * Apply the mask polygon to this tangle. Only the portion of the tangle inside the mask polygon will be displayed.
      */
     applyMask() {
-        if (this.ignoreMask || this.maskPoly.length < 1) {
+        if (this.ignoreMask) {
             return;
         }
 
@@ -525,8 +619,8 @@ class Tangle extends TangleBase {
         mask.noStroke();
         mask.fill(255, 255, 255, 255);
         mask.beginShape();
-        for (let p = 0; p < this.maskPoly.length; p++) {
-            mask.vertex(this.maskPoly[p].x-this.origin.x, this.maskPoly[p].y-this.origin.y);
+        for (let p = 0; p < this.maskPoly.vertices.length; p++) {
+            mask.vertex(this.maskPoly.vertices[p].x-this.origin.x, this.maskPoly.vertices[p].y-this.origin.y);
         }
         mask.endShape(CLOSE);
 
@@ -543,8 +637,8 @@ class Tangle extends TangleBase {
             this.g.stroke(0);
             this.g.fill(0, 0, 0, 0);
             this.g.beginShape();
-            for (let p = 0; p < this.maskPoly.length; p++) {
-                this.g.vertex(this.maskPoly[p].x-this.origin.x, this.maskPoly[p].y-this.origin.y);
+            for (let p = 0; p < this.maskPoly.vertices.length; p++) {
+                this.g.vertex(this.maskPoly.vertices[p].x-this.origin.x, this.maskPoly.vertices[p].y-this.origin.y);
             }
             this.g.endShape(CLOSE);
         }
@@ -746,7 +840,7 @@ class Aah extends Tangle {
 
     /**
      * Create the Aah tangle object.
-     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
+     * @param {Point[] | Polygon} mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {AahOptions} options A map of values to be loaded into instance variables.
      */
     constructor(mask, options) {
@@ -970,7 +1064,7 @@ class BoxSpiralElement extends TangleElement {
 
     /**
      * Create an array of potential points for this box spiral
-     * @returns [{Point}] Array of points
+     * @returns {Point[]} Array of points
      * @private
      */
     _pointPool() {
@@ -1079,7 +1173,7 @@ class BoxSpiralElement extends TangleElement {
  * @typedef {Object} BoxSpiralOptions
  * @property {number} desiredCount The number of spirals to generate.
  * @property {number|Range} size Size or size range of spirals to generate. The default is 50.
- * @property (number|Range} divisions Number of divisions for each spiral.
+ * @property {number|Range} divisions Number of divisions for each spiral.
  * @property {value} any Any of the TangleOptions may be used here.
  */
 
@@ -1095,7 +1189,7 @@ class BoxSpirals extends Tangle {
 
     /**
      * Create a new BoxSpiral
-     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
+     * @param {Point[] | Polygon} mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {BoxSpiralOptions} options The options list.
      */
     constructor(mask, options) {
@@ -1145,7 +1239,7 @@ class BoxSpirals extends Tangle {
 class Ambler extends Tangle {
     /**
      * Create a new Ambler.
-     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
+     * @param {Point[] | Polygon} mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {AmblerOptions} options The options list.
      */
     constructor(mask, options) {
@@ -1194,7 +1288,7 @@ class Ambler extends Tangle {
 class Emingle extends Tangle {
     /**
      * Create a new Emingle.
-     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
+     * @param {Point[] | Polygon} mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {EmingleOptions} options The options list.
      */
     constructor(mask, options) {
@@ -1254,7 +1348,7 @@ class Zentangle extends TangleBase {
         if (typeof options === 'undefined') options = {};
         options.allowableOptions = {
             background: 255,
-            borderSize: 20,
+            borderSize: 30,
         };
         this.loadOptions(options);
 
@@ -1313,8 +1407,8 @@ class Zentangle extends TangleBase {
     }
 
     /**
-     * Get a mask covering the entire zentangle.
-     * @returns [Point]
+     * Get a mask covering the entire Zentangle.
+     * @returns {Point[]} A rectangular mask covering the entire Zentangle canvas.
      */
     getFullMask() {
         return [
@@ -1379,8 +1473,8 @@ class Zentangle extends TangleBase {
 
     /**
      * Extend and randomize vertices. This is intended to make the border look hand-drawn.
-     * @param [Point] vertices List of points defining thr border.
-     * @returns [Point] New vertex list.
+     * @param {Point[]} vertices List of points defining thr border.
+     * @returns {Point[]} New vertex list.
      * @private
      */
     _createBorderPolyFromLines(vertices) {

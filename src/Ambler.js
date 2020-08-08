@@ -11,7 +11,7 @@
 class Ambler extends Tangle {
     /**
      * Create a new Ambler.
-     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
+     * @param {Point[] | Polygon} mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {AmblerOptions} options The options list.
      */
     constructor(mask, options) {

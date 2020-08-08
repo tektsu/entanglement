@@ -134,7 +134,7 @@ class BoxSpiralElement extends TangleElement {
 
     /**
      * Create an array of potential points for this box spiral
-     * @returns [{Point}] Array of points
+     * @returns {Point[]} Array of points
      * @private
      */
     _pointPool() {
@@ -243,7 +243,7 @@ class BoxSpiralElement extends TangleElement {
  * @typedef {Object} BoxSpiralOptions
  * @property {number} desiredCount The number of spirals to generate.
  * @property {number|Range} size Size or size range of spirals to generate. The default is 50.
- * @property (number|Range} divisions Number of divisions for each spiral.
+ * @property {number|Range} divisions Number of divisions for each spiral.
  * @property {value} any Any of the TangleOptions may be used here.
  */
 
@@ -259,7 +259,7 @@ class BoxSpirals extends Tangle {
 
     /**
      * Create a new BoxSpiral
-     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
+     * @param {Point[] | Polygon} mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {BoxSpiralOptions} options The options list.
      */
     constructor(mask, options) {

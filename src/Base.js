@@ -122,7 +122,7 @@ class TangleElement extends TangleBase {
  * @property {number} gridYVary The vertical grid point location variation in pixels.
  * @property {objects} polys Polygons already drawn.
  * @property {boolean} avoidCollisions If true, do not draw over other elements listed in this.polys.
- * @property [Point] maskPoly A set of points defining a polygon. Only the portion of the image inside the polygon will be displayed, unless ignoreMask is true.
+ * @property {Point[]} maskPoly A set of points defining a polygon. Only the portion of the image inside the polygon will be displayed, unless ignoreMask is true.
  * @property {boolean} addStrings If true, the boundaries of the maskPoly are drawn. Default is true.
  * @property {boolean} ignoreMask If true, do not mask the result, drawn the entire rectangle. Default is false.
  */
@@ -134,25 +134,19 @@ class Tangle extends TangleBase {
 
     /**
      * Create a new Tangle
-     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
+     * @param {Point[] | Polygon} mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {TangleOptions} options A map of values to be loaded into instance variables.
      */
     constructor(mask, options) {
         super();
-        let originX = mask[0].x;
-        let originY = mask[0].y;
-        let extentX = originX;
-        let extentY = originY;
-        for (let i=1; i<mask.length; i++) {
-            if (mask[i].x > extentX) extentX = mask[i].x;
-            if (mask[i].y > extentY) extentY = mask[i].y;
-            if (mask[i].x < originX) originX = mask[i].x;
-            if (mask[i].y < originY) originY = mask[i].y;
-        }
-        this.origin = new Point(originX, originY);
-        this.width = Math.floor(extentX - originX);
-        this.height = Math.floor(extentY - originY);
         this.maskPoly = mask;
+        if (Array.isArray(mask)) {
+            this.maskPoly = new Polygon(mask);
+        }
+        const br = this.maskPoly.getBoundingRectangle();
+        this.origin = br.getOrigin();
+        this.width = br.getWidth();
+        this.height = br.getHeight();
         this.g = createGraphics(this.width, this.height);
         this.gridPoints = [];
 
@@ -229,7 +223,7 @@ class Tangle extends TangleBase {
 
     /**
      * Test an polygon for collisions with existing polygons.
-     * @param [p5.Vector] poly The polygon to test.
+     * @param {p5.Vector[]} poly The polygon to test.
      * @returns {boolean} True if there is a collision.
      */
     collisionTest(poly) {
@@ -256,7 +250,7 @@ class Tangle extends TangleBase {
      * Apply the mask polygon to this tangle. Only the portion of the tangle inside the mask polygon will be displayed.
      */
     applyMask() {
-        if (this.ignoreMask || this.maskPoly.length < 1) {
+        if (this.ignoreMask) {
             return;
         }
 
@@ -265,8 +259,8 @@ class Tangle extends TangleBase {
         mask.noStroke();
         mask.fill(255, 255, 255, 255);
         mask.beginShape();
-        for (let p = 0; p < this.maskPoly.length; p++) {
-            mask.vertex(this.maskPoly[p].x-this.origin.x, this.maskPoly[p].y-this.origin.y);
+        for (let p = 0; p < this.maskPoly.vertices.length; p++) {
+            mask.vertex(this.maskPoly.vertices[p].x-this.origin.x, this.maskPoly.vertices[p].y-this.origin.y);
         }
         mask.endShape(CLOSE);
 
@@ -283,8 +277,8 @@ class Tangle extends TangleBase {
             this.g.stroke(0);
             this.g.fill(0, 0, 0, 0);
             this.g.beginShape();
-            for (let p = 0; p < this.maskPoly.length; p++) {
-                this.g.vertex(this.maskPoly[p].x-this.origin.x, this.maskPoly[p].y-this.origin.y);
+            for (let p = 0; p < this.maskPoly.vertices.length; p++) {
+                this.g.vertex(this.maskPoly.vertices[p].x-this.origin.x, this.maskPoly.vertices[p].y-this.origin.y);
             }
             this.g.endShape(CLOSE);
         }
