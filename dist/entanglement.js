@@ -3,7 +3,7 @@
  */
 class Entanglement {
 
-    static version = '0.0.4';
+    static version = '0.0.5';
 
     /**
      * Choose a value
@@ -382,8 +382,9 @@ class TangleElement extends TangleBase {
  * @property {number} gridYVary The vertical grid point location variation in pixels.
  * @property {objects} polys Polygons already drawn.
  * @property {boolean} avoidCollisions If true, do not draw over other elements listed in this.polys.
- * @property [Point] maskPoly A set of points defining a polygon. Only the portion of the image inside the polygon will be displayed.
- * @property {boolean} addStrings If true, the boundaries of the maskPoly are drawn.
+ * @property [Point] maskPoly A set of points defining a polygon. Only the portion of the image inside the polygon will be displayed, unless ignoreMask is true.
+ * @property {boolean} addStrings If true, the boundaries of the maskPoly are drawn. Default is true.
+ * @property {boolean} ignoreMask If true, do not mask the result, drawn the entire rectangle. Default is false.
  */
 
 /**
@@ -427,6 +428,7 @@ class Tangle extends TangleBase {
             polys: [],
             avoidCollisions: true,
             addStrings: true,
+            ignoreMask: false,
         };
 
         this.loadOptions(options);
@@ -514,7 +516,7 @@ class Tangle extends TangleBase {
      * Apply the mask polygon to this tangle. Only the portion of the tangle inside the mask polygon will be displayed.
      */
     applyMask() {
-        if (this.maskPoly.length < 1) {
+        if (this.ignoreMask || this.maskPoly.length < 1) {
             return;
         }
 
@@ -1179,6 +1181,57 @@ class Ambler extends Tangle {
 }
 
 /**
+ * @typedef {Object} EmingleOptions
+ * @property {string} startCorner The corner at which to start the box spiral. Can be 'nw', ne', 'se', 'sw' or 'random'. The default is 'nw'.
+ * @property {value} any Any of the TangleOptions may be used here.
+ */
+
+/**
+ * Define the Eming;e Tangle. Ambler consists of a grid containing box spirals
+ * <br />
+ * <img src='images/EmingleTangle.png' />
+ */
+class Emingle extends Tangle {
+    /**
+     * Create a new Emingle
+     * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
+     * @param {AmblerOptions} options The options list.
+     */
+    constructor(mask, options) {
+        if (typeof options === 'undefined') options = {};
+        options.allowableOptions = {
+            startCorner: 'nw',
+        };
+        super(mask, options);
+        const starts = ['nw', 'sw', 'se', 'ne'];
+        if (this.startCorner === 'random') {
+            this.startCorner = starts[Math.floor(random(0, 4))];
+        }
+
+        this.buildGridPoints();
+
+        for (let r = 0; r < this.gridPoints.length - 1; r++) {
+            for (let c = 0; c < this.gridPoints[r].length - 1; c++) {
+                const nw = this.gridPoints[r][c];
+                const ne = this.gridPoints[r][c + 1];
+                const se = this.gridPoints[r + 1][c + 1];
+                const sw = this.gridPoints[r + 1][c];
+                const bse = BoxSpiralElement.newFromCoordinates(this.g, nw, ne, se, sw, {
+                    startCorner: this.startCorner,
+                    divisions: 6,
+                    interior: true,
+                });
+                bse.draw();
+            }
+        }
+
+        this.grid();
+
+        this.applyMask();
+    }
+}
+
+/**
  * @typedef {Object} ZentangleOptions
  * @property {p5.Color} background The background of the Zentangle canvas.
  * @property {number} borderSize The average width of the border in pixels.
@@ -1192,7 +1245,7 @@ class Zentangle extends TangleBase {
 
     /**
      * Create a Zentangle object.
-     * @param {number} size The size of the Zentangle in pixels. There is only one number, as Zentagles are a square or a triangle (in which case size is the length of the side), or a circle (in which case the size is the diameter.
+     * @param {number} size The size of the Zentangle in pixels. There is only one number, as Zentagles are a square or a triangle (in which case size is the length of the side), or a circle (in which case the size is the diameter.)
      * @param {string} shape The shape of the Zentangle. Can be 'square' (the default), 'triangle' or 'circle'.
      * @param {ZentangleOptions} options
      */

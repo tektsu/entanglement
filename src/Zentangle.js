@@ -12,7 +12,7 @@ class Zentangle extends TangleBase {
 
     /**
      * Create a Zentangle object.
-     * @param {number} size The size of the Zentangle in pixels. There is only one number, as Zentagles are a square or a triangle (in which case size is the length of the side), or a circle (in which case the size is the diameter.
+     * @param {number} size The size of the Zentangle in pixels. There is only one number, as Zentagles are a square or a triangle (in which case size is the length of the side), or a circle (in which case the size is the diameter.)
      * @param {string} shape The shape of the Zentangle. Can be 'square' (the default), 'triangle' or 'circle'.
      * @param {ZentangleOptions} options
      */

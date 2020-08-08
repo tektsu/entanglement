@@ -2050,6 +2050,149 @@
 
             
                 
+<h4 class="name" id="EmingleOptions">EmingleOptions</h4>
+
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>startCorner</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The corner at which to start the box spiral. Can be 'nw', ne', 'se', 'sw' or 'random'. The default is 'nw'.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>any</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">value</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Any of the TangleOptions may be used here.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Emingle.js.html">Emingle.js</a>, <a href="Emingle.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
 <h4 class="name" id="TangleElementOptions">TangleElementOptions</h4>
 
 
@@ -2574,7 +2717,7 @@
 
             
 
-            <td class="description last"><p>maskPoly A set of points defining a polygon. Only the portion of the image inside the polygon will be displayed.</p></td>
+            <td class="description last"><p>maskPoly A set of points defining a polygon. Only the portion of the image inside the polygon will be displayed, unless ignoreMask is true.</p></td>
         </tr>
 
     
@@ -2603,7 +2746,36 @@
 
             
 
-            <td class="description last"><p>If true, the boundaries of the maskPoly are drawn.</p></td>
+            <td class="description last"><p>If true, the boundaries of the maskPoly are drawn. Default is true.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ignoreMask</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>If true, do not mask the result, drawn the entire rectangle. Default is false.</p></td>
         </tr>
 
     
@@ -2838,13 +3010,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Aah.html">Aah</a></li><li><a href="AahElement.html">AahElement</a></li><li><a href="Ambler.html">Ambler</a></li><li><a href="Box.html">Box</a></li><li><a href="BoxSpiralElement.html">BoxSpiralElement</a></li><li><a href="BoxSpirals.html">BoxSpirals</a></li><li><a href="DotElement.html">DotElement</a></li><li><a href="Entanglement.html">Entanglement</a></li><li><a href="Line.html">Line</a></li><li><a href="Point.html">Point</a></li><li><a href="Polar.html">Polar</a></li><li><a href="Range.html">Range</a></li><li><a href="Tangle.html">Tangle</a></li><li><a href="TangleBase.html">TangleBase</a></li><li><a href="TangleElement.html">TangleElement</a></li><li><a href="Zentangle.html">Zentangle</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Aah.html">Aah</a></li><li><a href="AahElement.html">AahElement</a></li><li><a href="Ambler.html">Ambler</a></li><li><a href="Box.html">Box</a></li><li><a href="BoxSpiralElement.html">BoxSpiralElement</a></li><li><a href="BoxSpirals.html">BoxSpirals</a></li><li><a href="DotElement.html">DotElement</a></li><li><a href="Emingle.html">Emingle</a></li><li><a href="Entanglement.html">Entanglement</a></li><li><a href="Line.html">Line</a></li><li><a href="Point.html">Point</a></li><li><a href="Polar.html">Polar</a></li><li><a href="Range.html">Range</a></li><li><a href="Tangle.html">Tangle</a></li><li><a href="TangleBase.html">TangleBase</a></li><li><a href="TangleElement.html">TangleElement</a></li><li><a href="Zentangle.html">Zentangle</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Tue Aug 04 2020 19:22:06 GMT-0700 (Mountain Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Fri Aug 07 2020 17:05:12 GMT-0700 (Mountain Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

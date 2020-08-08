@@ -122,8 +122,9 @@ class TangleElement extends TangleBase {
  * @property {number} gridYVary The vertical grid point location variation in pixels.
  * @property {objects} polys Polygons already drawn.
  * @property {boolean} avoidCollisions If true, do not draw over other elements listed in this.polys.
- * @property [Point] maskPoly A set of points defining a polygon. Only the portion of the image inside the polygon will be displayed.
- * @property {boolean} addStrings If true, the boundaries of the maskPoly are drawn.
+ * @property [Point] maskPoly A set of points defining a polygon. Only the portion of the image inside the polygon will be displayed, unless ignoreMask is true.
+ * @property {boolean} addStrings If true, the boundaries of the maskPoly are drawn. Default is true.
+ * @property {boolean} ignoreMask If true, do not mask the result, drawn the entire rectangle. Default is false.
  */
 
 /**
@@ -167,6 +168,7 @@ class Tangle extends TangleBase {
             polys: [],
             avoidCollisions: true,
             addStrings: true,
+            ignoreMask: false,
         };
 
         this.loadOptions(options);
@@ -254,7 +256,7 @@ class Tangle extends TangleBase {
      * Apply the mask polygon to this tangle. Only the portion of the tangle inside the mask polygon will be displayed.
      */
     applyMask() {
-        if (this.maskPoly.length < 1) {
+        if (this.ignoreMask || this.maskPoly.length < 1) {
             return;
         }
 
