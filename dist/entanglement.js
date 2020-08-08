@@ -1362,22 +1362,22 @@ class Zentangle extends TangleBase {
         let center = new Point(this.width/2, this.height/2);
         switch(this.shape) {
             case 'circle':
-                this.edgePoly = [];
+                this.edgePoly = new Polygon();
                 for (let d=0; d<360; d++) {
-                    this.edgePoly.push(new Polar(this.width/2-1, radians(d)).toPointCenter(center));
+                    this.edgePoly.addVertex(new Polar(this.width/2-1, radians(d)).toPointCenter(center));
                 }
-                this.borderPoly = [];
+                this.borderPoly = new Polygon();
                 for (let d=0; d<360; d++) {
-                    this.borderPoly.push(new Polar(this.width/2-this.borderSize, radians(d)).toPointCenter(center).vary(1));
+                    this.borderPoly.addVertex(new Polar(this.width/2-this.borderSize, radians(d)).toPointCenter(center).vary(1));
                 }
                 break;
             case 'triangle':
                 center = new Point(this.width/2, 2*this.height/3);
-                this.edgePoly = [
+                this.edgePoly = new Polygon([
                     new Point(0, this.height),
                     new Point(this.width/2, 0),
                     new Point(this.width, this.height),
-                ];
+                ]);
                 const distance = 2*this.height/3 - 2*this.borderSize;
                 this.borderPoly = this._createBorderPolyFromLines([
                     new Polar(distance, radians(270)).toPointCenter(center),
@@ -1386,12 +1386,12 @@ class Zentangle extends TangleBase {
                 ]);
                 break;
             default:    // square
-                this.edgePoly = [
+                this.edgePoly = new Polygon([
                     new Point(0, 0),
                     new Point(this.width, 0),
                     new Point(this.width, this.height),
                     new Point(0, this.height),
-                ];
+                ]);
                 this.borderPoly = this._createBorderPolyFromLines([
                     new Point(this.borderSize, this.borderSize),
                     new Point(this.width-this.borderSize, this.borderSize),
@@ -1411,12 +1411,12 @@ class Zentangle extends TangleBase {
      * @returns {Point[]} A rectangular mask covering the entire Zentangle canvas.
      */
     getFullMask() {
-        return [
+        return new Polygon([
             new Point(0, 0),
             new Point(this.width, 0),
             new Point(this.width, this.height),
             new Point(0, this.height),
-        ];
+        ]);
     }
 
     /**
@@ -1438,14 +1438,14 @@ class Zentangle extends TangleBase {
         border.noStroke();
         border.fill(255, 255, 255, 0);
         border.beginShape();
-        for (let p = 0; p < this.edgePoly.length; p++) {
-            border.vertex(this.edgePoly[p].x, this.edgePoly[p].y);
+        for (let p = 0; p < this.edgePoly.vertices.length; p++) {
+            border.vertex(this.edgePoly.vertices[p].x, this.edgePoly.vertices[p].y);
         }
         border.endShape(CLOSE);
         border.fill(255, 255, 255, 255);
         border.beginShape();
-        for (let p = 0; p < this.borderPoly.length; p++) {
-            border.vertex(this.borderPoly[p].x, this.borderPoly[p].y);
+        for (let p = 0; p < this.borderPoly.vertices.length; p++) {
+            border.vertex(this.borderPoly.vertices[p].x, this.borderPoly.vertices[p].y);
         }
         border.endShape(CLOSE);
 
@@ -1458,15 +1458,15 @@ class Zentangle extends TangleBase {
         stroke(0);
         fill(255, 255, 255, 0);
         beginShape();
-        for (let p = 0; p < this.borderPoly.length; p++) {
-            vertex(this.borderPoly[p].x, this.borderPoly[p].y);
+        for (let p = 0; p < this.borderPoly.vertices.length; p++) {
+            vertex(this.borderPoly.vertices[p].x, this.borderPoly.vertices[p].y);
         }
         endShape(CLOSE);
 
         // Draw the edge
         beginShape();
-        for (let p = 0; p < this.edgePoly.length; p++) {
-            vertex(this.edgePoly[p].x, this.edgePoly[p].y);
+        for (let p = 0; p < this.edgePoly.vertices.length; p++) {
+            vertex(this.edgePoly.vertices[p].x, this.edgePoly.vertices[p].y);
         }
         endShape(CLOSE);
     }
@@ -1478,13 +1478,16 @@ class Zentangle extends TangleBase {
      * @private
      */
     _createBorderPolyFromLines(vertices) {
-        let poly = [];
+        let poly = new Polygon();
         for (let start=0; start<vertices.length; start++) {
             let end = start+1;
             if (end === vertices.length) {
                 end = 0;
             }
-            poly = poly.concat(new Line(vertices[start], vertices[end]).handDrawn());
+            const points = new Line(vertices[start], vertices[end]).handDrawn();
+            for (let i=0; i<points.length; i++) {
+                poly.addVertex(points[i]);
+            }
         }
 
         return poly;

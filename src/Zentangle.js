@@ -84,12 +84,12 @@ class Zentangle extends TangleBase {
      * @returns {Point[]} A rectangular mask covering the entire Zentangle canvas.
      */
     getFullMask() {
-        return [
+        return new Polygon([
             new Point(0, 0),
             new Point(this.width, 0),
             new Point(this.width, this.height),
             new Point(0, this.height),
-        ];
+        ]);
     }
 
     /**
