@@ -5,15 +5,15 @@
  */
 
 /**
- * Define the Eming;e Tangle. Ambler consists of a grid containing box spirals
+ * Define the Emingle Tangle. Emingle consists of a grid containing box spirals.
  * <br />
  * <img src='images/EmingleTangle.png' />
  */
 class Emingle extends Tangle {
     /**
-     * Create a new Emingle
+     * Create a new Emingle.
      * @param [Point] mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
-     * @param {AmblerOptions} options The options list.
+     * @param {EmingleOptions} options The options list.
      */
     constructor(mask, options) {
         if (typeof options === 'undefined') options = {};

@@ -37,6 +37,7 @@ The Tangle is based on the [Tangle](https://tektsu.github.io/entanglement/Tangle
 | [Aah](https://tektsu.github.io/entanglement/Aah.html)    | [AahElement](https://tektsu.github.io/entanglement/AahElement.html) <br>[DotElement](https://tektsu.github.io/entanglement/DotElement.html) |
 | [Ambler](https://tektsu.github.io/entanglement/Ambler.html) | [BoxSpiralElement](https://tektsu.github.io/entanglement/BoxSpiralElement.html) |
 | [BoxSpirals](https://tektsu.github.io/entanglement/BoxSpirals.html) | [BoxSpiralElement](https://tektsu.github.io/entanglement/BoxSpiralElement.html) |
+| [Emingle](https://tektsu.github.io/entanglement/Emingle.html) | [BoxSpiralElement](https://tektsu.github.io/entanglement/BoxSpiralElement.html) |
 
 ## Tangle Elements
 
@@ -45,7 +46,7 @@ Tangle elements are shapes that make up tangle. Generally, a tangle will have a 
 | Tangle Element   | Used in Tangles |
 |:-----------------|:----------------|
 | [AahElement](https://tektsu.github.io/entanglement/AahElement.html)       | [Aah](https://tektsu.github.io/entanglement/Aah.html)             |
-| [BoxSpiralElement](https://tektsu.github.io/entanglement/BoxSpiralElement.html) | [Ambler](https://tektsu.github.io/entanglement/Ambler.html) <br />[BoxSpirals](https://tektsu.github.io/entanglement/BoxSpirals.html) |
+| [BoxSpiralElement](https://tektsu.github.io/entanglement/BoxSpiralElement.html) | [Ambler](https://tektsu.github.io/entanglement/Ambler.html) <br />[BoxSpirals](https://tektsu.github.io/entanglement/BoxSpirals.html) <br /> [Emingle](https://tektsu.github.io/entanglement/Emingle.html) |
 | [DotElement](https://tektsu.github.io/entanglement/DotElement.html)       | [Aah](https://tektsu.github.io/entanglement/Aah.html)             |
 
 ## Examples
