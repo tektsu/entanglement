@@ -120,11 +120,11 @@ class TangleElement extends TangleBase {
  * @property {number} gridVary The grid point location variation in pixels. If used, both gridXVary and gridYVary are set to this.
  * @property {number} gridXVary The horizontal grid point location variation in pixels.
  * @property {number} gridYVary The vertical grid point location variation in pixels.
- * @property {objects} polys Polygons already drawn.
+ * @property {object[]} polys Polygons already drawn.
  * @property {boolean} avoidCollisions If true, do not draw over other elements listed in this.polys.
  * @property {Point[]} maskPoly A set of points defining a polygon. Only the portion of the image inside the polygon will be displayed, unless ignoreMask is true.
  * @property {boolean} addStrings If true, the boundaries of the maskPoly are drawn. Default is true.
- * @property {boolean} ignoreMask If true, do not mask the result, drawn the entire rectangle. Default is false.
+ * @property {boolean} ignoreMask If true, do not mask the result, draw the entire rectangle. Default is false.
  */
 
 /**
