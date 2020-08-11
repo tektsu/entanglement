@@ -280,6 +280,7 @@ class Polygon {
         for (let i=0; i<this.vertices.length; i++) {
             this.vertices[i].rotate(degrees, center);
         }
+
         this.boundingRectangle = undefined;
     }
 

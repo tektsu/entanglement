@@ -312,6 +312,7 @@ class Polygon {
         for (let i=0; i<this.vertices.length; i++) {
             this.vertices[i].rotate(degrees, center);
         }
+
         this.boundingRectangle = undefined;
     }
 
@@ -475,16 +476,17 @@ class TangleElement extends TangleBase {
  * @property {number} debug The debug level.
  * @property {p5.Color} background The color with which to fill the background.
  * @property {number} gridSpacing The grid size in pixels. If used, both gridXSpacing and gridYSpacing are set to this.
- * @property {number} gridXSpacing The horizontal grid size in pixels.
- * @property {number} gridYSpacing The vertical grid size in pixels.
+ * @property {number} gridXSpacing The horizontal grid size in pixels. The default is 40.
+ * @property {number} gridYSpacing The vertical grid size in pixels. The Default is 40.
  * @property {number} gridVary The grid point location variation in pixels. If used, both gridXVary and gridYVary are set to this.
  * @property {number} gridXVary The horizontal grid point location variation in pixels.
  * @property {number} gridYVary The vertical grid point location variation in pixels.
- * @property {objects} polys Polygons already drawn.
- * @property {boolean} avoidCollisions If true, do not draw over other elements listed in this.polys.
+ * @property {object[]} polys Polygons already drawn.
+ * @property {boolean} avoidCollisions If true, do not draw over other elements listed in this.polys. The default is true.
  * @property {Point[]} maskPoly A set of points defining a polygon. Only the portion of the image inside the polygon will be displayed, unless ignoreMask is true.
- * @property {boolean} addStrings If true, the boundaries of the maskPoly are drawn. Default is true.
- * @property {boolean} ignoreMask If true, do not mask the result, drawn the entire rectangle. Default is false.
+ * @property {boolean} addStrings If true, the boundaries of the maskPoly are drawn. The default is true.
+ * @property {boolean} ignoreMask If true, do not mask the result, draw the entire rectangle. The default is false.
+ * @property {number} tangleRotate The number of degrees by which to rotate the tangle before applying the mask. The default is 0.
  */
 
 /**
@@ -503,11 +505,6 @@ class Tangle extends TangleBase {
         if (Array.isArray(mask)) {
             this.maskPoly = new Polygon(mask);
         }
-        const br = this.maskPoly.getBoundingRectangle();
-        this.origin = br.getOrigin();
-        this.width = br.getWidth();
-        this.height = br.getHeight();
-        this.g = createGraphics(this.width, this.height);
         this.gridPoints = [];
 
         this.optionsAllowed = {
@@ -523,9 +520,44 @@ class Tangle extends TangleBase {
             avoidCollisions: true,
             addStrings: true,
             ignoreMask: false,
+            tangleRotate: 0,
         };
 
         this.loadOptions(options);
+
+        const br = this.maskPoly.getBoundingRectangle().copy();
+        this.origin = br.getOrigin();
+        this.width = br.getWidth();
+        this.height = br.getHeight();
+        if (this.tangleRotate) {
+            // Rotate the mask area, but make sure the bounding rectangle always covers at least the original mask area.
+            let minX = this.origin.x;
+            let minY = this.origin.y;
+            let maxX = minX + this.width;
+            let maxY = minY + this.height;
+            br.rotate(this.tangleRotate);
+            const origin = br.getOrigin();
+            const width = br.getWidth();
+            const height = br.getHeight();
+            minX = Math.floor(Math.min(minX, origin.x));
+            minY = Math.floor(Math.min(minY, origin.y));
+            maxX = Math.ceil(Math.max(maxX, origin.x+width));
+            maxY = Math.ceil(Math.max(maxY, origin.y+height));
+            this.origin = new Point(minX, minY);
+            this.width = maxX-minX;
+            this.height = maxY-minY;
+        }
+        this.g = createGraphics(this.width, this.height);
+        if (this.tangleRotate) {
+            // Translate the center of the tangle back to the center of the bounding rectangle
+            const r = radians(this.tangleRotate);
+            const x = this.width/2;
+            const y = this.height/2;
+            const dx = Math.floor(x-(x*cos(r)-y*sin(r)));
+            const dy = Math.floor(y-(x*sin(r)+y*cos(r)));
+            this.g.translate(dx, dy);
+            this.g.rotate(r);
+        }
 
         // Set background
         if (this.background !== undefined) {
