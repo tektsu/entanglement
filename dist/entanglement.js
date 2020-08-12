@@ -475,6 +475,8 @@ class TangleElement extends TangleBase {
  * @typedef {Object} TangleOptions
  * @property {number} debug The debug level.
  * @property {p5.Color} background The color with which to fill the background.
+ * @property {boolean} grid If true, this is a grid-based tangle. The default is false.
+ * @property {boolean} gridShow If true, and this is a grid-based tangle, draw the grid lines after building the tangle. The default is true.
  * @property {number} gridSpacing The grid size in pixels. If used, both gridXSpacing and gridYSpacing are set to this.
  * @property {number} gridXSpacing The horizontal grid size in pixels. The default is 40.
  * @property {number} gridYSpacing The vertical grid size in pixels. The Default is 40.
@@ -506,10 +508,13 @@ class Tangle extends TangleBase {
             this.maskPoly = new Polygon(mask);
         }
         this.gridPoints = [];
+        this.build = function() {}
 
         this.optionsAllowed = {
             debug: 0,
             background: undefined,
+            grid: false,
+            gridShow: false,
             gridSpacing: undefined,
             gridXSpacing: 40,
             gridYSpacing: 40,
@@ -596,7 +601,7 @@ class Tangle extends TangleBase {
     /**
      * Draw the grid on the graphics buffer
      */
-    grid() {
+    showGrid() {
         if (this.gridPoints.length === 0)
             this.buildGridPoints();
         for(let r=0; r<this.gridPoints.length; r++) {
@@ -673,6 +678,27 @@ class Tangle extends TangleBase {
                 this.g.vertex(this.maskPoly.vertices[p].x-this.origin.x, this.maskPoly.vertices[p].y-this.origin.y);
             }
             this.g.endShape(CLOSE);
+        }
+    }
+
+    /**
+     * Build the tangle. Executes the this.build method with before and after processing appropriate to the tangle type.
+     * This is normally the last method called by a child class.
+     */
+    execute() {
+
+        if (this.grid) {
+            this.buildGridPoints();
+        }
+
+        this.build();
+
+        if (this.grid && this.gridShow) {
+            this.showGrid();
+        }
+
+        if (!this.ignoreMask) {
+            this.applyMask();
         }
     }
 }
@@ -883,80 +909,83 @@ class Aah extends Tangle {
         options.plan = options.plan === undefined ? Aah.plans.zentangle : options.plan;
         super(mask, options);
 
-        if (this.plan.aah === undefined) this.plan.aah = {};
-        if (this.plan.dot === undefined) this.plan.dot = {};
+        this.build = function() {
 
-        if (this.plan.aah.enable === undefined || this.plan.aah.enable === true) {
-            let drawCount = 0;
-            let failCount = 0;
+            if (this.plan.aah === undefined) this.plan.aah = {};
+            if (this.plan.dot === undefined) this.plan.dot = {};
 
-            const size = this.plan.aah.size === undefined ?
-                Math.min(this.width, this.height) / 8 : this.plan.aah.size;
-            if (this.margin === undefined) this.margin = size/6;
-            const desiredCount = this.plan.aah.desiredCount === undefined ?
-                (this.width / size) * (this.height / size) * 10 : this.plan.aah.desiredCount;
-            const sizeSDev = this.plan.aah.sizeSDP === undefined ?
-                (this.plan.aah.sizeSDP / 100) * size : this.plan.aah.sizeSDP;
+            if (this.plan.aah.enable === undefined || this.plan.aah.enable === true) {
+                let drawCount = 0;
+                let failCount = 0;
 
-            while (drawCount < desiredCount) {
-                let center = new Point(random(this.margin, this.width - this.margin), random(this.margin, this.height - this.margin));
+                const size = this.plan.aah.size === undefined ?
+                    Math.min(this.width, this.height) / 8 : this.plan.aah.size;
+                if (this.margin === undefined) this.margin = size / 6;
+                const desiredCount = this.plan.aah.desiredCount === undefined ?
+                    (this.width / size) * (this.height / size) * 10 : this.plan.aah.desiredCount;
+                const sizeSDev = this.plan.aah.sizeSDP === undefined ?
+                    (this.plan.aah.sizeSDP / 100) * size : this.plan.aah.sizeSDP;
 
-                let options = {
-                    debug: this.debug,
-                    size: randomGaussian(size, sizeSDev),
-                };
-                if (typeof this.plan.aah.armCount !== 'undefined') options.armCount = this.plan.aah.armCount;
-                if (typeof this.plan.aah.thetaSD !== 'undefined') options.thetaSD = this.plan.aah.thetaSD;
-                if (typeof this.plan.aah.lengthSDP !== 'undefined') options.lengthSDP = this.plan.aah.lengthSDP;
-                if (typeof this.plan.aah.gapSDP !== 'undefined') options.gapSDP = this.plan.aah.gapSDP;
-                if (typeof this.plan.aah.rotate !== 'undefined') options.rotate = this.plan.aah.rotate;
-                if (typeof this.plan.aah.tipDistancePercent !== 'undefined') options.tipDistancePercent = this.plan.aah.tipDistancePercent;
-                if (typeof this.plan.aah.tipDiameter !== 'undefined') options.tip.diameter = this.plan.aahTipDiameter;
-                if (typeof this.plan.aah.fillColor !== 'undefined') options.fillColor = this.plan.aah.fillColor;
-                if (typeof this.plan.aah.strokeColor !== 'undefined') options.strokeColor = this.plan.aah.strokeColor;
-                const aah = new AahElement(this.g, center, options);
-                const poly = aah.getPoly();
+                while (drawCount < desiredCount) {
+                    let center = new Point(random(this.margin, this.width - this.margin), random(this.margin, this.height - this.margin));
 
-                const conflict = this.collisionTest(poly);
-                if (conflict) {
-                    ++failCount;
-                    if (failCount > desiredCount * 3) {
-                        break;
+                    let options = {
+                        debug: this.debug,
+                        size: randomGaussian(size, sizeSDev),
+                    };
+                    if (typeof this.plan.aah.armCount !== 'undefined') options.armCount = this.plan.aah.armCount;
+                    if (typeof this.plan.aah.thetaSD !== 'undefined') options.thetaSD = this.plan.aah.thetaSD;
+                    if (typeof this.plan.aah.lengthSDP !== 'undefined') options.lengthSDP = this.plan.aah.lengthSDP;
+                    if (typeof this.plan.aah.gapSDP !== 'undefined') options.gapSDP = this.plan.aah.gapSDP;
+                    if (typeof this.plan.aah.rotate !== 'undefined') options.rotate = this.plan.aah.rotate;
+                    if (typeof this.plan.aah.tipDistancePercent !== 'undefined') options.tipDistancePercent = this.plan.aah.tipDistancePercent;
+                    if (typeof this.plan.aah.tipDiameter !== 'undefined') options.tip.diameter = this.plan.aahTipDiameter;
+                    if (typeof this.plan.aah.fillColor !== 'undefined') options.fillColor = this.plan.aah.fillColor;
+                    if (typeof this.plan.aah.strokeColor !== 'undefined') options.strokeColor = this.plan.aah.strokeColor;
+                    const aah = new AahElement(this.g, center, options);
+                    const poly = aah.getPoly();
+
+                    const conflict = this.collisionTest(poly);
+                    if (conflict) {
+                        ++failCount;
+                        if (failCount > desiredCount * 3) {
+                            break;
+                        }
+                    } else {
+                        this.polys.push(poly);
+                        aah.draw();
+                        ++drawCount;
                     }
-                } else {
-                    this.polys.push(poly);
-                    aah.draw();
-                    ++drawCount;
                 }
             }
-        }
 
-        if (this.plan.dot.enable === undefined || this.plan.dot.enable === true) {
-            const size = this.plan.dot.size === undefined ? 3 : this.plan.dot.size;
-            const sizeIsNum = isNaN(size) ? false : true;
-            const ds = (sizeIsNum ? size : size.max)*2;
-            const desiredCount = (this.width/ds) * (this.height/ds);
-            for (let i = 0; i < desiredCount; ++i) {
-                const center = new Point(random(this.margin, this.width - this.margin), random(this.margin, this.height - this.margin));
-                let options = {
-                    debug: this.debug,
-                    size: sizeIsNum ? size : size.rand(),
-                };
-                if (typeof this.plan.dot.spacing !== 'undefined') options.spacing = this.plan.dot.spacing;
-                if (typeof this.plan.dot.fillColor !== 'undefined') options.fillColor = this.plan.dot.fillColor;
-                if (typeof this.plan.dot.strokeColor !== 'undefined') options.strokeColor = this.plan.dot.strokeColor;
-                const dot = new DotElement(this.g, center, options);
-                const poly = dot.getPoly();
+            if (this.plan.dot.enable === undefined || this.plan.dot.enable === true) {
+                const size = this.plan.dot.size === undefined ? 3 : this.plan.dot.size;
+                const sizeIsNum = isNaN(size) ? false : true;
+                const ds = (sizeIsNum ? size : size.max) * 2;
+                const desiredCount = (this.width / ds) * (this.height / ds);
+                for (let i = 0; i < desiredCount; ++i) {
+                    const center = new Point(random(this.margin, this.width - this.margin), random(this.margin, this.height - this.margin));
+                    let options = {
+                        debug: this.debug,
+                        size: sizeIsNum ? size : size.rand(),
+                    };
+                    if (typeof this.plan.dot.spacing !== 'undefined') options.spacing = this.plan.dot.spacing;
+                    if (typeof this.plan.dot.fillColor !== 'undefined') options.fillColor = this.plan.dot.fillColor;
+                    if (typeof this.plan.dot.strokeColor !== 'undefined') options.strokeColor = this.plan.dot.strokeColor;
+                    const dot = new DotElement(this.g, center, options);
+                    const poly = dot.getPoly();
 
-                const conflict = this.collisionTest(poly);
-                if (!conflict) {
-                    this.polys.push(poly);
-                    dot.draw();
+                    const conflict = this.collisionTest(poly);
+                    if (!conflict) {
+                        this.polys.push(poly);
+                        dot.draw();
+                    }
                 }
             }
-        }
+        };
 
-        this.applyMask();
+        this.execute();
     }
 }
 
@@ -1236,25 +1265,28 @@ class BoxSpirals extends Tangle {
         };
         super(mask, options);
 
-        if (this.desiredCount === undefined) {
-            const s = isNaN(this.size) ? this.size.min : this.size;
-            this.desiredCount = Math.floor(this.width/s * this.height/s * 10); // An amount that should cover the buffer
-        }
+        this.build = function() {
 
-        for (let i=0; i<this.desiredCount; i++) {
-            let bseOpt = {
-                size: Entanglement.getInt(this.size),
-                fillColor: this.background,
-            };
-            if (this.divisions) bseOpt.divisions = this.divisions;
-            if (this.rotation) bseOpt.rotation = this.rotation;
-            if (this.rotate) bseOpt.rotate = this.rotate;
-            if (this.startCorner) bseOpt.startCorner = this.startCorner;
-            const bse = new BoxSpiralElement(this.g, new Point(random(0, this.width), random(0, this.height)), bseOpt);
-            bse.draw();
-        }
+            if (this.desiredCount === undefined) {
+                const s = isNaN(this.size) ? this.size.min : this.size;
+                this.desiredCount = Math.floor(this.width / s * this.height / s * 10); // An amount that should cover the buffer
+            }
 
-        this.applyMask();
+            for (let i = 0; i < this.desiredCount; i++) {
+                let bseOpt = {
+                    size: Entanglement.getInt(this.size),
+                    fillColor: this.background,
+                };
+                if (this.divisions) bseOpt.divisions = this.divisions;
+                if (this.rotation) bseOpt.rotation = this.rotation;
+                if (this.rotate) bseOpt.rotate = this.rotate;
+                if (this.startCorner) bseOpt.startCorner = this.startCorner;
+                const bse = new BoxSpiralElement(this.g, new Point(random(0, this.width), random(0, this.height)), bseOpt);
+                bse.draw();
+            }
+        };
+
+        this.execute();
     }
 }
 
@@ -1276,33 +1308,35 @@ class Ambler extends Tangle {
      */
     constructor(mask, options) {
         if (typeof options === 'undefined') options = {};
+        options.grid = true;
+        if (typeof options.gridShow === 'undefined') {
+            options.gridShow = true;
+        }
         super(mask, options);
 
-        this.buildGridPoints();
-
-        const starts = ['nw', 'sw', 'se', 'ne'];
-        let colRotate = 0;
-        let rowRotate = colRotate + 1;
-        for (let r = 0; r < this.gridPoints.length - 1; r++) {
-            for (let c = 0; c < this.gridPoints[r].length - 1; c++) {
-                const nw = this.gridPoints[r][c];
-                const ne = this.gridPoints[r][c + 1];
-                const se = this.gridPoints[r + 1][c + 1];
-                const sw = this.gridPoints[r + 1][c];
-                const bse = BoxSpiralElement.newFromCoordinates(this.g, nw, ne, se, sw, {
-                    startCorner: starts[colRotate % 4],
-                    divisions: 6,
-                    interior: true,
-                });
-                bse.draw();
-                colRotate++;
+        this.build = function() {
+            const starts = ['nw', 'sw', 'se', 'ne'];
+            let colRotate = 0;
+            let rowRotate = colRotate + 1;
+            for (let r = 0; r < this.gridPoints.length - 1; r++) {
+                for (let c = 0; c < this.gridPoints[r].length - 1; c++) {
+                    const nw = this.gridPoints[r][c];
+                    const ne = this.gridPoints[r][c + 1];
+                    const se = this.gridPoints[r + 1][c + 1];
+                    const sw = this.gridPoints[r + 1][c];
+                    const bse = BoxSpiralElement.newFromCoordinates(this.g, nw, ne, se, sw, {
+                        startCorner: starts[colRotate % 4],
+                        divisions: 6,
+                        interior: true,
+                    });
+                    bse.draw();
+                    colRotate++;
+                }
+                colRotate = rowRotate++;
             }
-            colRotate = rowRotate++;
-        }
+        };
 
-        this.grid();
-
-        this.applyMask();
+        this.execute();
     }
 }
 
@@ -1324,36 +1358,38 @@ class Emingle extends Tangle {
      * @param {EmingleOptions} options The options list.
      */
     constructor(mask, options) {
-        if (typeof options === 'undefined') options = {};
+        if (typeof options === 'undefined') options = {}
+        options.grid = true;
+        if (typeof options.gridShow === 'undefined') {
+            options.gridShow = true;
+        }
         options.allowableOptions = {
             startCorner: 'nw',
         };
         super(mask, options);
-        const starts = ['nw', 'sw', 'se', 'ne'];
-        if (this.startCorner === 'random') {
-            this.startCorner = starts[Math.floor(random(0, 4))];
-        }
 
-        this.buildGridPoints();
-
-        for (let r = 0; r < this.gridPoints.length - 1; r++) {
-            for (let c = 0; c < this.gridPoints[r].length - 1; c++) {
-                const nw = this.gridPoints[r][c];
-                const ne = this.gridPoints[r][c + 1];
-                const se = this.gridPoints[r + 1][c + 1];
-                const sw = this.gridPoints[r + 1][c];
-                const bse = BoxSpiralElement.newFromCoordinates(this.g, nw, ne, se, sw, {
-                    startCorner: this.startCorner,
-                    divisions: 6,
-                    interior: true,
-                });
-                bse.draw();
+        this.build = function() {
+            const starts = ['nw', 'sw', 'se', 'ne'];
+            if (this.startCorner === 'random') {
+                this.startCorner = starts[Math.floor(random(0, 4))];
             }
-        }
+            for (let r = 0; r < this.gridPoints.length - 1; r++) {
+                for (let c = 0; c < this.gridPoints[r].length - 1; c++) {
+                    const nw = this.gridPoints[r][c];
+                    const ne = this.gridPoints[r][c + 1];
+                    const se = this.gridPoints[r + 1][c + 1];
+                    const sw = this.gridPoints[r + 1][c];
+                    const bse = BoxSpiralElement.newFromCoordinates(this.g, nw, ne, se, sw, {
+                        startCorner: this.startCorner,
+                        divisions: 6,
+                        interior: true,
+                    });
+                    bse.draw();
+                }
+            }
+        };
 
-        this.grid();
-
-        this.applyMask();
+        this.execute();
     }
 }
 

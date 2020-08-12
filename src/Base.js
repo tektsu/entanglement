@@ -114,6 +114,8 @@ class TangleElement extends TangleBase {
  * @typedef {Object} TangleOptions
  * @property {number} debug The debug level.
  * @property {p5.Color} background The color with which to fill the background.
+ * @property {boolean} grid If true, this is a grid-based tangle. The default is false.
+ * @property {boolean} gridShow If true, and this is a grid-based tangle, draw the grid lines after building the tangle. The default is true.
  * @property {number} gridSpacing The grid size in pixels. If used, both gridXSpacing and gridYSpacing are set to this.
  * @property {number} gridXSpacing The horizontal grid size in pixels. The default is 40.
  * @property {number} gridYSpacing The vertical grid size in pixels. The Default is 40.
@@ -145,10 +147,13 @@ class Tangle extends TangleBase {
             this.maskPoly = new Polygon(mask);
         }
         this.gridPoints = [];
+        this.build = function() {}
 
         this.optionsAllowed = {
             debug: 0,
             background: undefined,
+            grid: false,
+            gridShow: false,
             gridSpacing: undefined,
             gridXSpacing: 40,
             gridYSpacing: 40,
@@ -235,7 +240,7 @@ class Tangle extends TangleBase {
     /**
      * Draw the grid on the graphics buffer
      */
-    grid() {
+    showGrid() {
         if (this.gridPoints.length === 0)
             this.buildGridPoints();
         for(let r=0; r<this.gridPoints.length; r++) {
@@ -312,6 +317,27 @@ class Tangle extends TangleBase {
                 this.g.vertex(this.maskPoly.vertices[p].x-this.origin.x, this.maskPoly.vertices[p].y-this.origin.y);
             }
             this.g.endShape(CLOSE);
+        }
+    }
+
+    /**
+     * Build the tangle. Executes the this.build method with before and after processing appropriate to the tangle type.
+     * This is normally the last method called by a child class.
+     */
+    execute() {
+
+        if (this.grid) {
+            this.buildGridPoints();
+        }
+
+        this.build();
+
+        if (this.grid && this.gridShow) {
+            this.showGrid();
+        }
+
+        if (!this.ignoreMask) {
+            this.applyMask();
         }
     }
 }

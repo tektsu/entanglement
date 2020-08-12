@@ -274,24 +274,27 @@ class BoxSpirals extends Tangle {
         };
         super(mask, options);
 
-        if (this.desiredCount === undefined) {
-            const s = isNaN(this.size) ? this.size.min : this.size;
-            this.desiredCount = Math.floor(this.width/s * this.height/s * 10); // An amount that should cover the buffer
-        }
+        this.build = function() {
 
-        for (let i=0; i<this.desiredCount; i++) {
-            let bseOpt = {
-                size: Entanglement.getInt(this.size),
-                fillColor: this.background,
-            };
-            if (this.divisions) bseOpt.divisions = this.divisions;
-            if (this.rotation) bseOpt.rotation = this.rotation;
-            if (this.rotate) bseOpt.rotate = this.rotate;
-            if (this.startCorner) bseOpt.startCorner = this.startCorner;
-            const bse = new BoxSpiralElement(this.g, new Point(random(0, this.width), random(0, this.height)), bseOpt);
-            bse.draw();
-        }
+            if (this.desiredCount === undefined) {
+                const s = isNaN(this.size) ? this.size.min : this.size;
+                this.desiredCount = Math.floor(this.width / s * this.height / s * 10); // An amount that should cover the buffer
+            }
 
-        this.applyMask();
+            for (let i = 0; i < this.desiredCount; i++) {
+                let bseOpt = {
+                    size: Entanglement.getInt(this.size),
+                    fillColor: this.background,
+                };
+                if (this.divisions) bseOpt.divisions = this.divisions;
+                if (this.rotation) bseOpt.rotation = this.rotation;
+                if (this.rotate) bseOpt.rotate = this.rotate;
+                if (this.startCorner) bseOpt.startCorner = this.startCorner;
+                const bse = new BoxSpiralElement(this.g, new Point(random(0, this.width), random(0, this.height)), bseOpt);
+                bse.draw();
+            }
+        };
+
+        this.execute();
     }
 }

@@ -204,79 +204,82 @@ class Aah extends Tangle {
         options.plan = options.plan === undefined ? Aah.plans.zentangle : options.plan;
         super(mask, options);
 
-        if (this.plan.aah === undefined) this.plan.aah = {};
-        if (this.plan.dot === undefined) this.plan.dot = {};
+        this.build = function() {
 
-        if (this.plan.aah.enable === undefined || this.plan.aah.enable === true) {
-            let drawCount = 0;
-            let failCount = 0;
+            if (this.plan.aah === undefined) this.plan.aah = {};
+            if (this.plan.dot === undefined) this.plan.dot = {};
 
-            const size = this.plan.aah.size === undefined ?
-                Math.min(this.width, this.height) / 8 : this.plan.aah.size;
-            if (this.margin === undefined) this.margin = size/6;
-            const desiredCount = this.plan.aah.desiredCount === undefined ?
-                (this.width / size) * (this.height / size) * 10 : this.plan.aah.desiredCount;
-            const sizeSDev = this.plan.aah.sizeSDP === undefined ?
-                (this.plan.aah.sizeSDP / 100) * size : this.plan.aah.sizeSDP;
+            if (this.plan.aah.enable === undefined || this.plan.aah.enable === true) {
+                let drawCount = 0;
+                let failCount = 0;
 
-            while (drawCount < desiredCount) {
-                let center = new Point(random(this.margin, this.width - this.margin), random(this.margin, this.height - this.margin));
+                const size = this.plan.aah.size === undefined ?
+                    Math.min(this.width, this.height) / 8 : this.plan.aah.size;
+                if (this.margin === undefined) this.margin = size / 6;
+                const desiredCount = this.plan.aah.desiredCount === undefined ?
+                    (this.width / size) * (this.height / size) * 10 : this.plan.aah.desiredCount;
+                const sizeSDev = this.plan.aah.sizeSDP === undefined ?
+                    (this.plan.aah.sizeSDP / 100) * size : this.plan.aah.sizeSDP;
 
-                let options = {
-                    debug: this.debug,
-                    size: randomGaussian(size, sizeSDev),
-                };
-                if (typeof this.plan.aah.armCount !== 'undefined') options.armCount = this.plan.aah.armCount;
-                if (typeof this.plan.aah.thetaSD !== 'undefined') options.thetaSD = this.plan.aah.thetaSD;
-                if (typeof this.plan.aah.lengthSDP !== 'undefined') options.lengthSDP = this.plan.aah.lengthSDP;
-                if (typeof this.plan.aah.gapSDP !== 'undefined') options.gapSDP = this.plan.aah.gapSDP;
-                if (typeof this.plan.aah.rotate !== 'undefined') options.rotate = this.plan.aah.rotate;
-                if (typeof this.plan.aah.tipDistancePercent !== 'undefined') options.tipDistancePercent = this.plan.aah.tipDistancePercent;
-                if (typeof this.plan.aah.tipDiameter !== 'undefined') options.tip.diameter = this.plan.aahTipDiameter;
-                if (typeof this.plan.aah.fillColor !== 'undefined') options.fillColor = this.plan.aah.fillColor;
-                if (typeof this.plan.aah.strokeColor !== 'undefined') options.strokeColor = this.plan.aah.strokeColor;
-                const aah = new AahElement(this.g, center, options);
-                const poly = aah.getPoly();
+                while (drawCount < desiredCount) {
+                    let center = new Point(random(this.margin, this.width - this.margin), random(this.margin, this.height - this.margin));
 
-                const conflict = this.collisionTest(poly);
-                if (conflict) {
-                    ++failCount;
-                    if (failCount > desiredCount * 3) {
-                        break;
+                    let options = {
+                        debug: this.debug,
+                        size: randomGaussian(size, sizeSDev),
+                    };
+                    if (typeof this.plan.aah.armCount !== 'undefined') options.armCount = this.plan.aah.armCount;
+                    if (typeof this.plan.aah.thetaSD !== 'undefined') options.thetaSD = this.plan.aah.thetaSD;
+                    if (typeof this.plan.aah.lengthSDP !== 'undefined') options.lengthSDP = this.plan.aah.lengthSDP;
+                    if (typeof this.plan.aah.gapSDP !== 'undefined') options.gapSDP = this.plan.aah.gapSDP;
+                    if (typeof this.plan.aah.rotate !== 'undefined') options.rotate = this.plan.aah.rotate;
+                    if (typeof this.plan.aah.tipDistancePercent !== 'undefined') options.tipDistancePercent = this.plan.aah.tipDistancePercent;
+                    if (typeof this.plan.aah.tipDiameter !== 'undefined') options.tip.diameter = this.plan.aahTipDiameter;
+                    if (typeof this.plan.aah.fillColor !== 'undefined') options.fillColor = this.plan.aah.fillColor;
+                    if (typeof this.plan.aah.strokeColor !== 'undefined') options.strokeColor = this.plan.aah.strokeColor;
+                    const aah = new AahElement(this.g, center, options);
+                    const poly = aah.getPoly();
+
+                    const conflict = this.collisionTest(poly);
+                    if (conflict) {
+                        ++failCount;
+                        if (failCount > desiredCount * 3) {
+                            break;
+                        }
+                    } else {
+                        this.polys.push(poly);
+                        aah.draw();
+                        ++drawCount;
                     }
-                } else {
-                    this.polys.push(poly);
-                    aah.draw();
-                    ++drawCount;
                 }
             }
-        }
 
-        if (this.plan.dot.enable === undefined || this.plan.dot.enable === true) {
-            const size = this.plan.dot.size === undefined ? 3 : this.plan.dot.size;
-            const sizeIsNum = isNaN(size) ? false : true;
-            const ds = (sizeIsNum ? size : size.max)*2;
-            const desiredCount = (this.width/ds) * (this.height/ds);
-            for (let i = 0; i < desiredCount; ++i) {
-                const center = new Point(random(this.margin, this.width - this.margin), random(this.margin, this.height - this.margin));
-                let options = {
-                    debug: this.debug,
-                    size: sizeIsNum ? size : size.rand(),
-                };
-                if (typeof this.plan.dot.spacing !== 'undefined') options.spacing = this.plan.dot.spacing;
-                if (typeof this.plan.dot.fillColor !== 'undefined') options.fillColor = this.plan.dot.fillColor;
-                if (typeof this.plan.dot.strokeColor !== 'undefined') options.strokeColor = this.plan.dot.strokeColor;
-                const dot = new DotElement(this.g, center, options);
-                const poly = dot.getPoly();
+            if (this.plan.dot.enable === undefined || this.plan.dot.enable === true) {
+                const size = this.plan.dot.size === undefined ? 3 : this.plan.dot.size;
+                const sizeIsNum = isNaN(size) ? false : true;
+                const ds = (sizeIsNum ? size : size.max) * 2;
+                const desiredCount = (this.width / ds) * (this.height / ds);
+                for (let i = 0; i < desiredCount; ++i) {
+                    const center = new Point(random(this.margin, this.width - this.margin), random(this.margin, this.height - this.margin));
+                    let options = {
+                        debug: this.debug,
+                        size: sizeIsNum ? size : size.rand(),
+                    };
+                    if (typeof this.plan.dot.spacing !== 'undefined') options.spacing = this.plan.dot.spacing;
+                    if (typeof this.plan.dot.fillColor !== 'undefined') options.fillColor = this.plan.dot.fillColor;
+                    if (typeof this.plan.dot.strokeColor !== 'undefined') options.strokeColor = this.plan.dot.strokeColor;
+                    const dot = new DotElement(this.g, center, options);
+                    const poly = dot.getPoly();
 
-                const conflict = this.collisionTest(poly);
-                if (!conflict) {
-                    this.polys.push(poly);
-                    dot.draw();
+                    const conflict = this.collisionTest(poly);
+                    if (!conflict) {
+                        this.polys.push(poly);
+                        dot.draw();
+                    }
                 }
             }
-        }
+        };
 
-        this.applyMask();
+        this.execute();
     }
 }
