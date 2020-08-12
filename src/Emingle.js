@@ -16,35 +16,37 @@ class Emingle extends Tangle {
      * @param {EmingleOptions} options The options list.
      */
     constructor(mask, options) {
-        if (typeof options === 'undefined') options = {};
+        if (typeof options === 'undefined') options = {}
+        options.grid = true;
+        if (typeof options.gridShow === 'undefined') {
+            options.gridShow = true;
+        }
         options.allowableOptions = {
             startCorner: 'nw',
         };
         super(mask, options);
-        const starts = ['nw', 'sw', 'se', 'ne'];
-        if (this.startCorner === 'random') {
-            this.startCorner = starts[Math.floor(random(0, 4))];
-        }
 
-        this.buildGridPoints();
-
-        for (let r = 0; r < this.gridPoints.length - 1; r++) {
-            for (let c = 0; c < this.gridPoints[r].length - 1; c++) {
-                const nw = this.gridPoints[r][c];
-                const ne = this.gridPoints[r][c + 1];
-                const se = this.gridPoints[r + 1][c + 1];
-                const sw = this.gridPoints[r + 1][c];
-                const bse = BoxSpiralElement.newFromCoordinates(this.g, nw, ne, se, sw, {
-                    startCorner: this.startCorner,
-                    divisions: 6,
-                    interior: true,
-                });
-                bse.draw();
+        this.build = function() {
+            const starts = ['nw', 'sw', 'se', 'ne'];
+            if (this.startCorner === 'random') {
+                this.startCorner = starts[Math.floor(random(0, 4))];
             }
-        }
+            for (let r = 0; r < this.gridPoints.length - 1; r++) {
+                for (let c = 0; c < this.gridPoints[r].length - 1; c++) {
+                    const nw = this.gridPoints[r][c];
+                    const ne = this.gridPoints[r][c + 1];
+                    const se = this.gridPoints[r + 1][c + 1];
+                    const sw = this.gridPoints[r + 1][c];
+                    const bse = BoxSpiralElement.newFromCoordinates(this.g, nw, ne, se, sw, {
+                        startCorner: this.startCorner,
+                        divisions: 6,
+                        interior: true,
+                    });
+                    bse.draw();
+                }
+            }
+        };
 
-        this.grid();
-
-        this.applyMask();
+        this.execute();
     }
 }
