@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Entanglement</title>
+    <title>JSDoc: Class: W2</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Entanglement</h1>
+    <h1 class="page-title">Class: W2</h1>
 
     
 
@@ -28,9 +28,11 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>Entanglement<span class="signature">()</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>W2<span class="signature">(mask, options)</span><span class="type-signature"></span></h2>
         
-            <div class="class-description"><p>Utilities routines for the Entanglement library.</p></div>
+            <div class="class-description"><p>Define the W2 Tangle. W2 consists of a grid of squares connected by straight lines to create a woven patten.
+<br />
+<img src='images/W2Tangle.png' /></p></div>
         
     
 </header>
@@ -45,19 +47,98 @@
     
 
     
-    <h4 class="name" id="Entanglement"><span class="type-signature"></span>new Entanglement<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="W2"><span class="type-signature"></span>new W2<span class="signature">(mask, options)</span><span class="type-signature"></span></h4>
     
 
     
 
 
 
+<div class="description">
+    <p>Create a new W2.</p>
+</div>
 
 
 
 
 
 
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mask</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;<a href="Point.html">Point</a>></span>
+|
+
+<span class="param-type"><a href="Polygon.html">Polygon</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#W2Options">W2Options</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The options list.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -93,7 +174,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Entanglement.js.html">Entanglement.js</a>, <a href="Entanglement.js.html#line4">line 4</a>
+        <a href="W2.js.html">W2.js</a>, <a href="W2.js.html#line22">line 22</a>
     </li></ul></dd>
     
 
@@ -140,290 +221,6 @@
 
     
 
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".getInt"><span class="type-signature">(static) </span>getInt<span class="signature">(v)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>Choose an integer value</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>v</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-|
-
-<span class="param-type"><a href="Range.html">Range</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>A value or value range.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Entanglement.js.html">Entanglement.js</a>, <a href="Entanglement.js.html#line24">line 24</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".getValue"><span class="type-signature">(static) </span>getValue<span class="signature">(v)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>Choose a value</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>v</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-|
-
-<span class="param-type"><a href="Range.html">Range</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>A value or value range.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Entanglement.js.html">Entanglement.js</a>, <a href="Entanglement.js.html#line12">line 12</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
     
 
     
