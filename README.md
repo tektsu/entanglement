@@ -11,7 +11,7 @@ Load the 3 required libraries:
 ```
     <script src="https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/p5.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/bmoren/p5.collide2d/p5.collide2d.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/tektsu/entanglement@0.0.4/dist/entanglement.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/tektsu/entanglement@0.0.6/dist/entanglement.js"></script>
 ```
 
 Review the documentation at https://tektsu.github.io/entanglement/, as well as the example code in the examples/ directory.
