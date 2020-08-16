@@ -38,6 +38,8 @@ The Tangle is based on the [Tangle](https://tektsu.github.io/entanglement/Tangle
 | [Ambler](https://tektsu.github.io/entanglement/Ambler.html) | [BoxSpiralElement](https://tektsu.github.io/entanglement/BoxSpiralElement.html) |
 | [BoxSpirals](https://tektsu.github.io/entanglement/BoxSpirals.html) | [BoxSpiralElement](https://tektsu.github.io/entanglement/BoxSpiralElement.html) |
 | [Emingle](https://tektsu.github.io/entanglement/Emingle.html) | [BoxSpiralElement](https://tektsu.github.io/entanglement/BoxSpiralElement.html) |
+| [Huggins](https://tektsu.github.io/entanglement/Huggins.html) | |
+| [W2](https://tektsu.github.io/entanglement/W2.html) | |
 
 ## Tangle Elements
 
