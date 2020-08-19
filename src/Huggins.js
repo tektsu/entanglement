@@ -33,7 +33,10 @@ class Huggins extends Tangle {
 
         this.build = function() {
             if (this.holeDiameter === 'proportional') {
-                this.holeDiameter = Math.min(this.gridXSpacing, this.gridYSpacing) / 4;
+                this.holeDiameter = Math.min(
+                    (typeof this.gridXSpacing === 'object' ? this.gridXSpacing.min : this.gridXSpacing),
+                    (typeof this.gridYSpacing === 'object' ? this.gridYSpacing.min : this.gridYSpacing)
+                ) / 4;
             }
             const radius = this.holeDiameter/2;
             const control = this.curve*radius;

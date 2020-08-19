@@ -32,7 +32,10 @@ class W2 extends Tangle {
 
         this.build = function() {
             if (this.holeSize === 'proportional') {
-                this.holeSize = Math.min(this.gridXSpacing, this.gridYSpacing) / 4;
+                this.holeSize = Math.min(
+                    (typeof this.gridXSpacing === 'object' ? this.gridXSpacing.min : this.gridXSpacing),
+                    (typeof this.gridYSpacing === 'object' ? this.gridYSpacing.min : this.gridYSpacing)
+                ) / 4;
             }
             const halfSize = this.holeSize/2;
 
