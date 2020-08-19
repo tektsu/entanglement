@@ -341,6 +341,15 @@ class GridTangle extends Tangle {
         if (this.gridDivisions !== undefined) {
             this.gridXDivisions = this.gridYDivisions = this.gridDivisions;
         }
+
+        if (this.gridXDivisions !== undefined) {
+            const minXSpacing = (typeof this.gridXSpacing === 'object' ? this.gridXSpacing.min : this.gridXSpacing);
+            this.gridXDivisions = (this.width / minXSpacing) + 2;
+        }
+        if (this.gridYDivisions !== undefined) {
+            const minYSpacing = (typeof this.gridYSpacing === 'object' ? this.gridYSpacing.min : this.gridYSpacing);
+            this.gridYDivisions = (this.height / minYSpacing) + 2;
+        }
     }
 
     /**
@@ -409,8 +418,8 @@ class GridTangle extends Tangle {
             this.gridMeta[r] = [];
             for (let c=0; c<this.maxCols; c++) {
                 this.gridMeta[r][c] = {
-                    x: -minXSpacing / 2,
-                    y: -minYSpacing / 2,
+                    x: 0,
+                    y: 0,
                 };
                 this._updateMeta(r, c);
                 this.gridPoints[r][c] = new Point(
