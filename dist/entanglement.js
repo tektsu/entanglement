@@ -475,16 +475,6 @@ class TangleElement extends TangleBase {
  * @typedef {Object} TangleOptions
  * @property {number} debug The debug level.
  * @property {p5.Color} background The color with which to fill the background.
- * @property {boolean} grid If true, this is a grid-based tangle. The default is false.
- * @property {boolean} gridShow If true, and this is a grid-based tangle, draw the grid lines after building the tangle. The default is true.
- * @property {number | Range} gridSpacing The grid size in pixels. If used, both gridXSpacing and gridYSpacing are set to this.
- * @property {number | Range} gridXSpacing The horizontal grid size in pixels. The default is 40. If set to a Range, the gridSpacingMode determines how that range is used.
- * @property {number | Range} gridYSpacing The vertical grid size in pixels. The default is 40.  If set to a Range, the gridSpacingMode determines how that range is used.
- * @property {string} gridXSpacingMode The horizontal grid size in pixels. The default is 'static'.
- * @property {string} gridYSpacingMode The vertical grid size in pixels. The default is 'static'.
- * @property {number} gridVary The grid point location variation in pixels. If used, both gridXVary and gridYVary are set to this.
- * @property {number} gridXVary The horizontal grid point location variation in pixels.
- * @property {number} gridYVary The vertical grid point location variation in pixels.
  * @property {object[]} polys Polygons already drawn.
  * @property {boolean} avoidCollisions If true, do not draw over other elements listed in this.polys. The default is true.
  * @property {Point[]} maskPoly A set of points defining a polygon. Only the portion of the image inside the polygon will be displayed, unless ignoreMask is true.
@@ -514,16 +504,6 @@ class Tangle extends TangleBase {
         this.optionsAllowed = {
             debug: 0,
             background: undefined,
-            grid: false,
-            gridShow: false,
-            gridSpacing: undefined,
-            gridXSpacing: 40,
-            gridYSpacing: 40,
-            gridXSpacingMode: 'static',
-            gridYSpacingMode: 'static',
-            gridVary: undefined,
-            gridXVary: undefined,
-            gridYVary: undefined,
             polys: [],
             avoidCollisions: true,
             addStrings: true,
@@ -532,10 +512,6 @@ class Tangle extends TangleBase {
         };
 
         this.loadOptions(options);
-
-        this.gridPoints = [];
-        this.gridMeta = [];
-        this.gridVariation = [];
 
         const br = this.maskPoly.getBoundingRectangle().copy();
         this.origin = br.getOrigin();
@@ -575,6 +551,132 @@ class Tangle extends TangleBase {
         if (this.background !== undefined) {
             this.g.background(this.background);
         }
+    }
+
+    /**
+     * Test an polygon for collisions with existing polygons.
+     * @param {p5.Vector[]} poly The polygon to test.
+     * @returns {boolean} True if there is a collision.
+     */
+    collisionTest(poly) {
+        if (!this.avoidCollisions)
+            return false;
+        for (let i = 0; i < this.polys.length; ++i) {
+            if (collidePolyPoly(poly, this.polys[i], true)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Paste the graphics buffer onto the canvas at the specified position .
+     * @param {Point} position The position at which to place the image on the canvas.
+     */
+    paste(position) {
+        image(this.g, position.x, position.y);
+    }
+
+    /**
+     * Apply the mask polygon to this tangle. Only the portion of the tangle inside the mask polygon will be displayed.
+     */
+    applyMask() {
+        if (this.ignoreMask) {
+            return;
+        }
+
+        // Create the mask from the maskPoly
+        let mask = createGraphics(this.width, this.height);
+        mask.noStroke();
+        mask.fill(255, 255, 255, 255);
+        mask.beginShape();
+        for (let p = 0; p < this.maskPoly.vertices.length; p++) {
+            mask.vertex(this.maskPoly.vertices[p].x-this.origin.x, this.maskPoly.vertices[p].y-this.origin.y);
+        }
+        mask.endShape(CLOSE);
+
+        // Create a masked cloned image
+        let clone;
+        (clone = this.g.get()).mask(mask.get());
+
+        // Recreate the renderer with the cloned image
+        this.g = createGraphics(this.width, this.height);
+        this.g.image(clone, 0, 0);
+
+        // If we are drawing strings, do so now
+        if (this.addStrings) {
+            this.g.stroke(0);
+            this.g.fill(0, 0, 0, 0);
+            this.g.beginShape();
+            for (let p = 0; p < this.maskPoly.vertices.length; p++) {
+                this.g.vertex(this.maskPoly.vertices[p].x-this.origin.x, this.maskPoly.vertices[p].y-this.origin.y);
+            }
+            this.g.endShape(CLOSE);
+        }
+    }
+
+    /**
+     * Build the tangle. Executes the this.build method with before and after processing appropriate to the tangle type.
+     * This is normally the last method called by a child class.
+     */
+    execute() {
+
+        this.build();
+        if (!this.ignoreMask) {
+            this.applyMask();
+        }
+    }
+}
+
+/**
+ * @typedef {Object} GridTangleOptions
+ * @property {boolean} gridShow If true, and this is a grid-based tangle, draw the grid lines after building the tangle. The default is true.
+ * @property {number | Range} gridSpacing The grid size in pixels. If used, both gridXSpacing and gridYSpacing are set to this.
+ * @property {number | Range} gridXSpacing The horizontal grid size in pixels. The default is 40. If set to a Range, the gridSpacingMode determines how that range is used.
+ * @property {number | Range} gridYSpacing The vertical grid size in pixels. The default is 40.  If set to a Range, the gridSpacingMode determines how that range is used.
+ * @property {string} gridXSpacingMode The horizontal grid size in pixels. The default is 'static'.
+ * @property {string} gridYSpacingMode The vertical grid size in pixels. The default is 'static'.
+ * @property {number} gridVary The grid point location variation in pixels. If used, both gridXVary and gridYVary are set to this.
+ * @property {number} gridXVary The horizontal grid point location variation in pixels.
+ * @property {number} gridYVary The vertical grid point location variation in pixels.
+ */
+
+/**
+ * Base class for a grid tangle, which is an area containg a design based on a grid.
+ */
+class GridTangle extends Tangle {
+
+    /**
+     * Create a new Tangle
+     * @param {Point[] | Polygon} mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
+     * @param {TangleOptions} options A map of values to be loaded into instance variables.
+     */
+    constructor(mask, options) {
+        if (typeof options === 'undefined') options = {}
+        if (typeof options.allowableOptions == 'undefined') options.allowableOptions = {}
+        options.allowableOptions = {
+            ...options.allowableOptions,
+            ...{
+                gridShow: false,
+                gridSpacing: undefined,
+                gridDivisions: undefined,
+                gridXDivisions: undefined,
+                gridYDivisions: undefined,
+                gridXSpacing: 40,
+                gridYSpacing: 40,
+                gridXSpacingMode: 'static',
+                gridYSpacingMode: 'static',
+                gridVary: undefined,
+                gridXVary: undefined,
+                gridYVary: undefined,
+            },
+        };
+        super(mask, options);
+
+        this.gridPoints = [];
+        this.gridMeta = [];
+        this.gridVariation = [];
 
         // Check gridSpacing
         if (this.gridSpacing !== undefined) {
@@ -595,6 +697,10 @@ class Tangle extends TangleBase {
         }
         if (this.gridYVary === undefined) {
             this.gridYVary = .02 * (typeof this.gridYSpacing === 'object' ? this.gridYSpacing.min : this.gridYSpacing);
+        }
+
+        if (this.gridDivisions !== undefined) {
+            this.gridXDivisions = this.gridYDivisions = this.gridDivisions;
         }
     }
 
@@ -674,7 +780,6 @@ class Tangle extends TangleBase {
                 );
             }
         }
-        console.log(this.gridPoints);
     }
 
     /**
@@ -698,81 +803,16 @@ class Tangle extends TangleBase {
     }
 
     /**
-     * Test an polygon for collisions with existing polygons.
-     * @param {p5.Vector[]} poly The polygon to test.
-     * @returns {boolean} True if there is a collision.
-     */
-    collisionTest(poly) {
-        if (!this.avoidCollisions)
-            return false;
-        for (let i = 0; i < this.polys.length; ++i) {
-            if (collidePolyPoly(poly, this.polys[i], true)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Paste the graphics buffer onto the canvas at the specified position .
-     * @param {Point} position The position at which to place the image on the canvas.
-     */
-    paste(position) {
-        image(this.g, position.x, position.y);
-    }
-
-    /**
-     * Apply the mask polygon to this tangle. Only the portion of the tangle inside the mask polygon will be displayed.
-     */
-    applyMask() {
-        if (this.ignoreMask) {
-            return;
-        }
-
-        // Create the mask from the maskPoly
-        let mask = createGraphics(this.width, this.height);
-        mask.noStroke();
-        mask.fill(255, 255, 255, 255);
-        mask.beginShape();
-        for (let p = 0; p < this.maskPoly.vertices.length; p++) {
-            mask.vertex(this.maskPoly.vertices[p].x-this.origin.x, this.maskPoly.vertices[p].y-this.origin.y);
-        }
-        mask.endShape(CLOSE);
-
-        // Create a masked cloned image
-        let clone;
-        (clone = this.g.get()).mask(mask.get());
-
-        // Recreate the renderer with the cloned image
-        this.g = createGraphics(this.width, this.height);
-        this.g.image(clone, 0, 0);
-
-        // If we are drawing strings, do so now
-        if (this.addStrings) {
-            this.g.stroke(0);
-            this.g.fill(0, 0, 0, 0);
-            this.g.beginShape();
-            for (let p = 0; p < this.maskPoly.vertices.length; p++) {
-                this.g.vertex(this.maskPoly.vertices[p].x-this.origin.x, this.maskPoly.vertices[p].y-this.origin.y);
-            }
-            this.g.endShape(CLOSE);
-        }
-    }
-
-    /**
      * Build the tangle. Executes the this.build method with before and after processing appropriate to the tangle type.
      * This is normally the last method called by a child class.
      */
     execute() {
 
-        if (this.grid) {
-            this.buildGridPoints();
-        }
+        this.buildGridPoints();
 
         this.build();
 
-        if (this.grid && this.gridShow) {
+        if (this.gridShow) {
             this.showGrid();
         }
 
@@ -1371,7 +1411,7 @@ class BoxSpirals extends Tangle {
 
 /**
  * @typedef {Object} AmblerOptions
- * @property {value} any Any of the TangleOptions may be used here.
+ * @property {value} any Any of the GridTangleOptions may be used here.
  */
 
 /**
@@ -1379,7 +1419,7 @@ class BoxSpirals extends Tangle {
  * <br />
  * <img src='images/AmblerTangle.png' />
  */
-class Ambler extends Tangle {
+class Ambler extends GridTangle {
     /**
      * Create a new Ambler.
      * @param {Point[] | Polygon} mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
@@ -1387,7 +1427,6 @@ class Ambler extends Tangle {
      */
     constructor(mask, options) {
         if (typeof options === 'undefined') options = {};
-        options.grid = true;
         if (typeof options.gridShow === 'undefined') {
             options.gridShow = true;
         }
@@ -1422,7 +1461,7 @@ class Ambler extends Tangle {
 /**
  * @typedef {Object} EmingleOptions
  * @property {string} startCorner The corner at which to start the box spiral. Can be 'nw', ne', 'se', 'sw' or 'random'. The default is 'nw'.
- * @property {value} any Any of the TangleOptions may be used here.
+ * @property {value} any Any of the GridTangleOptions may be used here.
  */
 
 /**
@@ -1430,7 +1469,7 @@ class Ambler extends Tangle {
  * <br />
  * <img src='images/EmingleTangle.png' />
  */
-class Emingle extends Tangle {
+class Emingle extends GridTangle {
     /**
      * Create a new Emingle.
      * @param {Point[] | Polygon} mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
@@ -1438,7 +1477,6 @@ class Emingle extends Tangle {
      */
     constructor(mask, options) {
         if (typeof options === 'undefined') options = {}
-        options.grid = true;
         if (typeof options.gridShow === 'undefined') {
             options.gridShow = true;
         }
@@ -1478,7 +1516,7 @@ class Emingle extends Tangle {
  * @property {p5.Color} holeFillColor The fill color for the dots. The default is 'black'.
  * @property {boolean} holesShow If true, the dots will be drawn, otherwise they will be left out. The default is true.
  * @property {number} curve If set to 1, the connecting lines will be straight. Increasing values add more curve to the lines. Extreme values distort the curves in interesting ways. The default is 5.
- * @property {value} any Any of the TangleOptions may be used here.
+ * @property {value} any Any of the GridTangleOptions may be used here.
  */
 
 /**
@@ -1486,7 +1524,7 @@ class Emingle extends Tangle {
  * <br />
  * <img src='images/HugginsTangle.png' />
  */
-class Huggins extends Tangle {
+class Huggins extends GridTangle {
 
     /**
      * Create a new Huggins.
@@ -1495,7 +1533,6 @@ class Huggins extends Tangle {
      */
     constructor(mask, options) {
         if (typeof options === 'undefined') options = {}
-        options.grid = true;
         options.gridShow = false;
         options.allowableOptions = {
             holeDiameter: 'proportional',
@@ -1600,7 +1637,7 @@ class Huggins extends Tangle {
  * @property {p5.Color} holeFillColor The fill color for the dots. The default is 'black'.
  * @property {boolean} holesShow If true, the dots will be drawn, otherwise they will be left out. The default is true.
  * @property {number} curve If set to 1, the connecting lines will be straight. Increasing values add more curve to the lines. Extreme values distort the curves in interesting ways. The default is 5.
- * @property {value} any Any of the TangleOptions may be used here.
+ * @property {value} any Any of the GridTangleOptions may be used here.
  */
 
 /**
@@ -1608,7 +1645,7 @@ class Huggins extends Tangle {
  * <br />
  * <img src='images/W2Tangle.png' />
  */
-class W2 extends Tangle {
+class W2 extends GridTangle {
 
     /**
      * Create a new W2.
@@ -1617,7 +1654,6 @@ class W2 extends Tangle {
      */
     constructor(mask, options) {
         if (typeof options === 'undefined') options = {}
-        options.grid = true;
         options.gridShow = false;
         options.allowableOptions = {
             holeSize: 'proportional',

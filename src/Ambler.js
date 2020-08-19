@@ -1,6 +1,6 @@
 /**
  * @typedef {Object} AmblerOptions
- * @property {value} any Any of the TangleOptions may be used here.
+ * @property {value} any Any of the GridTangleOptions may be used here.
  */
 
 /**
@@ -8,7 +8,7 @@
  * <br />
  * <img src='images/AmblerTangle.png' />
  */
-class Ambler extends Tangle {
+class Ambler extends GridTangle {
     /**
      * Create a new Ambler.
      * @param {Point[] | Polygon} mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
@@ -16,7 +16,6 @@ class Ambler extends Tangle {
      */
     constructor(mask, options) {
         if (typeof options === 'undefined') options = {};
-        options.grid = true;
         if (typeof options.gridShow === 'undefined') {
             options.gridShow = true;
         }

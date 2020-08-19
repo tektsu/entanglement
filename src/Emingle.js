@@ -1,7 +1,7 @@
 /**
  * @typedef {Object} EmingleOptions
  * @property {string} startCorner The corner at which to start the box spiral. Can be 'nw', ne', 'se', 'sw' or 'random'. The default is 'nw'.
- * @property {value} any Any of the TangleOptions may be used here.
+ * @property {value} any Any of the GridTangleOptions may be used here.
  */
 
 /**
@@ -9,7 +9,7 @@
  * <br />
  * <img src='images/EmingleTangle.png' />
  */
-class Emingle extends Tangle {
+class Emingle extends GridTangle {
     /**
      * Create a new Emingle.
      * @param {Point[] | Polygon} mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
@@ -17,7 +17,6 @@ class Emingle extends Tangle {
      */
     constructor(mask, options) {
         if (typeof options === 'undefined') options = {}
-        options.grid = true;
         if (typeof options.gridShow === 'undefined') {
             options.gridShow = true;
         }

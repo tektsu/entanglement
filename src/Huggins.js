@@ -4,7 +4,7 @@
  * @property {p5.Color} holeFillColor The fill color for the dots. The default is 'black'.
  * @property {boolean} holesShow If true, the dots will be drawn, otherwise they will be left out. The default is true.
  * @property {number} curve If set to 1, the connecting lines will be straight. Increasing values add more curve to the lines. Extreme values distort the curves in interesting ways. The default is 5.
- * @property {value} any Any of the TangleOptions may be used here.
+ * @property {value} any Any of the GridTangleOptions may be used here.
  */
 
 /**
@@ -12,7 +12,7 @@
  * <br />
  * <img src='images/HugginsTangle.png' />
  */
-class Huggins extends Tangle {
+class Huggins extends GridTangle {
 
     /**
      * Create a new Huggins.
@@ -21,7 +21,6 @@ class Huggins extends Tangle {
      */
     constructor(mask, options) {
         if (typeof options === 'undefined') options = {}
-        options.grid = true;
         options.gridShow = false;
         options.allowableOptions = {
             holeDiameter: 'proportional',
