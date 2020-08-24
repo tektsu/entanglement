@@ -1,11 +1,25 @@
-module.exports = function(grunt) {
+/*jshint esversion: 9 */
+
+module.exports = function (grunt) {
 
     // Project configuration.
     grunt.initConfig({
         concat: {
             separator: ';\n',
             dist: {
-                src: ['src/Entanglement.js', 'src/Draw.js', 'src/Base.js', 'src/Aah.js', `src/BoxSpirals.js`, 'src/Ambler.js', 'src/Emingle.js', 'src/Huggins.js', 'src/W2.js', 'src/Zentangle.js'],
+                src: [
+                    'src/Entanglement.js',
+                    'src/Draw.js',
+                    'src/Base.js',
+                    'src/GridTangle.js',
+                    'src/Aah.js',
+                    `src/BoxSpirals.js`,
+                    'src/Ambler.js',
+                    'src/Emingle.js',
+                    'src/Huggins.js',
+                    'src/W2.js',
+                    'src/Zentangle.js'
+                ],
                 dest: 'dist/entanglement.js',
             },
         },

@@ -26,7 +26,9 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
+            <pre class="prettyprint source linenums"><code>/*jshint esversion: 9 */
+
+/**
  * @typedef {Object} BoxSpiralElementOptions
  * @property {number|Range} divisions The number of divisions into which to subdivide the quadrilateral sides. The default is 4.
  * @property {string} rotation The direction of the spiral. Must be 'ccw', 'cw' or 'random'. The default is 'ccw'.
@@ -84,10 +86,10 @@ class BoxSpiralElement extends TangleElement {
         }
 
         // If any corners are undefined at this point, create them from the size parameter
-        if (this.nw === undefined) this.nw = new Point(center.x-this.size/2, center.y-this.size/2);
-        if (this.ne === undefined) this.ne = new Point(center.x+this.size/2, center.y-this.size/2);
-        if (this.se === undefined) this.se = new Point(center.x+this.size/2, center.y+this.size/2);
-        if (this.sw === undefined) this.sw = new Point(center.x-this.size/2, center.y+this.size/2);
+        if (this.nw === undefined) this.nw = new Point(center.x - this.size / 2, center.y - this.size / 2);
+        if (this.ne === undefined) this.ne = new Point(center.x + this.size / 2, center.y - this.size / 2);
+        if (this.se === undefined) this.se = new Point(center.x + this.size / 2, center.y + this.size / 2);
+        if (this.sw === undefined) this.sw = new Point(center.x - this.size / 2, center.y + this.size / 2);
 
         // Do any requested rotation
         if (this.rotate !== undefined) {
@@ -123,7 +125,7 @@ class BoxSpiralElement extends TangleElement {
         options.ne = ne;
         options.se = se;
         options.sw = sw;
-        return new BoxSpiralElement(g, new Point((nw.x+ne.x+se.x+sw.x)/4, (nw.y+ne.y+se.y+sw.y)/4), options);
+        return new BoxSpiralElement(g, new Point((nw.x + ne.x + se.x + sw.x) / 4, (nw.y + ne.y + se.y + sw.y) / 4), options);
     }
 
     /**
@@ -174,15 +176,15 @@ class BoxSpiralElement extends TangleElement {
         const lsxPoints = new Line(this.sw, this.se).divide(this.divisions);
         let vLines = [];
         let hLines = [];
-        for (let i=0; i&lt;=this.divisions; i++) {
+        for (let i = 0; i &lt;= this.divisions; i++) {
             vLines.push(new Line(lnxPoints[i], lsxPoints[i]));
             hLines.push(new Line(lwyPoints[i], leyPoints[i]));
         }
 
         // Create the point pool from which the spirals will be created, using line intersections
         let points = [];
-        for (let h=0; h&lt;=this.divisions; h++) {
-            for (let v=0; v&lt;=this.divisions; v++) {
+        for (let h = 0; h &lt;= this.divisions; h++) {
+            for (let v = 0; v &lt;= this.divisions; v++) {
                 points.push(hLines[h].intersection(vLines[v]));
             }
         }
@@ -208,22 +210,22 @@ class BoxSpiralElement extends TangleElement {
         if (this.rotation === 'cw') {
             this.direction++; // if cw, the initial direction is 1.
         }
-        this.current = this.interior ? this.divisions + 2 : 0;       // Index of first point
-        this.step =  this.interior ? 2 : 0;
-        this.levelCount = 3;    // We need three strokes at the first level, 2 for each subsequent level
+        this.current = this.interior ? this.divisions + 2 : 0; // Index of first point
+        this.step = this.interior ? 2 : 0;
+        this.levelCount = 3; // We need three strokes at the first level, 2 for each subsequent level
 
         // Modifications if the starting corner is other than nw
-        switch(this.startCorner) {
+        switch (this.startCorner) {
             case 'ne':
                 this.current = this.interior ? 2 * this.divisions : this.divisions;
                 this.direction += 3;
                 break;
             case 'se':
-                this.current = this.interior ? Math.pow(this.divisions, 2) + this.divisions - 2 : Math.pow(this.divisions+1, 2) - 1;
+                this.current = this.interior ? Math.pow(this.divisions, 2) + this.divisions - 2 : Math.pow(this.divisions + 1, 2) - 1;
                 this.direction += 2;
                 break;
             case 'sw':
-                this.current = this.interior ? Math.pow(this.divisions, 2) : this.divisions * (this.divisions+1);
+                this.current = this.interior ? Math.pow(this.divisions, 2) : this.divisions * (this.divisions + 1);
                 this.direction += 1;
                 break;
         }
@@ -241,15 +243,15 @@ class BoxSpiralElement extends TangleElement {
         const interval = this.divisions - this.step;
         if (interval === 0)
             return p;
-        switch(this.direction % 4) {
+        switch (this.direction % 4) {
             case 0: // down
-                p = this.current + interval*(this.divisions+1);
+                p = this.current + interval * (this.divisions + 1);
                 break;
             case 1: // right
                 p = this.current + interval;
                 break;
             case 2: // up
-                p = this.current - interval*(this.divisions+1);
+                p = this.current - interval * (this.divisions + 1);
                 break;
             case 3: // left
                 p = this.current - interval;
@@ -302,7 +304,7 @@ class BoxSpirals extends Tangle {
         };
         super(mask, options);
 
-        this.build = function() {
+        this.build = function () {
 
             if (this.desiredCount === undefined) {
                 const s = isNaN(this.size) ? this.size.min : this.size;
@@ -325,8 +327,7 @@ class BoxSpirals extends Tangle {
 
         this.execute();
     }
-}
-</code></pre>
+}</code></pre>
         </article>
     </section>
 
@@ -336,13 +337,13 @@ class BoxSpirals extends Tangle {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Aah.html">Aah</a></li><li><a href="AahElement.html">AahElement</a></li><li><a href="Ambler.html">Ambler</a></li><li><a href="BoxSpiralElement.html">BoxSpiralElement</a></li><li><a href="BoxSpirals.html">BoxSpirals</a></li><li><a href="DotElement.html">DotElement</a></li><li><a href="Emingle.html">Emingle</a></li><li><a href="Entanglement.html">Entanglement</a></li><li><a href="GridTangle.html">GridTangle</a></li><li><a href="Huggins.html">Huggins</a></li><li><a href="Line.html">Line</a></li><li><a href="Point.html">Point</a></li><li><a href="Polar.html">Polar</a></li><li><a href="Polygon.html">Polygon</a></li><li><a href="Range.html">Range</a></li><li><a href="Tangle.html">Tangle</a></li><li><a href="TangleBase.html">TangleBase</a></li><li><a href="TangleElement.html">TangleElement</a></li><li><a href="W2.html">W2</a></li><li><a href="Zentangle.html">Zentangle</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Aah.html">Aah</a></li><li><a href="AahElement.html">AahElement</a></li><li><a href="Ambler.html">Ambler</a></li><li><a href="BoxSpiralElement.html">BoxSpiralElement</a></li><li><a href="BoxSpirals.html">BoxSpirals</a></li><li><a href="DotElement.html">DotElement</a></li><li><a href="Emingle.html">Emingle</a></li><li><a href="Entanglement.html">Entanglement</a></li><li><a href="GridSpacingModeCompression.html">GridSpacingModeCompression</a></li><li><a href="GridSpacingModeLinear.html">GridSpacingModeLinear</a></li><li><a href="GridSpacingModeStatic.html">GridSpacingModeStatic</a></li><li><a href="GridSpacingModeWave.html">GridSpacingModeWave</a></li><li><a href="GridTangle.html">GridTangle</a></li><li><a href="Huggins.html">Huggins</a></li><li><a href="Line.html">Line</a></li><li><a href="Point.html">Point</a></li><li><a href="Polar.html">Polar</a></li><li><a href="Polygon.html">Polygon</a></li><li><a href="Range.html">Range</a></li><li><a href="Tangle.html">Tangle</a></li><li><a href="TangleBase.html">TangleBase</a></li><li><a href="TangleElement.html">TangleElement</a></li><li><a href="W2.html">W2</a></li><li><a href="Zentangle.html">Zentangle</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Tue Aug 18 2020 18:39:32 GMT-0700 (Mountain Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sun Aug 23 2020 18:18:18 GMT-0700 (Mountain Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

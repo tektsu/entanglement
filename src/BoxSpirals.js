@@ -1,3 +1,5 @@
+/*jshint esversion: 9 */
+
 /**
  * @typedef {Object} BoxSpiralElementOptions
  * @property {number|Range} divisions The number of divisions into which to subdivide the quadrilateral sides. The default is 4.
@@ -56,10 +58,10 @@ class BoxSpiralElement extends TangleElement {
         }
 
         // If any corners are undefined at this point, create them from the size parameter
-        if (this.nw === undefined) this.nw = new Point(center.x-this.size/2, center.y-this.size/2);
-        if (this.ne === undefined) this.ne = new Point(center.x+this.size/2, center.y-this.size/2);
-        if (this.se === undefined) this.se = new Point(center.x+this.size/2, center.y+this.size/2);
-        if (this.sw === undefined) this.sw = new Point(center.x-this.size/2, center.y+this.size/2);
+        if (this.nw === undefined) this.nw = new Point(center.x - this.size / 2, center.y - this.size / 2);
+        if (this.ne === undefined) this.ne = new Point(center.x + this.size / 2, center.y - this.size / 2);
+        if (this.se === undefined) this.se = new Point(center.x + this.size / 2, center.y + this.size / 2);
+        if (this.sw === undefined) this.sw = new Point(center.x - this.size / 2, center.y + this.size / 2);
 
         // Do any requested rotation
         if (this.rotate !== undefined) {
@@ -95,7 +97,7 @@ class BoxSpiralElement extends TangleElement {
         options.ne = ne;
         options.se = se;
         options.sw = sw;
-        return new BoxSpiralElement(g, new Point((nw.x+ne.x+se.x+sw.x)/4, (nw.y+ne.y+se.y+sw.y)/4), options);
+        return new BoxSpiralElement(g, new Point((nw.x + ne.x + se.x + sw.x) / 4, (nw.y + ne.y + se.y + sw.y) / 4), options);
     }
 
     /**
@@ -146,15 +148,15 @@ class BoxSpiralElement extends TangleElement {
         const lsxPoints = new Line(this.sw, this.se).divide(this.divisions);
         let vLines = [];
         let hLines = [];
-        for (let i=0; i<=this.divisions; i++) {
+        for (let i = 0; i <= this.divisions; i++) {
             vLines.push(new Line(lnxPoints[i], lsxPoints[i]));
             hLines.push(new Line(lwyPoints[i], leyPoints[i]));
         }
 
         // Create the point pool from which the spirals will be created, using line intersections
         let points = [];
-        for (let h=0; h<=this.divisions; h++) {
-            for (let v=0; v<=this.divisions; v++) {
+        for (let h = 0; h <= this.divisions; h++) {
+            for (let v = 0; v <= this.divisions; v++) {
                 points.push(hLines[h].intersection(vLines[v]));
             }
         }
@@ -180,22 +182,22 @@ class BoxSpiralElement extends TangleElement {
         if (this.rotation === 'cw') {
             this.direction++; // if cw, the initial direction is 1.
         }
-        this.current = this.interior ? this.divisions + 2 : 0;       // Index of first point
-        this.step =  this.interior ? 2 : 0;
-        this.levelCount = 3;    // We need three strokes at the first level, 2 for each subsequent level
+        this.current = this.interior ? this.divisions + 2 : 0; // Index of first point
+        this.step = this.interior ? 2 : 0;
+        this.levelCount = 3; // We need three strokes at the first level, 2 for each subsequent level
 
         // Modifications if the starting corner is other than nw
-        switch(this.startCorner) {
+        switch (this.startCorner) {
             case 'ne':
                 this.current = this.interior ? 2 * this.divisions : this.divisions;
                 this.direction += 3;
                 break;
             case 'se':
-                this.current = this.interior ? Math.pow(this.divisions, 2) + this.divisions - 2 : Math.pow(this.divisions+1, 2) - 1;
+                this.current = this.interior ? Math.pow(this.divisions, 2) + this.divisions - 2 : Math.pow(this.divisions + 1, 2) - 1;
                 this.direction += 2;
                 break;
             case 'sw':
-                this.current = this.interior ? Math.pow(this.divisions, 2) : this.divisions * (this.divisions+1);
+                this.current = this.interior ? Math.pow(this.divisions, 2) : this.divisions * (this.divisions + 1);
                 this.direction += 1;
                 break;
         }
@@ -213,15 +215,15 @@ class BoxSpiralElement extends TangleElement {
         const interval = this.divisions - this.step;
         if (interval === 0)
             return p;
-        switch(this.direction % 4) {
+        switch (this.direction % 4) {
             case 0: // down
-                p = this.current + interval*(this.divisions+1);
+                p = this.current + interval * (this.divisions + 1);
                 break;
             case 1: // right
                 p = this.current + interval;
                 break;
             case 2: // up
-                p = this.current - interval*(this.divisions+1);
+                p = this.current - interval * (this.divisions + 1);
                 break;
             case 3: // left
                 p = this.current - interval;
@@ -274,7 +276,7 @@ class BoxSpirals extends Tangle {
         };
         super(mask, options);
 
-        this.build = function() {
+        this.build = function () {
 
             if (this.desiredCount === undefined) {
                 const s = isNaN(this.size) ? this.size.min : this.size;

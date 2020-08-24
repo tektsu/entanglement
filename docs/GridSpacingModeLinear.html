@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: GridTangle</title>
+    <title>JSDoc: Class: GridSpacingModeLinear</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: GridTangle</h1>
+    <h1 class="page-title">Class: GridSpacingModeLinear</h1>
 
     
 
@@ -28,9 +28,9 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>GridTangle<span class="signature">(mask, options)</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>GridSpacingModeLinear<span class="signature">(tangle)</span><span class="type-signature"></span></h2>
         
-            <div class="class-description"><p>Base class for a grid tangle, which is an area containg a design based on a grid.</p></div>
+            <div class="class-description"><p>Create a rectangular grid with liniearly increasing spacing.</p></div>
         
     
 </header>
@@ -45,7 +45,7 @@
     
 
     
-    <h4 class="name" id="GridTangle"><span class="type-signature"></span>new GridTangle<span class="signature">(mask, options)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="GridSpacingModeLinear"><span class="type-signature"></span>new GridSpacingModeLinear<span class="signature">(tangle)</span><span class="type-signature"></span></h4>
     
 
     
@@ -53,7 +53,7 @@
 
 
 <div class="description">
-    <p>Create a new GridTangle</p>
+    <p>Create a grid spacing mode generator.</p>
 </div>
 
 
@@ -89,16 +89,13 @@
 
         <tr>
             
-                <td class="name"><code>mask</code></td>
+                <td class="name"><code>tangle</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;<a href="Point.html">Point</a>></span>
-|
-
-<span class="param-type"><a href="Polygon.html">Polygon</a></span>
+<span class="param-type">object</span>
 
 
             
@@ -108,30 +105,7 @@
 
             
 
-            <td class="description last"><p>Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="global.html#TangleOptions">TangleOptions</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>A map of values to be loaded into instance variables.</p></td>
+            <td class="description last"><p>The 'this' value from the calling Tangle class.</p></td>
         </tr>
 
     
@@ -172,7 +146,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="GridTangle.js.html">GridTangle.js</a>, <a href="GridTangle.js.html#line35">line 35</a>
+        <a href="GridTangle.js.html">GridTangle.js</a>, <a href="GridTangle.js.html#line255">line 255</a>
     </li></ul></dd>
     
 
@@ -228,7 +202,7 @@
     
 
     
-    <h4 class="name" id="buildGridPoints"><span class="type-signature"></span>buildGridPoints<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="x"><span class="type-signature"></span>x<span class="signature">(r, c)</span><span class="type-signature"></span></h4>
     
 
     
@@ -236,9 +210,7 @@
 
 
 <div class="description">
-    <p>Build a set of grid points using the grid* options. There will be enough ppints to fill the rectangular area
-defined by the mask. Some of the points may be well outside the area, depending on the algorithm used to
-produce the points.</p>
+    <p>Get the x value for the specified coordinate.</p>
 </div>
 
 
@@ -247,6 +219,78 @@ produce the points.</p>
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>r</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Row</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>c</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Column</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -282,7 +326,7 @@ produce the points.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="GridTangle.js.html">GridTangle.js</a>, <a href="GridTangle.js.html#line114">line 114</a>
+        <a href="GridTangle.js.html">GridTangle.js</a>, <a href="GridTangle.js.html#line278">line 278</a>
     </li></ul></dd>
     
 
@@ -318,7 +362,7 @@ produce the points.</p>
     
 
     
-    <h4 class="name" id="execute"><span class="type-signature"></span>execute<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="y"><span class="type-signature"></span>y<span class="signature">(r, c)</span><span class="type-signature"></span></h4>
     
 
     
@@ -326,8 +370,7 @@ produce the points.</p>
 
 
 <div class="description">
-    <p>Build the tangle. Executes the this.build method with before and after processing appropriate to the tangle type.
-This is normally the last method called by a child class.</p>
+    <p>Get the y value for the specified coordinate.</p>
 </div>
 
 
@@ -338,92 +381,76 @@ This is normally the last method called by a child class.</p>
 
 
 
-
-
-
-
-<dl class="details">
-
+    <h5>Parameters:</h5>
     
 
-    
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="GridTangle.js.html">GridTangle.js</a>, <a href="GridTangle.js.html#line188">line 188</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        <th>Type</th>
 
         
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>r</code></td>
             
 
-    
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Row</p></td>
+        </tr>
 
     
-    <h4 class="name" id="showGrid"><span class="type-signature"></span>showGrid<span class="signature">()</span><span class="type-signature"></span></h4>
-    
+
+        <tr>
+            
+                <td class="name"><code>c</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Column</p></td>
+        </tr>
 
     
-
-
-
-<div class="description">
-    <p>Draw the grid on the graphics buffer</p>
-</div>
-
-
-
-
-
-
-
+    </tbody>
+</table>
 
 
 
@@ -459,7 +486,7 @@ This is normally the last method called by a child class.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="GridTangle.js.html">GridTangle.js</a>, <a href="GridTangle.js.html#line167">line 167</a>
+        <a href="GridTangle.js.html">GridTangle.js</a>, <a href="GridTangle.js.html#line291">line 291</a>
     </li></ul></dd>
     
 

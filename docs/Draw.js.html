@@ -26,7 +26,9 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
+            <pre class="prettyprint source linenums"><code>/*jshint esversion: 9 */
+
+/**
  * Define a point with cartesian coordinates.
  */
 class Point {
@@ -59,8 +61,8 @@ class Point {
         const r = radians(degrees);
         const x = this.x - center.x;
         const y = this.y - center.y;
-        this.x = x*cos(r)-y*sin(r) + center.x;
-        this.y = x*sin(r)+y*cos(r) + center.y;
+        this.x = x * cos(r) - y * sin(r) + center.x;
+        this.y = x * sin(r) + y * cos(r) + center.y;
     }
 
     /**
@@ -138,10 +140,10 @@ class Line {
      * @returns {Point[]} List of points.
      */
     divide(segments) {
-        let points = [ this.begin ];
+        let points = [this.begin];
         const xDiff = this.begin.x - this.end.x;
         const yDiff = this.begin.y - this.end.y;
-        for (let i=1; i&lt;=segments; i++) {
+        for (let i = 1; i &lt;= segments; i++) {
             points.push(new Point(this.begin.x - i * xDiff / segments, this.begin.y - i * yDiff / segments));
         }
 
@@ -156,7 +158,7 @@ class Line {
      */
     handDrawn(divisions, variation) {
         if (divisions === undefined) {
-            divisions = Math.floor(this.length()/6);
+            divisions = Math.floor(this.length() / 6);
         }
         if (divisions === 0) {
             return [this.begin, this.end];
@@ -167,9 +169,9 @@ class Line {
 
         let variedPoints = [];
         const points = this.divide(divisions);
-        for (let p=0; p&lt;points.length; p++) {
-            if (p===0 || p===points.length-1) {
-                variedPoints.push(points[p])
+        for (let p = 0; p &lt; points.length; p++) {
+            if (p === 0 || p === points.length - 1) {
+                variedPoints.push(points[p]);
             } else {
                 variedPoints.push(points[p].vary(variation));
             }
@@ -210,7 +212,7 @@ class Polygon {
      */
     constructor(vertices) {
         this.boundingRectangle = undefined;
-        this.vertices = []
+        this.vertices = [];
         if (typeof vertices !== 'undefined') {
             this.vertices = vertices;
         }
@@ -264,8 +266,8 @@ class Polygon {
     getCenter() {
         this.getBoundingRectangle();
         return new Point(
-            (this.boundingRectangle.vertices[0].x + this.boundingRectangle.vertices[1].x)/2,
-            (this.boundingRectangle.vertices[0].y + this.boundingRectangle.vertices[3].y)/2,
+            (this.boundingRectangle.vertices[0].x + this.boundingRectangle.vertices[1].x) / 2,
+            (this.boundingRectangle.vertices[0].y + this.boundingRectangle.vertices[3].y) / 2,
         );
     }
 
@@ -302,10 +304,10 @@ class Polygon {
      * @param {Point} center The point around which to rotate. If not supplied, the physical center of the polygon is used.
      */
     rotate(degrees, center) {
-        if (typeof(center) === 'undefined') {
+        if (typeof (center) === 'undefined') {
             center = this.getCenter();
         }
-        for (let i=0; i&lt;this.vertices.length; i++) {
+        for (let i = 0; i &lt; this.vertices.length; i++) {
             this.vertices[i].rotate(degrees, center);
         }
 
@@ -318,7 +320,7 @@ class Polygon {
      */
     copy() {
         const poly = new Polygon();
-        for (let i=0; i&lt;this.vertices.length; i++) {
+        for (let i = 0; i &lt; this.vertices.length; i++) {
             poly.addVertex(new Point(this.vertices[i].x, this.vertices[i].y));
         }
 
@@ -353,8 +355,7 @@ class Range {
     rand() {
         return random(this.min, this.max);
     }
-}
-</code></pre>
+}</code></pre>
         </article>
     </section>
 
@@ -364,13 +365,13 @@ class Range {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Aah.html">Aah</a></li><li><a href="AahElement.html">AahElement</a></li><li><a href="Ambler.html">Ambler</a></li><li><a href="BoxSpiralElement.html">BoxSpiralElement</a></li><li><a href="BoxSpirals.html">BoxSpirals</a></li><li><a href="DotElement.html">DotElement</a></li><li><a href="Emingle.html">Emingle</a></li><li><a href="Entanglement.html">Entanglement</a></li><li><a href="GridTangle.html">GridTangle</a></li><li><a href="Huggins.html">Huggins</a></li><li><a href="Line.html">Line</a></li><li><a href="Point.html">Point</a></li><li><a href="Polar.html">Polar</a></li><li><a href="Polygon.html">Polygon</a></li><li><a href="Range.html">Range</a></li><li><a href="Tangle.html">Tangle</a></li><li><a href="TangleBase.html">TangleBase</a></li><li><a href="TangleElement.html">TangleElement</a></li><li><a href="W2.html">W2</a></li><li><a href="Zentangle.html">Zentangle</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Aah.html">Aah</a></li><li><a href="AahElement.html">AahElement</a></li><li><a href="Ambler.html">Ambler</a></li><li><a href="BoxSpiralElement.html">BoxSpiralElement</a></li><li><a href="BoxSpirals.html">BoxSpirals</a></li><li><a href="DotElement.html">DotElement</a></li><li><a href="Emingle.html">Emingle</a></li><li><a href="Entanglement.html">Entanglement</a></li><li><a href="GridSpacingModeCompression.html">GridSpacingModeCompression</a></li><li><a href="GridSpacingModeLinear.html">GridSpacingModeLinear</a></li><li><a href="GridSpacingModeStatic.html">GridSpacingModeStatic</a></li><li><a href="GridSpacingModeWave.html">GridSpacingModeWave</a></li><li><a href="GridTangle.html">GridTangle</a></li><li><a href="Huggins.html">Huggins</a></li><li><a href="Line.html">Line</a></li><li><a href="Point.html">Point</a></li><li><a href="Polar.html">Polar</a></li><li><a href="Polygon.html">Polygon</a></li><li><a href="Range.html">Range</a></li><li><a href="Tangle.html">Tangle</a></li><li><a href="TangleBase.html">TangleBase</a></li><li><a href="TangleElement.html">TangleElement</a></li><li><a href="W2.html">W2</a></li><li><a href="Zentangle.html">Zentangle</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Tue Aug 18 2020 18:39:32 GMT-0700 (Mountain Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sun Aug 23 2020 18:18:18 GMT-0700 (Mountain Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

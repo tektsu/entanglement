@@ -1,3 +1,5 @@
+/*jshint esversion: 9 */
+
 /**
  * @typedef {Object} DotElementOptions
  * @property {number|Range} size Dot diameter.
@@ -27,9 +29,9 @@ class DotElement extends TangleElement {
         super(g, center, options);
         this.spacing = Math.max(100, this.spacing);
 
-        let dAngle = TWO_PI/8;
-        for (let angle=0; angle<TWO_PI; angle+=dAngle) {
-            this.addVertex(new Polar(this.spacing/100 * this.size, angle).toPointCenter(this.center));   // Put a vertex out beyond the tip of the arm
+        let dAngle = TWO_PI / 8;
+        for (let angle = 0; angle < TWO_PI; angle += dAngle) {
+            this.addVertex(new Polar(this.spacing / 100 * this.size, angle).toPointCenter(this.center)); // Put a vertex out beyond the tip of the arm
         }
     }
 
@@ -97,31 +99,31 @@ class AahElement extends TangleElement {
             size: 100,
         };
         super(g, center, options);
-        this.length = this.size/2;
+        this.length = this.size / 2;
         if (this.armCount < 3) this.armCount = 3;
         this.arms = [];
 
-        const dAngle = TWO_PI/this.armCount;
+        const dAngle = TWO_PI / this.armCount;
         const rotation = this.rotate ? random(0, dAngle) : 0;
-        for (let angle=0; angle<TWO_PI-(dAngle/2); angle+=dAngle) {
+        for (let angle = 0; angle < TWO_PI - (dAngle / 2); angle += dAngle) {
 
             // Create the arm
-            let c = new Polar(randomGaussian(this.length, this.lengthSDP/100 * this.length), randomGaussian(angle+rotation, this.thetaSD*Math.PI/180));
-            const gap = randomGaussian(this.gapSDP, this.gapSDP/7)/100 * this.length;
+            let c = new Polar(randomGaussian(this.length, this.lengthSDP / 100 * this.length), randomGaussian(angle + rotation, this.thetaSD * Math.PI / 180));
+            const gap = randomGaussian(this.gapSDP, this.gapSDP / 7) / 100 * this.length;
             let arm = {
-                start: new Polar(gap, c.a).toPointCenter(this.center),  // Draw line from here...
-                stop: c.toPointCenter(this.center),                     // ...to here
+                start: new Polar(gap, c.a).toPointCenter(this.center), // Draw line from here...
+                stop: c.toPointCenter(this.center), // ...to here
                 tipCenter: new Polar(c.r * (this.tipDistancePercent / 100), c.a).toPointCenter(this.center),
                 tipDiameter: !isNaN(this.tipDiameter) ? this.tipDiameter : this.tipDiameter === AahElement.tipType.gap ? gap : 10,
             };
             this.arms.push(arm);
 
             // Polygon vertices associated with this arm
-            let maxLength = Math.max(c.r, c.r * (this.tipDistancePercent / 100)) + arm.tipDiameter/2;
-            this.addVertex(new Polar(maxLength + 5*gap, c.a).toPointCenter(this.center));
-            this.addVertex(new Polar(0.6*c.r, c.a+(dAngle/2)).toPointCenter(this.center));
+            let maxLength = Math.max(c.r, c.r * (this.tipDistancePercent / 100)) + arm.tipDiameter / 2;
+            this.addVertex(new Polar(maxLength + 5 * gap, c.a).toPointCenter(this.center));
+            this.addVertex(new Polar(0.6 * c.r, c.a + (dAngle / 2)).toPointCenter(this.center));
         }
-        if(this.debug) console.log("aah: ", this.aah);
+        if (this.debug) console.log("aah: ", this.aah);
     }
 
 
@@ -182,8 +184,7 @@ class Aah extends Tangle {
      */
     static plans = {
         zentangle: {
-            aah: {
-            },
+            aah: {},
             dot: {
                 size: new Range(3, 6),
                 fillColor: 255,
@@ -204,7 +205,7 @@ class Aah extends Tangle {
         options.plan = options.plan === undefined ? Aah.plans.zentangle : options.plan;
         super(mask, options);
 
-        this.build = function() {
+        this.build = function () {
 
             if (this.plan.aah === undefined) this.plan.aah = {};
             if (this.plan.dot === undefined) this.plan.dot = {};

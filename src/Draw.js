@@ -1,3 +1,5 @@
+/*jshint esversion: 9 */
+
 /**
  * Define a point with cartesian coordinates.
  */
@@ -31,8 +33,8 @@ class Point {
         const r = radians(degrees);
         const x = this.x - center.x;
         const y = this.y - center.y;
-        this.x = x*cos(r)-y*sin(r) + center.x;
-        this.y = x*sin(r)+y*cos(r) + center.y;
+        this.x = x * cos(r) - y * sin(r) + center.x;
+        this.y = x * sin(r) + y * cos(r) + center.y;
     }
 
     /**
@@ -110,10 +112,10 @@ class Line {
      * @returns {Point[]} List of points.
      */
     divide(segments) {
-        let points = [ this.begin ];
+        let points = [this.begin];
         const xDiff = this.begin.x - this.end.x;
         const yDiff = this.begin.y - this.end.y;
-        for (let i=1; i<=segments; i++) {
+        for (let i = 1; i <= segments; i++) {
             points.push(new Point(this.begin.x - i * xDiff / segments, this.begin.y - i * yDiff / segments));
         }
 
@@ -128,7 +130,7 @@ class Line {
      */
     handDrawn(divisions, variation) {
         if (divisions === undefined) {
-            divisions = Math.floor(this.length()/6);
+            divisions = Math.floor(this.length() / 6);
         }
         if (divisions === 0) {
             return [this.begin, this.end];
@@ -139,9 +141,9 @@ class Line {
 
         let variedPoints = [];
         const points = this.divide(divisions);
-        for (let p=0; p<points.length; p++) {
-            if (p===0 || p===points.length-1) {
-                variedPoints.push(points[p])
+        for (let p = 0; p < points.length; p++) {
+            if (p === 0 || p === points.length - 1) {
+                variedPoints.push(points[p]);
             } else {
                 variedPoints.push(points[p].vary(variation));
             }
@@ -182,7 +184,7 @@ class Polygon {
      */
     constructor(vertices) {
         this.boundingRectangle = undefined;
-        this.vertices = []
+        this.vertices = [];
         if (typeof vertices !== 'undefined') {
             this.vertices = vertices;
         }
@@ -236,8 +238,8 @@ class Polygon {
     getCenter() {
         this.getBoundingRectangle();
         return new Point(
-            (this.boundingRectangle.vertices[0].x + this.boundingRectangle.vertices[1].x)/2,
-            (this.boundingRectangle.vertices[0].y + this.boundingRectangle.vertices[3].y)/2,
+            (this.boundingRectangle.vertices[0].x + this.boundingRectangle.vertices[1].x) / 2,
+            (this.boundingRectangle.vertices[0].y + this.boundingRectangle.vertices[3].y) / 2,
         );
     }
 
@@ -274,10 +276,10 @@ class Polygon {
      * @param {Point} center The point around which to rotate. If not supplied, the physical center of the polygon is used.
      */
     rotate(degrees, center) {
-        if (typeof(center) === 'undefined') {
+        if (typeof (center) === 'undefined') {
             center = this.getCenter();
         }
-        for (let i=0; i<this.vertices.length; i++) {
+        for (let i = 0; i < this.vertices.length; i++) {
             this.vertices[i].rotate(degrees, center);
         }
 
@@ -290,7 +292,7 @@ class Polygon {
      */
     copy() {
         const poly = new Polygon();
-        for (let i=0; i<this.vertices.length; i++) {
+        for (let i = 0; i < this.vertices.length; i++) {
             poly.addVertex(new Point(this.vertices[i].x, this.vertices[i].y));
         }
 

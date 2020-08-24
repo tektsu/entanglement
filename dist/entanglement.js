@@ -1,3 +1,5 @@
+/*jshint esversion: 9 */
+
 /**
  * Utilities routines for the Entanglement library.
  */
@@ -8,6 +10,7 @@ class Entanglement {
     /**
      * Choose a value
      * @param {number|Range} v A value or value range.
+     * @returns {number} Return the value passed in or a random value from the Range passed in.
      */
     static getValue(v) {
         let ret = v;
@@ -20,15 +23,32 @@ class Entanglement {
     /**
      * Choose an integer value
      * @param {number|Range} v A value or value range.
+     * @returns {number} Return the value passed in or a random value from the Range passed in as an integer.
      */
     static getInt(v) {
         let ret = v;
         if (isNaN(v)) {
-            ret = random(v.min, v.max+1);
+            ret = random(v.min, v.max + 1);
         }
         return Math.floor(ret);
     }
+
+    /**
+     * Get the minimum value
+     * @param {number|Range} v A value or value range.
+     * @returns {number} Return the value passed in or the minimum value from the Range passed in.
+     */
+    static getMinValue(v) {
+        let ret = v;
+        if (isNaN(v)) {
+            ret = v.min;
+        }
+        return ret;
+    }
+
+
 }
+/*jshint esversion: 9 */
 
 /**
  * Define a point with cartesian coordinates.
@@ -63,8 +83,8 @@ class Point {
         const r = radians(degrees);
         const x = this.x - center.x;
         const y = this.y - center.y;
-        this.x = x*cos(r)-y*sin(r) + center.x;
-        this.y = x*sin(r)+y*cos(r) + center.y;
+        this.x = x * cos(r) - y * sin(r) + center.x;
+        this.y = x * sin(r) + y * cos(r) + center.y;
     }
 
     /**
@@ -142,10 +162,10 @@ class Line {
      * @returns {Point[]} List of points.
      */
     divide(segments) {
-        let points = [ this.begin ];
+        let points = [this.begin];
         const xDiff = this.begin.x - this.end.x;
         const yDiff = this.begin.y - this.end.y;
-        for (let i=1; i<=segments; i++) {
+        for (let i = 1; i <= segments; i++) {
             points.push(new Point(this.begin.x - i * xDiff / segments, this.begin.y - i * yDiff / segments));
         }
 
@@ -160,7 +180,7 @@ class Line {
      */
     handDrawn(divisions, variation) {
         if (divisions === undefined) {
-            divisions = Math.floor(this.length()/6);
+            divisions = Math.floor(this.length() / 6);
         }
         if (divisions === 0) {
             return [this.begin, this.end];
@@ -171,9 +191,9 @@ class Line {
 
         let variedPoints = [];
         const points = this.divide(divisions);
-        for (let p=0; p<points.length; p++) {
-            if (p===0 || p===points.length-1) {
-                variedPoints.push(points[p])
+        for (let p = 0; p < points.length; p++) {
+            if (p === 0 || p === points.length - 1) {
+                variedPoints.push(points[p]);
             } else {
                 variedPoints.push(points[p].vary(variation));
             }
@@ -214,7 +234,7 @@ class Polygon {
      */
     constructor(vertices) {
         this.boundingRectangle = undefined;
-        this.vertices = []
+        this.vertices = [];
         if (typeof vertices !== 'undefined') {
             this.vertices = vertices;
         }
@@ -268,8 +288,8 @@ class Polygon {
     getCenter() {
         this.getBoundingRectangle();
         return new Point(
-            (this.boundingRectangle.vertices[0].x + this.boundingRectangle.vertices[1].x)/2,
-            (this.boundingRectangle.vertices[0].y + this.boundingRectangle.vertices[3].y)/2,
+            (this.boundingRectangle.vertices[0].x + this.boundingRectangle.vertices[1].x) / 2,
+            (this.boundingRectangle.vertices[0].y + this.boundingRectangle.vertices[3].y) / 2,
         );
     }
 
@@ -306,10 +326,10 @@ class Polygon {
      * @param {Point} center The point around which to rotate. If not supplied, the physical center of the polygon is used.
      */
     rotate(degrees, center) {
-        if (typeof(center) === 'undefined') {
+        if (typeof (center) === 'undefined') {
             center = this.getCenter();
         }
-        for (let i=0; i<this.vertices.length; i++) {
+        for (let i = 0; i < this.vertices.length; i++) {
             this.vertices[i].rotate(degrees, center);
         }
 
@@ -322,7 +342,7 @@ class Polygon {
      */
     copy() {
         const poly = new Polygon();
-        for (let i=0; i<this.vertices.length; i++) {
+        for (let i = 0; i < this.vertices.length; i++) {
             poly.addVertex(new Point(this.vertices[i].x, this.vertices[i].y));
         }
 
@@ -358,6 +378,7 @@ class Range {
         return random(this.min, this.max);
     }
 }
+/*jshint esversion: 9 */
 
 /**
  * Common components of TangleElement and Tangle.
@@ -387,7 +408,7 @@ class TangleBase {
             if (property in allowable) {
                 this[property] = options[property];
             } else {
-                console.log("ERROR: Ignoring option: ", property)
+                console.log("ERROR: Ignoring option: ", property);
             }
         }
         for (const property in allowable) {
@@ -419,7 +440,7 @@ class TangleElement extends TangleBase {
     constructor(g, center, options) {
         super();
         this.g = g;
-        this.center = center==undefined ? Point(0,0) : center;
+        this.center = center == undefined ? Point(0, 0) : center;
         this.poly = [];
 
         this.optionsAllowed = {
@@ -444,7 +465,7 @@ class TangleElement extends TangleBase {
      * @returns [p5.Vector] An array of vertices for the enclosing polygon.
      */
     getPoly() {
-        return this.poly
+        return this.poly;
     }
 
     /**
@@ -499,7 +520,7 @@ class Tangle extends TangleBase {
         if (Array.isArray(mask)) {
             this.maskPoly = new Polygon(mask);
         }
-        this.build = function() {}
+        this.build = function () {};
 
         this.optionsAllowed = {
             debug: 0,
@@ -529,20 +550,20 @@ class Tangle extends TangleBase {
             const height = br.getHeight();
             minX = Math.floor(Math.min(minX, origin.x));
             minY = Math.floor(Math.min(minY, origin.y));
-            maxX = Math.ceil(Math.max(maxX, origin.x+width));
-            maxY = Math.ceil(Math.max(maxY, origin.y+height));
+            maxX = Math.ceil(Math.max(maxX, origin.x + width));
+            maxY = Math.ceil(Math.max(maxY, origin.y + height));
             this.origin = new Point(minX, minY);
-            this.width = maxX-minX;
-            this.height = maxY-minY;
+            this.width = maxX - minX;
+            this.height = maxY - minY;
         }
         this.g = createGraphics(this.width, this.height);
         if (this.tangleRotate) {
             // Translate the center of the tangle back to the center of the bounding rectangle
             const r = radians(this.tangleRotate);
-            const x = this.width/2;
-            const y = this.height/2;
-            const dx = Math.floor(x-(x*cos(r)-y*sin(r)));
-            const dy = Math.floor(y-(x*sin(r)+y*cos(r)));
+            const x = this.width / 2;
+            const y = this.height / 2;
+            const dx = Math.floor(x - (x * cos(r) - y * sin(r)));
+            const dy = Math.floor(y - (x * sin(r) + y * cos(r)));
             this.g.translate(dx, dy);
             this.g.rotate(r);
         }
@@ -592,7 +613,7 @@ class Tangle extends TangleBase {
         mask.fill(255, 255, 255, 255);
         mask.beginShape();
         for (let p = 0; p < this.maskPoly.vertices.length; p++) {
-            mask.vertex(this.maskPoly.vertices[p].x-this.origin.x, this.maskPoly.vertices[p].y-this.origin.y);
+            mask.vertex(this.maskPoly.vertices[p].x - this.origin.x, this.maskPoly.vertices[p].y - this.origin.y);
         }
         mask.endShape(CLOSE);
 
@@ -610,7 +631,7 @@ class Tangle extends TangleBase {
             this.g.fill(0, 0, 0, 0);
             this.g.beginShape();
             for (let p = 0; p < this.maskPoly.vertices.length; p++) {
-                this.g.vertex(this.maskPoly.vertices[p].x-this.origin.x, this.maskPoly.vertices[p].y-this.origin.y);
+                this.g.vertex(this.maskPoly.vertices[p].x - this.origin.x, this.maskPoly.vertices[p].y - this.origin.y);
             }
             this.g.endShape(CLOSE);
         }
@@ -628,6 +649,7 @@ class Tangle extends TangleBase {
         }
     }
 }
+/*jshint esversion: 9 */
 
 /**
  * @typedef {Object} GridTangleOptions
@@ -640,6 +662,15 @@ class Tangle extends TangleBase {
  * @property {number} gridVary The grid point location variation in pixels. If used, both gridXVary and gridYVary are set to this.
  * @property {number} gridXVary The horizontal grid point location variation in pixels.
  * @property {number} gridYVary The vertical grid point location variation in pixels.
+ * @property {number} gridDivisions The number of columns and rows the grid should have. If used, both gridXDivisions and gridYDivisions are set to this.
+ * @property {number} gridXDivisions The number of columns the grid should have. If not set, this is calculated from width and gridXSpacing.
+ * @property {number} gridYDivisions The number of rows the grid should have. If not set, this is calculated from height and gridYSpacing.
+ * @property {number | Range} gridXOrigin The x-coodinate of the upper left corner of the graph. The grid mode may modify this.
+ * @property {number | Range} gridYOrigin The y-coodinate of the upper left corner of the graph. The grid mode may modify this.
+ * @property {number | Range} gridXFrequency The grid horizontal wave frequency. The grid mode may ignore this or interpret it as it pleases.
+ * @property {number | Range} gridYFrequency The grid vertical wave frequency. The grid mode may ignore this or interpret it as it pleases.
+ * @property {number | Range} gridXAmplitude The grid horizontal wave amplitude. The grid mode may ignore this or interpret it as it pleases.
+ * @property {number | Range} gridYAmplitude The grid vertical wave amplitude. The grid mode may ignore this or interpret it as it pleases.
  */
 
 /**
@@ -648,21 +679,18 @@ class Tangle extends TangleBase {
 class GridTangle extends Tangle {
 
     /**
-     * Create a new Tangle
+     * Create a new GridTangle
      * @param {Point[] | Polygon} mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
      * @param {TangleOptions} options A map of values to be loaded into instance variables.
      */
     constructor(mask, options) {
-        if (typeof options === 'undefined') options = {}
-        if (typeof options.allowableOptions == 'undefined') options.allowableOptions = {}
+        if (typeof options === 'undefined') options = {};
+        if (typeof options.allowableOptions == 'undefined') options.allowableOptions = {};
         options.allowableOptions = {
             ...options.allowableOptions,
             ...{
                 gridShow: false,
                 gridSpacing: undefined,
-                gridDivisions: undefined,
-                gridXDivisions: undefined,
-                gridYDivisions: undefined,
                 gridXSpacing: 40,
                 gridYSpacing: 40,
                 gridXSpacingMode: 'static',
@@ -670,6 +698,15 @@ class GridTangle extends Tangle {
                 gridVary: undefined,
                 gridXVary: undefined,
                 gridYVary: undefined,
+                gridDivisions: undefined,
+                gridXDivisions: undefined,
+                gridYDivisions: undefined,
+                gridXOrigin: undefined,
+                gridYOrigin: undefined,
+                gridXFrequency: undefined,
+                gridYFrequency: undefined,
+                gridXAmplitude: undefined,
+                gridYAmplitude: undefined,
             },
         };
         super(mask, options);
@@ -693,62 +730,30 @@ class GridTangle extends Tangle {
         }
 
         if (this.gridXVary === undefined) {
-            this.gridXVary = .02 * (typeof this.gridXSpacing === 'object' ? this.gridXSpacing.min : this.gridXSpacing);
+            this.gridXVary = 0.02 * (typeof this.gridXSpacing === 'object' ? this.gridXSpacing.min : this.gridXSpacing);
         }
         if (this.gridYVary === undefined) {
-            this.gridYVary = .02 * (typeof this.gridYSpacing === 'object' ? this.gridYSpacing.min : this.gridYSpacing);
+            this.gridYVary = 0.02 * (typeof this.gridYSpacing === 'object' ? this.gridYSpacing.min : this.gridYSpacing);
         }
 
         if (this.gridDivisions !== undefined) {
             this.gridXDivisions = this.gridYDivisions = this.gridDivisions;
         }
-    }
 
-    /**
-     * Calculate the position of a point according to the current algorithm, based on row and column index.
-     * @param (number} r Row index.
-     * @param {number} c Column index.
-     * @private
-     */
-    _updateMeta(r, c) {
-        // Progress along a row
-        if (c > 0) {
-            if (typeof this.gridXSpacing === 'number')
-                this.gridMeta[r][c].x = this.gridMeta[r][c-1].x + this.gridXSpacing;
-            else {
-                switch (this.gridXSpacingMode) {
-                    case 'random':
-                        this.gridMeta[r][c].x = this.gridMeta[r][c-1].x + this.gridXSpacing.rand();
-                        break;
-                    case 'linear':
-                        this.gridMeta[r][c].x = this.gridMeta[r][c-1].x + this.gridXSpacing.min + (c/this.maxCols) * (this.gridXSpacing.max - this.gridXSpacing.min);
-                        break
-                    default:
-                        this.gridMeta[r][c].x = this.gridMeta[r][c-1].x + this.gridXSpacing.min;
-                        break;
-                }
-            }
-            this.gridMeta[r][c].y = this.gridMeta[r][c-1].y;
+        if (this.gridXDivisions === undefined) {
+            const minXSpacing = (typeof this.gridXSpacing === 'object' ? this.gridXSpacing.min : this.gridXSpacing);
+            this.gridXDivisions = (this.width / minXSpacing) + 2;
         }
-        else {
-            if (r > 0) {
-                // New Row
-                if (typeof this.gridYSpacing === 'number')
-                    this.gridMeta[r][c].y = this.gridMeta[r - 1][c].y + this.gridYSpacing;
-                else {
-                    switch (this.gridYSpacingMode) {
-                        case 'random':
-                            this.gridMeta[r][c].y = this.gridMeta[r - 1][c].y + this.gridYSpacing.rand();
-                            break;
-                        case 'linear':
-                            this.gridMeta[r][c].y = this.gridMeta[r - 1][c].y + this.gridYSpacing.min + (r/this.maxRows) * (this.gridYSpacing.max - this.gridYSpacing.min);
-                            break
-                        default:
-                            this.gridMeta[r][c].y = this.gridMeta[r - 1][c].y + this.gridYSpacing.min;
-                            break;
-                    }
-                }
-            }
+        if (this.gridYDivisions === undefined) {
+            const minYSpacing = (typeof this.gridYSpacing === 'object' ? this.gridYSpacing.min : this.gridYSpacing);
+            this.gridYDivisions = (this.height / minYSpacing) + 2;
+        }
+
+        if (this.gridXOrigin === undefined) {
+            this.gridXOrigin = -Entanglement.getMinValue(this.gridXSpacing) / 2;
+        }
+        if (this.gridYOrigin === undefined) {
+            this.gridYOrigin = -Entanglement.getMinValue(this.gridYSpacing) / 2;
         }
     }
 
@@ -758,28 +763,53 @@ class GridTangle extends Tangle {
      * produce the points.
      */
     buildGridPoints() {
-        const minXSpacing = (typeof this.gridXSpacing === 'object' ? this.gridXSpacing.min : this.gridXSpacing);
-        const minYSpacing = (typeof this.gridYSpacing === 'object' ? this.gridYSpacing.min : this.gridYSpacing);
-        this.maxCols = (this.width / minXSpacing) + 2;
-        this.maxRows = (this.height / minYSpacing) + 2;
-
         this.gridPoints = [];
-        this.gridMeta = []
-        for (let r=0; r<this.maxRows; r++) {
+        this.gridMeta = [];
+        let colGen, rowGen;
+        switch (this.gridXSpacingMode) {
+            case 'wave':
+                colGen = new GridSpacingModeWave(this);
+                break;
+            case 'compression':
+                colGen = new GridSpacingModeCompression(this);
+                break;
+            case 'linear':
+                colGen = new GridSpacingModeLinear(this);
+                break;
+            default:
+                colGen = new GridSpacingModeStatic(this);
+                break;
+        }
+        if (this.gridXSpacingMode === this.gridYSpacingMode) {
+            rowGen = colGen;
+        } else {
+            switch (this.gridYSpacingMode) {
+                case 'wave':
+                    rowGen = new GridSpacingModeWave(this);
+                    break;
+                case 'compression':
+                    rowGen = new GridSpacingModeCompression(this);
+                    break;
+                case 'linear':
+                    rowGen = new GridSpacingModeLinear(this);
+                    break;
+                default:
+                    rowGen = new GridSpacingModeStatic(this);
+                    break;
+            }
+        }
+        for (let r = 0; r < this.gridYDivisions; r++) {
             this.gridPoints[r] = [];
             this.gridMeta[r] = [];
-            for (let c=0; c<this.maxCols; c++) {
-                this.gridMeta[r][c] = {
-                    x: -minXSpacing / 2,
-                    y: -minYSpacing / 2,
-                };
-                this._updateMeta(r, c);
+            for (let c = 0; c < this.gridXDivisions; c++) {
+                this.gridMeta[r][c] = new Point(colGen.x(r, c), rowGen.y(r, c));
                 this.gridPoints[r][c] = new Point(
-                    random(this.gridMeta[r][c].x-this.gridXVary, this.gridMeta[r][c].x+this.gridXVary),
-                    random(this.gridMeta[r][c].y-this.gridYVary, this.gridMeta[r][c].y+this.gridYVary),
+                    random(this.gridMeta[r][c].x - this.gridXVary, this.gridMeta[r][c].x + this.gridXVary),
+                    random(this.gridMeta[r][c].y - this.gridYVary, this.gridMeta[r][c].y + this.gridYVary),
                 );
             }
         }
+        console.log(this.gridPoints);
     }
 
     /**
@@ -788,15 +818,15 @@ class GridTangle extends Tangle {
     showGrid() {
         if (this.gridPoints.length === 0)
             this.buildGridPoints();
-        for(let r=0; r<this.gridPoints.length; r++) {
-            for(let c=0; c<this.gridPoints[r].length; c++) {
-                let nextPoint = this.gridPoints[r][c+1];
-                if(nextPoint !== undefined) {
+        for (let r = 0; r < this.gridPoints.length; r++) {
+            for (let c = 0; c < this.gridPoints[r].length; c++) {
+                let nextPoint = this.gridPoints[r][c + 1];
+                if (nextPoint !== undefined) {
                     this.g.line(this.gridPoints[r][c].x, this.gridPoints[r][c].y, nextPoint.x, nextPoint.y);
                 }
-                if (this.gridPoints[r+1] === undefined)
+                if (this.gridPoints[r + 1] === undefined)
                     continue;
-                nextPoint = this.gridPoints[r+1][c];
+                nextPoint = this.gridPoints[r + 1][c];
                 this.g.line(this.gridPoints[r][c].x, this.gridPoints[r][c].y, nextPoint.x, nextPoint.y);
             }
         }
@@ -821,6 +851,197 @@ class GridTangle extends Tangle {
         }
     }
 }
+
+/**
+ * Create a rectangular grid with even spacing.
+ */
+class GridSpacingModeStatic {
+
+    /**
+     * Create a grid spacing mode generator.
+     * @param {object} tangle The 'this' value from the calling Tangle class.
+     */
+    constructor(tangle) {
+        this.tangle = tangle;
+    }
+
+    /**
+     * Get the x value for the specified coordinate.
+     * @param {integer} r Row
+     * @param {integer} c Column
+     */
+    x(r, c) {
+        const spacing = Entanglement.getValue(this.tangle.gridXSpacing);
+        let x = Entanglement.getValue(this.tangle.gridXOrigin) - spacing / 2;
+        if (c) {
+            x = this.tangle.gridPoints[r][c - 1].x + spacing;
+        }
+        return x;
+    }
+
+    /**
+     * Get the y value for the specified coordinate.
+     * @param {integer} r Row
+     * @param {integer} c Column
+     */
+    y(r, c) {
+        const spacing = Entanglement.getValue(this.tangle.gridYSpacing);
+        let y = Entanglement.getValue(this.tangle.gridYOrigin) - spacing / 2;
+        if (r) {
+            y = this.tangle.gridPoints[r - 1][c].y + spacing;
+        }
+        return y;
+    }
+}
+
+/**
+ * Create a rectangular grid with liniearly increasing spacing.
+ */
+class GridSpacingModeLinear {
+
+    /**
+     * Create a grid spacing mode generator.
+     * @param {object} tangle The 'this' value from the calling Tangle class.
+     */
+    constructor(tangle) {
+        this.tangle = tangle;
+        if (typeof this.tangle.gridXSpacing === 'object') {
+            this.xMin = this.tangle.gridXSpacing.min;
+            this.xRange = this.tangle.gridXSpacing.max - this.tangle.gridXSpacing.min;
+        } else {
+            this.xMin = this.tangle.gridXSpacing;
+            this.xRange = 0;
+        }
+        if (typeof this.tangle.gridYSpacing === 'object') {
+            this.yMin = this.tangle.gridYSpacing.min;
+            this.yRange = this.tangle.gridYSpacing.max - this.tangle.gridYSpacing.min;
+        } else {
+            this.yMin = this.tangle.gridYSpacing;
+            this.yRange = 0;
+        }
+    }
+
+    /**
+     * Get the x value for the specified coordinate.
+     * @param {integer} r Row
+     * @param {integer} c Column
+     */
+    x(r, c) {
+        let x = Entanglement.getValue(this.tangle.gridXOrigin) - this.xMin / 2;
+        if (c) {
+            x = this.tangle.gridPoints[r][c - 1].x + this.xMin + this.xRange * (c / this.tangle.gridXDivisions);
+        }
+        return x;
+    }
+
+    /**
+     * Get the y value for the specified coordinate.
+     * @param {integer} r Row
+     * @param {integer} c Column
+     */
+    y(r, c) {
+        let y = Entanglement.getValue(this.tangle.gridYOrigin) - this.yMin / 2;
+        if (r) {
+            y = this.tangle.gridPoints[r - 1][c].y + this.yMin + this.yRange * (r / this.tangle.gridYDivisions);
+        }
+        return y;
+    }
+}
+
+class GridSpacingModeWave {
+
+    /**
+     * Create a grid spacing mode generator.
+     * @param {object} tangle The 'this' value from the calling Tangle class.
+     */
+    constructor(tangle) {
+        this.tangle = tangle;
+        this.xAmplitude = typeof this.tangle.gridXAmplitude === 'undefined' ?
+            1 : Entanglement.getValue(this.tangle.gridXAmplitude);
+        this.yAmplitude = typeof this.tangle.gridYAmplitude === 'undefined' ?
+            1 : Entanglement.getValue(this.tangle.gridYAmplitude);
+        this.xFrequency = typeof this.tangle.gridXFrequency === 'undefined' ?
+            360 / this.tangle.gridXDivisions : Entanglement.getValue(this.tangle.gridXFrequency);
+        this.yFrequency = typeof this.tangle.gridYFrequency === 'undefined' ?
+            360 / this.tangle.gridYDivisions : Entanglement.getValue(this.tangle.gridYFrequency);
+    }
+
+    /**
+     * Get the x value for the specified coordinate.
+     * @param {integer} r Row
+     * @param {integer} c Column
+     */
+    x(r, c) {
+        const spacing = Entanglement.getValue(this.tangle.gridXSpacing);
+        let x = Entanglement.getValue(this.tangle.gridXOrigin) + Math.sin(radians(this.xFrequency * r)) * spacing * this.xAmplitude;
+        if (c) {
+            x = this.tangle.gridPoints[0][c - 1].x + spacing + Math.sin(radians(this.xFrequency * r)) * spacing * this.xAmplitude;
+        }
+        return x;
+    }
+
+    /**
+     * Get the y value for the specified coordinate.
+     * @param {integer} r Row
+     * @param {integer} c Column
+     */
+    y(r, c) {
+        const spacing = Entanglement.getValue(this.tangle.gridYSpacing);
+        let y = Entanglement.getValue(this.tangle.gridYOrigin) + Math.sin(radians(this.yFrequency * c)) * spacing * this.yAmplitude;
+        if (r) {
+            y = this.tangle.gridPoints[r - 1][0].y + spacing + Math.sin(radians(this.yFrequency * c)) * spacing * this.yAmplitude;
+        }
+        return y;
+    }
+}
+
+class GridSpacingModeCompression {
+
+    /**
+     * Create a grid spacing mode generator.
+     * @param {object} tangle The 'this' value from the calling Tangle class.
+     */
+    constructor(tangle) {
+        this.tangle = tangle;
+        this.xAmplitude = typeof this.tangle.gridXAmplitude === 'undefined' ?
+            0.5 : Entanglement.getValue(this.tangle.gridXAmplitude);
+        this.yAmplitude = typeof this.tangle.gridYAmplitude === 'undefined' ?
+            0.5 : Entanglement.getValue(this.tangle.gridYAmplitude);
+        this.xFrequency = typeof this.tangle.gridXFrequency === 'undefined' ?
+            360 / this.tangle.gridXDivisions : Entanglement.getValue(this.tangle.gridXFrequency);
+        this.yFrequency = typeof this.tangle.gridYFrequency === 'undefined' ?
+            360 / this.tangle.gridYDivisions : Entanglement.getValue(this.tangle.gridYFrequency);
+    }
+
+    /**
+     * Get the x value for the specified coordinate.
+     * @param {integer} r Row
+     * @param {integer} c Column
+     */
+    x(r, c) {
+        const spacing = Entanglement.getValue(this.tangle.gridXSpacing);
+        let x = Entanglement.getValue(this.tangle.gridXOrigin) - spacing / 2;
+        if (c) {
+            x = this.tangle.gridPoints[0][c - 1].x + spacing + Math.sin(radians(this.xFrequency * c)) * spacing * this.xAmplitude;
+        }
+        return x;
+    }
+
+    /**
+     * Get the y value for the specified coordinate.
+     * @param {integer} r Row
+     * @param {integer} c Column
+     */
+    y(r, c) {
+        const spacing = Entanglement.getValue(this.tangle.gridYSpacing);
+        let y = Entanglement.getValue(this.tangle.gridYOrigin) - spacing / 2;
+        if (r) {
+            y = this.tangle.gridPoints[r - 1][0].y + spacing + Math.sin(radians(this.yFrequency * r)) * spacing * this.yAmplitude;
+        }
+        return y;
+    }
+}
+/*jshint esversion: 9 */
 
 /**
  * @typedef {Object} DotElementOptions
@@ -851,9 +1072,9 @@ class DotElement extends TangleElement {
         super(g, center, options);
         this.spacing = Math.max(100, this.spacing);
 
-        let dAngle = TWO_PI/8;
-        for (let angle=0; angle<TWO_PI; angle+=dAngle) {
-            this.addVertex(new Polar(this.spacing/100 * this.size, angle).toPointCenter(this.center));   // Put a vertex out beyond the tip of the arm
+        let dAngle = TWO_PI / 8;
+        for (let angle = 0; angle < TWO_PI; angle += dAngle) {
+            this.addVertex(new Polar(this.spacing / 100 * this.size, angle).toPointCenter(this.center)); // Put a vertex out beyond the tip of the arm
         }
     }
 
@@ -921,31 +1142,31 @@ class AahElement extends TangleElement {
             size: 100,
         };
         super(g, center, options);
-        this.length = this.size/2;
+        this.length = this.size / 2;
         if (this.armCount < 3) this.armCount = 3;
         this.arms = [];
 
-        const dAngle = TWO_PI/this.armCount;
+        const dAngle = TWO_PI / this.armCount;
         const rotation = this.rotate ? random(0, dAngle) : 0;
-        for (let angle=0; angle<TWO_PI-(dAngle/2); angle+=dAngle) {
+        for (let angle = 0; angle < TWO_PI - (dAngle / 2); angle += dAngle) {
 
             // Create the arm
-            let c = new Polar(randomGaussian(this.length, this.lengthSDP/100 * this.length), randomGaussian(angle+rotation, this.thetaSD*Math.PI/180));
-            const gap = randomGaussian(this.gapSDP, this.gapSDP/7)/100 * this.length;
+            let c = new Polar(randomGaussian(this.length, this.lengthSDP / 100 * this.length), randomGaussian(angle + rotation, this.thetaSD * Math.PI / 180));
+            const gap = randomGaussian(this.gapSDP, this.gapSDP / 7) / 100 * this.length;
             let arm = {
-                start: new Polar(gap, c.a).toPointCenter(this.center),  // Draw line from here...
-                stop: c.toPointCenter(this.center),                     // ...to here
+                start: new Polar(gap, c.a).toPointCenter(this.center), // Draw line from here...
+                stop: c.toPointCenter(this.center), // ...to here
                 tipCenter: new Polar(c.r * (this.tipDistancePercent / 100), c.a).toPointCenter(this.center),
                 tipDiameter: !isNaN(this.tipDiameter) ? this.tipDiameter : this.tipDiameter === AahElement.tipType.gap ? gap : 10,
             };
             this.arms.push(arm);
 
             // Polygon vertices associated with this arm
-            let maxLength = Math.max(c.r, c.r * (this.tipDistancePercent / 100)) + arm.tipDiameter/2;
-            this.addVertex(new Polar(maxLength + 5*gap, c.a).toPointCenter(this.center));
-            this.addVertex(new Polar(0.6*c.r, c.a+(dAngle/2)).toPointCenter(this.center));
+            let maxLength = Math.max(c.r, c.r * (this.tipDistancePercent / 100)) + arm.tipDiameter / 2;
+            this.addVertex(new Polar(maxLength + 5 * gap, c.a).toPointCenter(this.center));
+            this.addVertex(new Polar(0.6 * c.r, c.a + (dAngle / 2)).toPointCenter(this.center));
         }
-        if(this.debug) console.log("aah: ", this.aah);
+        if (this.debug) console.log("aah: ", this.aah);
     }
 
 
@@ -1006,8 +1227,7 @@ class Aah extends Tangle {
      */
     static plans = {
         zentangle: {
-            aah: {
-            },
+            aah: {},
             dot: {
                 size: new Range(3, 6),
                 fillColor: 255,
@@ -1028,7 +1248,7 @@ class Aah extends Tangle {
         options.plan = options.plan === undefined ? Aah.plans.zentangle : options.plan;
         super(mask, options);
 
-        this.build = function() {
+        this.build = function () {
 
             if (this.plan.aah === undefined) this.plan.aah = {};
             if (this.plan.dot === undefined) this.plan.dot = {};
@@ -1107,6 +1327,7 @@ class Aah extends Tangle {
         this.execute();
     }
 }
+/*jshint esversion: 9 */
 
 /**
  * @typedef {Object} BoxSpiralElementOptions
@@ -1166,10 +1387,10 @@ class BoxSpiralElement extends TangleElement {
         }
 
         // If any corners are undefined at this point, create them from the size parameter
-        if (this.nw === undefined) this.nw = new Point(center.x-this.size/2, center.y-this.size/2);
-        if (this.ne === undefined) this.ne = new Point(center.x+this.size/2, center.y-this.size/2);
-        if (this.se === undefined) this.se = new Point(center.x+this.size/2, center.y+this.size/2);
-        if (this.sw === undefined) this.sw = new Point(center.x-this.size/2, center.y+this.size/2);
+        if (this.nw === undefined) this.nw = new Point(center.x - this.size / 2, center.y - this.size / 2);
+        if (this.ne === undefined) this.ne = new Point(center.x + this.size / 2, center.y - this.size / 2);
+        if (this.se === undefined) this.se = new Point(center.x + this.size / 2, center.y + this.size / 2);
+        if (this.sw === undefined) this.sw = new Point(center.x - this.size / 2, center.y + this.size / 2);
 
         // Do any requested rotation
         if (this.rotate !== undefined) {
@@ -1205,7 +1426,7 @@ class BoxSpiralElement extends TangleElement {
         options.ne = ne;
         options.se = se;
         options.sw = sw;
-        return new BoxSpiralElement(g, new Point((nw.x+ne.x+se.x+sw.x)/4, (nw.y+ne.y+se.y+sw.y)/4), options);
+        return new BoxSpiralElement(g, new Point((nw.x + ne.x + se.x + sw.x) / 4, (nw.y + ne.y + se.y + sw.y) / 4), options);
     }
 
     /**
@@ -1256,15 +1477,15 @@ class BoxSpiralElement extends TangleElement {
         const lsxPoints = new Line(this.sw, this.se).divide(this.divisions);
         let vLines = [];
         let hLines = [];
-        for (let i=0; i<=this.divisions; i++) {
+        for (let i = 0; i <= this.divisions; i++) {
             vLines.push(new Line(lnxPoints[i], lsxPoints[i]));
             hLines.push(new Line(lwyPoints[i], leyPoints[i]));
         }
 
         // Create the point pool from which the spirals will be created, using line intersections
         let points = [];
-        for (let h=0; h<=this.divisions; h++) {
-            for (let v=0; v<=this.divisions; v++) {
+        for (let h = 0; h <= this.divisions; h++) {
+            for (let v = 0; v <= this.divisions; v++) {
                 points.push(hLines[h].intersection(vLines[v]));
             }
         }
@@ -1290,22 +1511,22 @@ class BoxSpiralElement extends TangleElement {
         if (this.rotation === 'cw') {
             this.direction++; // if cw, the initial direction is 1.
         }
-        this.current = this.interior ? this.divisions + 2 : 0;       // Index of first point
-        this.step =  this.interior ? 2 : 0;
-        this.levelCount = 3;    // We need three strokes at the first level, 2 for each subsequent level
+        this.current = this.interior ? this.divisions + 2 : 0; // Index of first point
+        this.step = this.interior ? 2 : 0;
+        this.levelCount = 3; // We need three strokes at the first level, 2 for each subsequent level
 
         // Modifications if the starting corner is other than nw
-        switch(this.startCorner) {
+        switch (this.startCorner) {
             case 'ne':
                 this.current = this.interior ? 2 * this.divisions : this.divisions;
                 this.direction += 3;
                 break;
             case 'se':
-                this.current = this.interior ? Math.pow(this.divisions, 2) + this.divisions - 2 : Math.pow(this.divisions+1, 2) - 1;
+                this.current = this.interior ? Math.pow(this.divisions, 2) + this.divisions - 2 : Math.pow(this.divisions + 1, 2) - 1;
                 this.direction += 2;
                 break;
             case 'sw':
-                this.current = this.interior ? Math.pow(this.divisions, 2) : this.divisions * (this.divisions+1);
+                this.current = this.interior ? Math.pow(this.divisions, 2) : this.divisions * (this.divisions + 1);
                 this.direction += 1;
                 break;
         }
@@ -1323,15 +1544,15 @@ class BoxSpiralElement extends TangleElement {
         const interval = this.divisions - this.step;
         if (interval === 0)
             return p;
-        switch(this.direction % 4) {
+        switch (this.direction % 4) {
             case 0: // down
-                p = this.current + interval*(this.divisions+1);
+                p = this.current + interval * (this.divisions + 1);
                 break;
             case 1: // right
                 p = this.current + interval;
                 break;
             case 2: // up
-                p = this.current - interval*(this.divisions+1);
+                p = this.current - interval * (this.divisions + 1);
                 break;
             case 3: // left
                 p = this.current - interval;
@@ -1384,7 +1605,7 @@ class BoxSpirals extends Tangle {
         };
         super(mask, options);
 
-        this.build = function() {
+        this.build = function () {
 
             if (this.desiredCount === undefined) {
                 const s = isNaN(this.size) ? this.size.min : this.size;
@@ -1408,6 +1629,7 @@ class BoxSpirals extends Tangle {
         this.execute();
     }
 }
+/*jshint esversion: 9 */
 
 /**
  * @typedef {Object} AmblerOptions
@@ -1432,7 +1654,7 @@ class Ambler extends GridTangle {
         }
         super(mask, options);
 
-        this.build = function() {
+        this.build = function () {
             const starts = ['nw', 'sw', 'se', 'ne'];
             let colRotate = 0;
             let rowRotate = colRotate + 1;
@@ -1457,6 +1679,7 @@ class Ambler extends GridTangle {
         this.execute();
     }
 }
+/*jshint esversion: 9 */
 
 /**
  * @typedef {Object} EmingleOptions
@@ -1476,7 +1699,7 @@ class Emingle extends GridTangle {
      * @param {EmingleOptions} options The options list.
      */
     constructor(mask, options) {
-        if (typeof options === 'undefined') options = {}
+        if (typeof options === 'undefined') options = {};
         if (typeof options.gridShow === 'undefined') {
             options.gridShow = true;
         }
@@ -1485,7 +1708,7 @@ class Emingle extends GridTangle {
         };
         super(mask, options);
 
-        this.build = function() {
+        this.build = function () {
             const starts = ['nw', 'sw', 'se', 'ne'];
             if (this.startCorner === 'random') {
                 this.startCorner = starts[Math.floor(random(0, 4))];
@@ -1509,6 +1732,7 @@ class Emingle extends GridTangle {
         this.execute();
     }
 }
+/*jshint esversion: 9 */
 
 /**
  * @typedef {Object} HugginsOptions
@@ -1532,7 +1756,7 @@ class Huggins extends GridTangle {
      * @param {HugginsOptions} options The options list.
      */
     constructor(mask, options) {
-        if (typeof options === 'undefined') options = {}
+        if (typeof options === 'undefined') options = {};
         options.gridShow = false;
         options.allowableOptions = {
             holeDiameter: 'proportional',
@@ -1542,15 +1766,15 @@ class Huggins extends GridTangle {
         };
         super(mask, options);
 
-        this.build = function() {
+        this.build = function () {
             if (this.holeDiameter === 'proportional') {
                 this.holeDiameter = Math.min(
                     (typeof this.gridXSpacing === 'object' ? this.gridXSpacing.min : this.gridXSpacing),
                     (typeof this.gridYSpacing === 'object' ? this.gridYSpacing.min : this.gridYSpacing)
                 ) / 4;
             }
-            const radius = this.holeDiameter/2;
-            const control = this.curve*radius;
+            const radius = this.holeDiameter / 2;
+            const control = this.curve * radius;
             this.g.curveTightness(0);
 
             // Create cache for control points
@@ -1582,13 +1806,13 @@ class Huggins extends GridTangle {
                 for (let c = 0; c < this.gridPoints[r].length - 1; c++) {
                     let c1 = controlPoints[r][c][7];
                     let p1 = controlPoints[r][c][0];
-                    let p2 = controlPoints[r][c+1][1];
-                    let c2 = controlPoints[r][c+1][6];
+                    let p2 = controlPoints[r][c + 1][1];
+                    let c2 = controlPoints[r][c + 1][6];
                     if (colInd++ % 2) {
                         c1 = controlPoints[r][c][4];
                         p1 = controlPoints[r][c][3];
-                        p2 = controlPoints[r][c+1][2];
-                        c2 = controlPoints[r][c+1][5];
+                        p2 = controlPoints[r][c + 1][2];
+                        c2 = controlPoints[r][c + 1][5];
                     }
                     this.g.curve(c1.x, c1.y, p1.x, p1.y, p2.x, p2.y, c2.x, c2.y);
                 }
@@ -1602,13 +1826,13 @@ class Huggins extends GridTangle {
                 for (let c = 0; c < this.gridPoints[r].length; c++) {
                     let c1 = controlPoints[r][c][4];
                     let p1 = controlPoints[r][c][1];
-                    let p2 = controlPoints[r+1][c][2];
-                    let c2 = controlPoints[r+1][c][7];
+                    let p2 = controlPoints[r + 1][c][2];
+                    let c2 = controlPoints[r + 1][c][7];
                     if (colInd++ % 2) {
                         c1 = controlPoints[r][c][5];
                         p1 = controlPoints[r][c][0];
-                        p2 = controlPoints[r+1][c][3];
-                        c2 = controlPoints[r+1][c][6];
+                        p2 = controlPoints[r + 1][c][3];
+                        c2 = controlPoints[r + 1][c][6];
                     }
                     this.g.curve(c1.x, c1.y, p1.x, p1.y, p2.x, p2.y, c2.x, c2.y);
                 }
@@ -1630,6 +1854,7 @@ class Huggins extends GridTangle {
     }
 
 }
+/*jshint esversion: 9 */
 
 /**
  * @typedef {Object} W2Options
@@ -1653,7 +1878,7 @@ class W2 extends GridTangle {
      * @param {W2Options} options The options list.
      */
     constructor(mask, options) {
-        if (typeof options === 'undefined') options = {}
+        if (typeof options === 'undefined') options = {};
         options.gridShow = false;
         options.allowableOptions = {
             holeSize: 'proportional',
@@ -1662,14 +1887,14 @@ class W2 extends GridTangle {
         };
         super(mask, options);
 
-        this.build = function() {
+        this.build = function () {
             if (this.holeSize === 'proportional') {
                 this.holeSize = Math.min(
                     (typeof this.gridXSpacing === 'object' ? this.gridXSpacing.min : this.gridXSpacing),
                     (typeof this.gridYSpacing === 'object' ? this.gridYSpacing.min : this.gridYSpacing)
                 ) / 4;
             }
-            const halfSize = this.holeSize/2;
+            const halfSize = this.holeSize / 2;
 
             // Create cache for control points
             let controlPoints = [];
@@ -1678,10 +1903,10 @@ class W2 extends GridTangle {
                 for (let c = 0; c < this.gridPoints[r].length; c++) {
                     // Create the control points
                     let points = [];
-                    points.push(new Point(this.gridPoints[r][c].x-halfSize, this.gridPoints[r][c].y-halfSize));
-                    points.push(new Point(this.gridPoints[r][c].x+halfSize, this.gridPoints[r][c].y-halfSize));
-                    points.push(new Point(this.gridPoints[r][c].x+halfSize, this.gridPoints[r][c].y+halfSize));
-                    points.push(new Point(this.gridPoints[r][c].x-halfSize, this.gridPoints[r][c].y+halfSize));
+                    points.push(new Point(this.gridPoints[r][c].x - halfSize, this.gridPoints[r][c].y - halfSize));
+                    points.push(new Point(this.gridPoints[r][c].x + halfSize, this.gridPoints[r][c].y - halfSize));
+                    points.push(new Point(this.gridPoints[r][c].x + halfSize, this.gridPoints[r][c].y + halfSize));
+                    points.push(new Point(this.gridPoints[r][c].x - halfSize, this.gridPoints[r][c].y + halfSize));
                     row.push(points);
                 }
                 controlPoints.push(row);
@@ -1695,10 +1920,10 @@ class W2 extends GridTangle {
             for (let r = 0; r < this.gridPoints.length; r++) {
                 for (let c = 0; c < this.gridPoints[r].length - 1; c++) {
                     let p1 = controlPoints[r][c][1];
-                    let p2 = controlPoints[r][c+1][0];
+                    let p2 = controlPoints[r][c + 1][0];
                     if (colInd++ % 2) {
                         p1 = controlPoints[r][c][2];
-                        p2 = controlPoints[r][c+1][3];
+                        p2 = controlPoints[r][c + 1][3];
                     }
                     this.g.line(p1.x, p1.y, p2.x, p2.y);
                 }
@@ -1711,10 +1936,10 @@ class W2 extends GridTangle {
             for (let r = 0; r < this.gridPoints.length - 1; r++) {
                 for (let c = 0; c < this.gridPoints[r].length; c++) {
                     let p1 = controlPoints[r][c][2];
-                    let p2 = controlPoints[r+1][c][1];
+                    let p2 = controlPoints[r + 1][c][1];
                     if (colInd++ % 2) {
                         p1 = controlPoints[r][c][3];
-                        p2 = controlPoints[r+1][c][0];
+                        p2 = controlPoints[r + 1][c][0];
                     }
                     this.g.line(p1.x, p1.y, p2.x, p2.y);
                 }
@@ -1736,6 +1961,7 @@ class W2 extends GridTangle {
     }
 
 }
+/*jshint esversion: 9 */
 
 /**
  * @typedef {Object} ZentangleOptions
@@ -1771,33 +1997,33 @@ class Zentangle extends TangleBase {
             this.height *= 0.87;
         }
         this.g = createGraphics(this.width, this.height);
-        let center = new Point(this.width/2, this.height/2);
-        switch(this.shape) {
+        let center = new Point(this.width / 2, this.height / 2);
+        switch (this.shape) {
             case 'circle':
                 this.edgePoly = new Polygon();
-                for (let d=0; d<360; d++) {
-                    this.edgePoly.addVertex(new Polar(this.width/2-1, radians(d)).toPointCenter(center));
+                for (let d = 0; d < 360; d++) {
+                    this.edgePoly.addVertex(new Polar(this.width / 2 - 1, radians(d)).toPointCenter(center));
                 }
                 this.borderPoly = new Polygon();
-                for (let d=0; d<360; d++) {
-                    this.borderPoly.addVertex(new Polar(this.width/2-this.borderSize, radians(d)).toPointCenter(center).vary(1));
+                for (let d = 0; d < 360; d++) {
+                    this.borderPoly.addVertex(new Polar(this.width / 2 - this.borderSize, radians(d)).toPointCenter(center).vary(1));
                 }
                 break;
             case 'triangle':
-                center = new Point(this.width/2, 2*this.height/3);
+                center = new Point(this.width / 2, 2 * this.height / 3);
                 this.edgePoly = new Polygon([
                     new Point(0, this.height),
-                    new Point(this.width/2, 0),
+                    new Point(this.width / 2, 0),
                     new Point(this.width, this.height),
                 ]);
-                const distance = 2*this.height/3 - 2*this.borderSize;
+                const distance = 2 * this.height / 3 - 2 * this.borderSize;
                 this.borderPoly = this._createBorderPolyFromLines([
                     new Polar(distance, radians(270)).toPointCenter(center),
                     new Polar(distance, radians(30)).toPointCenter(center),
                     new Polar(distance, radians(150)).toPointCenter(center),
                 ]);
                 break;
-            default:    // square
+            default: // square
                 this.edgePoly = new Polygon([
                     new Point(0, 0),
                     new Point(this.width, 0),
@@ -1806,9 +2032,9 @@ class Zentangle extends TangleBase {
                 ]);
                 this.borderPoly = this._createBorderPolyFromLines([
                     new Point(this.borderSize, this.borderSize),
-                    new Point(this.width-this.borderSize, this.borderSize),
-                    new Point(this.width-this.borderSize, this.height-this.borderSize),
-                    new Point(this.borderSize, this.height-this.borderSize),
+                    new Point(this.width - this.borderSize, this.borderSize),
+                    new Point(this.width - this.borderSize, this.height - this.borderSize),
+                    new Point(this.borderSize, this.height - this.borderSize),
                 ]);
                 break;
         }
@@ -1891,13 +2117,13 @@ class Zentangle extends TangleBase {
      */
     _createBorderPolyFromLines(vertices) {
         let poly = new Polygon();
-        for (let start=0; start<vertices.length; start++) {
-            let end = start+1;
+        for (let start = 0; start < vertices.length; start++) {
+            let end = start + 1;
             if (end === vertices.length) {
                 end = 0;
             }
             const points = new Line(vertices[start], vertices[end]).handDrawn();
-            for (let i=0; i<points.length; i++) {
+            for (let i = 0; i < points.length; i++) {
                 poly.addVertex(points[i]);
             }
         }

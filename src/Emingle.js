@@ -1,3 +1,5 @@
+/*jshint esversion: 9 */
+
 /**
  * @typedef {Object} EmingleOptions
  * @property {string} startCorner The corner at which to start the box spiral. Can be 'nw', ne', 'se', 'sw' or 'random'. The default is 'nw'.
@@ -16,7 +18,7 @@ class Emingle extends GridTangle {
      * @param {EmingleOptions} options The options list.
      */
     constructor(mask, options) {
-        if (typeof options === 'undefined') options = {}
+        if (typeof options === 'undefined') options = {};
         if (typeof options.gridShow === 'undefined') {
             options.gridShow = true;
         }
@@ -25,7 +27,7 @@ class Emingle extends GridTangle {
         };
         super(mask, options);
 
-        this.build = function() {
+        this.build = function () {
             const starts = ['nw', 'sw', 'se', 'ne'];
             if (this.startCorner === 'random') {
                 this.startCorner = starts[Math.floor(random(0, 4))];

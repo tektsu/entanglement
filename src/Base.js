@@ -1,3 +1,5 @@
+/*jshint esversion: 9 */
+
 /**
  * Common components of TangleElement and Tangle.
  */
@@ -26,7 +28,7 @@ class TangleBase {
             if (property in allowable) {
                 this[property] = options[property];
             } else {
-                console.log("ERROR: Ignoring option: ", property)
+                console.log("ERROR: Ignoring option: ", property);
             }
         }
         for (const property in allowable) {
@@ -58,7 +60,7 @@ class TangleElement extends TangleBase {
     constructor(g, center, options) {
         super();
         this.g = g;
-        this.center = center==undefined ? Point(0,0) : center;
+        this.center = center == undefined ? Point(0, 0) : center;
         this.poly = [];
 
         this.optionsAllowed = {
@@ -83,7 +85,7 @@ class TangleElement extends TangleBase {
      * @returns [p5.Vector] An array of vertices for the enclosing polygon.
      */
     getPoly() {
-        return this.poly
+        return this.poly;
     }
 
     /**
@@ -138,7 +140,7 @@ class Tangle extends TangleBase {
         if (Array.isArray(mask)) {
             this.maskPoly = new Polygon(mask);
         }
-        this.build = function() {}
+        this.build = function () {};
 
         this.optionsAllowed = {
             debug: 0,
@@ -168,20 +170,20 @@ class Tangle extends TangleBase {
             const height = br.getHeight();
             minX = Math.floor(Math.min(minX, origin.x));
             minY = Math.floor(Math.min(minY, origin.y));
-            maxX = Math.ceil(Math.max(maxX, origin.x+width));
-            maxY = Math.ceil(Math.max(maxY, origin.y+height));
+            maxX = Math.ceil(Math.max(maxX, origin.x + width));
+            maxY = Math.ceil(Math.max(maxY, origin.y + height));
             this.origin = new Point(minX, minY);
-            this.width = maxX-minX;
-            this.height = maxY-minY;
+            this.width = maxX - minX;
+            this.height = maxY - minY;
         }
         this.g = createGraphics(this.width, this.height);
         if (this.tangleRotate) {
             // Translate the center of the tangle back to the center of the bounding rectangle
             const r = radians(this.tangleRotate);
-            const x = this.width/2;
-            const y = this.height/2;
-            const dx = Math.floor(x-(x*cos(r)-y*sin(r)));
-            const dy = Math.floor(y-(x*sin(r)+y*cos(r)));
+            const x = this.width / 2;
+            const y = this.height / 2;
+            const dx = Math.floor(x - (x * cos(r) - y * sin(r)));
+            const dy = Math.floor(y - (x * sin(r) + y * cos(r)));
             this.g.translate(dx, dy);
             this.g.rotate(r);
         }
@@ -231,7 +233,7 @@ class Tangle extends TangleBase {
         mask.fill(255, 255, 255, 255);
         mask.beginShape();
         for (let p = 0; p < this.maskPoly.vertices.length; p++) {
-            mask.vertex(this.maskPoly.vertices[p].x-this.origin.x, this.maskPoly.vertices[p].y-this.origin.y);
+            mask.vertex(this.maskPoly.vertices[p].x - this.origin.x, this.maskPoly.vertices[p].y - this.origin.y);
         }
         mask.endShape(CLOSE);
 
@@ -249,7 +251,7 @@ class Tangle extends TangleBase {
             this.g.fill(0, 0, 0, 0);
             this.g.beginShape();
             for (let p = 0; p < this.maskPoly.vertices.length; p++) {
-                this.g.vertex(this.maskPoly.vertices[p].x-this.origin.x, this.maskPoly.vertices[p].y-this.origin.y);
+                this.g.vertex(this.maskPoly.vertices[p].x - this.origin.x, this.maskPoly.vertices[p].y - this.origin.y);
             }
             this.g.endShape(CLOSE);
         }
@@ -262,208 +264,6 @@ class Tangle extends TangleBase {
     execute() {
 
         this.build();
-        if (!this.ignoreMask) {
-            this.applyMask();
-        }
-    }
-}
-
-/**
- * @typedef {Object} GridTangleOptions
- * @property {boolean} gridShow If true, and this is a grid-based tangle, draw the grid lines after building the tangle. The default is true.
- * @property {number | Range} gridSpacing The grid size in pixels. If used, both gridXSpacing and gridYSpacing are set to this.
- * @property {number | Range} gridXSpacing The horizontal grid size in pixels. The default is 40. If set to a Range, the gridSpacingMode determines how that range is used.
- * @property {number | Range} gridYSpacing The vertical grid size in pixels. The default is 40.  If set to a Range, the gridSpacingMode determines how that range is used.
- * @property {string} gridXSpacingMode The horizontal grid size in pixels. The default is 'static'.
- * @property {string} gridYSpacingMode The vertical grid size in pixels. The default is 'static'.
- * @property {number} gridVary The grid point location variation in pixels. If used, both gridXVary and gridYVary are set to this.
- * @property {number} gridXVary The horizontal grid point location variation in pixels.
- * @property {number} gridYVary The vertical grid point location variation in pixels.
- */
-
-/**
- * Base class for a grid tangle, which is an area containg a design based on a grid.
- */
-class GridTangle extends Tangle {
-
-    /**
-     * Create a new Tangle
-     * @param {Point[] | Polygon} mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
-     * @param {TangleOptions} options A map of values to be loaded into instance variables.
-     */
-    constructor(mask, options) {
-        if (typeof options === 'undefined') options = {}
-        if (typeof options.allowableOptions == 'undefined') options.allowableOptions = {}
-        options.allowableOptions = {
-            ...options.allowableOptions,
-            ...{
-                gridShow: false,
-                gridSpacing: undefined,
-                gridDivisions: undefined,
-                gridXDivisions: undefined,
-                gridYDivisions: undefined,
-                gridXSpacing: 40,
-                gridYSpacing: 40,
-                gridXSpacingMode: 'static',
-                gridYSpacingMode: 'static',
-                gridVary: undefined,
-                gridXVary: undefined,
-                gridYVary: undefined,
-            },
-        };
-        super(mask, options);
-
-        this.gridPoints = [];
-        this.gridMeta = [];
-        this.gridVariation = [];
-
-        // Check gridSpacing
-        if (this.gridSpacing !== undefined) {
-            if (typeof this.gridSpacing === 'object') {
-                // gridSpacing is a Range
-                this.gridXSpacing = new Range(this.gridSpacing.min, this.gridSpacing.max);
-                this.gridYSpacing = new Range(this.gridSpacing.min, this.gridSpacing.max);
-            } else {
-                this.gridXSpacing = this.gridYSpacing = this.gridSpacing;
-            }
-        }
-        if (this.gridVary !== undefined) {
-            this.gridXVary = this.gridYVary = this.gridVary;
-        }
-
-        if (this.gridXVary === undefined) {
-            this.gridXVary = .02 * (typeof this.gridXSpacing === 'object' ? this.gridXSpacing.min : this.gridXSpacing);
-        }
-        if (this.gridYVary === undefined) {
-            this.gridYVary = .02 * (typeof this.gridYSpacing === 'object' ? this.gridYSpacing.min : this.gridYSpacing);
-        }
-
-        if (this.gridDivisions !== undefined) {
-            this.gridXDivisions = this.gridYDivisions = this.gridDivisions;
-        }
-
-        if (this.gridXDivisions !== undefined) {
-            const minXSpacing = (typeof this.gridXSpacing === 'object' ? this.gridXSpacing.min : this.gridXSpacing);
-            this.gridXDivisions = (this.width / minXSpacing) + 2;
-        }
-        if (this.gridYDivisions !== undefined) {
-            const minYSpacing = (typeof this.gridYSpacing === 'object' ? this.gridYSpacing.min : this.gridYSpacing);
-            this.gridYDivisions = (this.height / minYSpacing) + 2;
-        }
-    }
-
-    /**
-     * Calculate the position of a point according to the current algorithm, based on row and column index.
-     * @param (number} r Row index.
-     * @param {number} c Column index.
-     * @private
-     */
-    _updateMeta(r, c) {
-        // Progress along a row
-        if (c > 0) {
-            if (typeof this.gridXSpacing === 'number')
-                this.gridMeta[r][c].x = this.gridMeta[r][c-1].x + this.gridXSpacing;
-            else {
-                switch (this.gridXSpacingMode) {
-                    case 'random':
-                        this.gridMeta[r][c].x = this.gridMeta[r][c-1].x + this.gridXSpacing.rand();
-                        break;
-                    case 'linear':
-                        this.gridMeta[r][c].x = this.gridMeta[r][c-1].x + this.gridXSpacing.min + (c/this.maxCols) * (this.gridXSpacing.max - this.gridXSpacing.min);
-                        break
-                    default:
-                        this.gridMeta[r][c].x = this.gridMeta[r][c-1].x + this.gridXSpacing.min;
-                        break;
-                }
-            }
-            this.gridMeta[r][c].y = this.gridMeta[r][c-1].y;
-        }
-        else {
-            if (r > 0) {
-                // New Row
-                if (typeof this.gridYSpacing === 'number')
-                    this.gridMeta[r][c].y = this.gridMeta[r - 1][c].y + this.gridYSpacing;
-                else {
-                    switch (this.gridYSpacingMode) {
-                        case 'random':
-                            this.gridMeta[r][c].y = this.gridMeta[r - 1][c].y + this.gridYSpacing.rand();
-                            break;
-                        case 'linear':
-                            this.gridMeta[r][c].y = this.gridMeta[r - 1][c].y + this.gridYSpacing.min + (r/this.maxRows) * (this.gridYSpacing.max - this.gridYSpacing.min);
-                            break
-                        default:
-                            this.gridMeta[r][c].y = this.gridMeta[r - 1][c].y + this.gridYSpacing.min;
-                            break;
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Build a set of grid points using the grid* options. There will be enough ppints to fill the rectangular area
-     * defined by the mask. Some of the points may be well outside the area, depending on the algorithm used to
-     * produce the points.
-     */
-    buildGridPoints() {
-        const minXSpacing = (typeof this.gridXSpacing === 'object' ? this.gridXSpacing.min : this.gridXSpacing);
-        const minYSpacing = (typeof this.gridYSpacing === 'object' ? this.gridYSpacing.min : this.gridYSpacing);
-        this.maxCols = (this.width / minXSpacing) + 2;
-        this.maxRows = (this.height / minYSpacing) + 2;
-
-        this.gridPoints = [];
-        this.gridMeta = []
-        for (let r=0; r<this.maxRows; r++) {
-            this.gridPoints[r] = [];
-            this.gridMeta[r] = [];
-            for (let c=0; c<this.maxCols; c++) {
-                this.gridMeta[r][c] = {
-                    x: 0,
-                    y: 0,
-                };
-                this._updateMeta(r, c);
-                this.gridPoints[r][c] = new Point(
-                    random(this.gridMeta[r][c].x-this.gridXVary, this.gridMeta[r][c].x+this.gridXVary),
-                    random(this.gridMeta[r][c].y-this.gridYVary, this.gridMeta[r][c].y+this.gridYVary),
-                );
-            }
-        }
-    }
-
-    /**
-     * Draw the grid on the graphics buffer
-     */
-    showGrid() {
-        if (this.gridPoints.length === 0)
-            this.buildGridPoints();
-        for(let r=0; r<this.gridPoints.length; r++) {
-            for(let c=0; c<this.gridPoints[r].length; c++) {
-                let nextPoint = this.gridPoints[r][c+1];
-                if(nextPoint !== undefined) {
-                    this.g.line(this.gridPoints[r][c].x, this.gridPoints[r][c].y, nextPoint.x, nextPoint.y);
-                }
-                if (this.gridPoints[r+1] === undefined)
-                    continue;
-                nextPoint = this.gridPoints[r+1][c];
-                this.g.line(this.gridPoints[r][c].x, this.gridPoints[r][c].y, nextPoint.x, nextPoint.y);
-            }
-        }
-    }
-
-    /**
-     * Build the tangle. Executes the this.build method with before and after processing appropriate to the tangle type.
-     * This is normally the last method called by a child class.
-     */
-    execute() {
-
-        this.buildGridPoints();
-
-        this.build();
-
-        if (this.gridShow) {
-            this.showGrid();
-        }
-
         if (!this.ignoreMask) {
             this.applyMask();
         }

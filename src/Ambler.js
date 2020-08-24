@@ -1,3 +1,5 @@
+/*jshint esversion: 9 */
+
 /**
  * @typedef {Object} AmblerOptions
  * @property {value} any Any of the GridTangleOptions may be used here.
@@ -21,7 +23,7 @@ class Ambler extends GridTangle {
         }
         super(mask, options);
 
-        this.build = function() {
+        this.build = function () {
             const starts = ['nw', 'sw', 'se', 'ne'];
             let colRotate = 0;
             let rowRotate = colRotate + 1;

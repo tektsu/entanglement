@@ -1,3 +1,5 @@
+/*jshint esversion: 9 */
+
 /**
  * @typedef {Object} ZentangleOptions
  * @property {p5.Color} background The background of the Zentangle canvas.
@@ -32,33 +34,33 @@ class Zentangle extends TangleBase {
             this.height *= 0.87;
         }
         this.g = createGraphics(this.width, this.height);
-        let center = new Point(this.width/2, this.height/2);
-        switch(this.shape) {
+        let center = new Point(this.width / 2, this.height / 2);
+        switch (this.shape) {
             case 'circle':
                 this.edgePoly = new Polygon();
-                for (let d=0; d<360; d++) {
-                    this.edgePoly.addVertex(new Polar(this.width/2-1, radians(d)).toPointCenter(center));
+                for (let d = 0; d < 360; d++) {
+                    this.edgePoly.addVertex(new Polar(this.width / 2 - 1, radians(d)).toPointCenter(center));
                 }
                 this.borderPoly = new Polygon();
-                for (let d=0; d<360; d++) {
-                    this.borderPoly.addVertex(new Polar(this.width/2-this.borderSize, radians(d)).toPointCenter(center).vary(1));
+                for (let d = 0; d < 360; d++) {
+                    this.borderPoly.addVertex(new Polar(this.width / 2 - this.borderSize, radians(d)).toPointCenter(center).vary(1));
                 }
                 break;
             case 'triangle':
-                center = new Point(this.width/2, 2*this.height/3);
+                center = new Point(this.width / 2, 2 * this.height / 3);
                 this.edgePoly = new Polygon([
                     new Point(0, this.height),
-                    new Point(this.width/2, 0),
+                    new Point(this.width / 2, 0),
                     new Point(this.width, this.height),
                 ]);
-                const distance = 2*this.height/3 - 2*this.borderSize;
+                const distance = 2 * this.height / 3 - 2 * this.borderSize;
                 this.borderPoly = this._createBorderPolyFromLines([
                     new Polar(distance, radians(270)).toPointCenter(center),
                     new Polar(distance, radians(30)).toPointCenter(center),
                     new Polar(distance, radians(150)).toPointCenter(center),
                 ]);
                 break;
-            default:    // square
+            default: // square
                 this.edgePoly = new Polygon([
                     new Point(0, 0),
                     new Point(this.width, 0),
@@ -67,9 +69,9 @@ class Zentangle extends TangleBase {
                 ]);
                 this.borderPoly = this._createBorderPolyFromLines([
                     new Point(this.borderSize, this.borderSize),
-                    new Point(this.width-this.borderSize, this.borderSize),
-                    new Point(this.width-this.borderSize, this.height-this.borderSize),
-                    new Point(this.borderSize, this.height-this.borderSize),
+                    new Point(this.width - this.borderSize, this.borderSize),
+                    new Point(this.width - this.borderSize, this.height - this.borderSize),
+                    new Point(this.borderSize, this.height - this.borderSize),
                 ]);
                 break;
         }
@@ -152,13 +154,13 @@ class Zentangle extends TangleBase {
      */
     _createBorderPolyFromLines(vertices) {
         let poly = new Polygon();
-        for (let start=0; start<vertices.length; start++) {
-            let end = start+1;
+        for (let start = 0; start < vertices.length; start++) {
+            let end = start + 1;
             if (end === vertices.length) {
                 end = 0;
             }
             const points = new Line(vertices[start], vertices[end]).handDrawn();
-            for (let i=0; i<points.length; i++) {
+            for (let i = 0; i < points.length; i++) {
                 poly.addVertex(points[i]);
             }
         }

@@ -1,3 +1,5 @@
+/*jshint esversion: 9 */
+
 /**
  * @typedef {Object} W2Options
  * @property {number | string} holeSize The size of the squares in pixels. If set to 'proportional', which is the default, the size will be 1/4 if the smallest grid spacing.
@@ -20,7 +22,7 @@ class W2 extends GridTangle {
      * @param {W2Options} options The options list.
      */
     constructor(mask, options) {
-        if (typeof options === 'undefined') options = {}
+        if (typeof options === 'undefined') options = {};
         options.gridShow = false;
         options.allowableOptions = {
             holeSize: 'proportional',
@@ -29,14 +31,14 @@ class W2 extends GridTangle {
         };
         super(mask, options);
 
-        this.build = function() {
+        this.build = function () {
             if (this.holeSize === 'proportional') {
                 this.holeSize = Math.min(
                     (typeof this.gridXSpacing === 'object' ? this.gridXSpacing.min : this.gridXSpacing),
                     (typeof this.gridYSpacing === 'object' ? this.gridYSpacing.min : this.gridYSpacing)
                 ) / 4;
             }
-            const halfSize = this.holeSize/2;
+            const halfSize = this.holeSize / 2;
 
             // Create cache for control points
             let controlPoints = [];
@@ -45,10 +47,10 @@ class W2 extends GridTangle {
                 for (let c = 0; c < this.gridPoints[r].length; c++) {
                     // Create the control points
                     let points = [];
-                    points.push(new Point(this.gridPoints[r][c].x-halfSize, this.gridPoints[r][c].y-halfSize));
-                    points.push(new Point(this.gridPoints[r][c].x+halfSize, this.gridPoints[r][c].y-halfSize));
-                    points.push(new Point(this.gridPoints[r][c].x+halfSize, this.gridPoints[r][c].y+halfSize));
-                    points.push(new Point(this.gridPoints[r][c].x-halfSize, this.gridPoints[r][c].y+halfSize));
+                    points.push(new Point(this.gridPoints[r][c].x - halfSize, this.gridPoints[r][c].y - halfSize));
+                    points.push(new Point(this.gridPoints[r][c].x + halfSize, this.gridPoints[r][c].y - halfSize));
+                    points.push(new Point(this.gridPoints[r][c].x + halfSize, this.gridPoints[r][c].y + halfSize));
+                    points.push(new Point(this.gridPoints[r][c].x - halfSize, this.gridPoints[r][c].y + halfSize));
                     row.push(points);
                 }
                 controlPoints.push(row);
@@ -62,10 +64,10 @@ class W2 extends GridTangle {
             for (let r = 0; r < this.gridPoints.length; r++) {
                 for (let c = 0; c < this.gridPoints[r].length - 1; c++) {
                     let p1 = controlPoints[r][c][1];
-                    let p2 = controlPoints[r][c+1][0];
+                    let p2 = controlPoints[r][c + 1][0];
                     if (colInd++ % 2) {
                         p1 = controlPoints[r][c][2];
-                        p2 = controlPoints[r][c+1][3];
+                        p2 = controlPoints[r][c + 1][3];
                     }
                     this.g.line(p1.x, p1.y, p2.x, p2.y);
                 }
@@ -78,10 +80,10 @@ class W2 extends GridTangle {
             for (let r = 0; r < this.gridPoints.length - 1; r++) {
                 for (let c = 0; c < this.gridPoints[r].length; c++) {
                     let p1 = controlPoints[r][c][2];
-                    let p2 = controlPoints[r+1][c][1];
+                    let p2 = controlPoints[r + 1][c][1];
                     if (colInd++ % 2) {
                         p1 = controlPoints[r][c][3];
-                        p2 = controlPoints[r+1][c][0];
+                        p2 = controlPoints[r + 1][c][0];
                     }
                     this.g.line(p1.x, p1.y, p2.x, p2.y);
                 }

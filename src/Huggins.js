@@ -1,3 +1,5 @@
+/*jshint esversion: 9 */
+
 /**
  * @typedef {Object} HugginsOptions
  * @property {number | string} holeDiameter The diameter of the dots in pixels. If set to 'proportional', which is the default, the diameter will be 1/8 if the smallest grid spacing.
@@ -20,7 +22,7 @@ class Huggins extends GridTangle {
      * @param {HugginsOptions} options The options list.
      */
     constructor(mask, options) {
-        if (typeof options === 'undefined') options = {}
+        if (typeof options === 'undefined') options = {};
         options.gridShow = false;
         options.allowableOptions = {
             holeDiameter: 'proportional',
@@ -30,15 +32,15 @@ class Huggins extends GridTangle {
         };
         super(mask, options);
 
-        this.build = function() {
+        this.build = function () {
             if (this.holeDiameter === 'proportional') {
                 this.holeDiameter = Math.min(
                     (typeof this.gridXSpacing === 'object' ? this.gridXSpacing.min : this.gridXSpacing),
                     (typeof this.gridYSpacing === 'object' ? this.gridYSpacing.min : this.gridYSpacing)
                 ) / 4;
             }
-            const radius = this.holeDiameter/2;
-            const control = this.curve*radius;
+            const radius = this.holeDiameter / 2;
+            const control = this.curve * radius;
             this.g.curveTightness(0);
 
             // Create cache for control points
@@ -70,13 +72,13 @@ class Huggins extends GridTangle {
                 for (let c = 0; c < this.gridPoints[r].length - 1; c++) {
                     let c1 = controlPoints[r][c][7];
                     let p1 = controlPoints[r][c][0];
-                    let p2 = controlPoints[r][c+1][1];
-                    let c2 = controlPoints[r][c+1][6];
+                    let p2 = controlPoints[r][c + 1][1];
+                    let c2 = controlPoints[r][c + 1][6];
                     if (colInd++ % 2) {
                         c1 = controlPoints[r][c][4];
                         p1 = controlPoints[r][c][3];
-                        p2 = controlPoints[r][c+1][2];
-                        c2 = controlPoints[r][c+1][5];
+                        p2 = controlPoints[r][c + 1][2];
+                        c2 = controlPoints[r][c + 1][5];
                     }
                     this.g.curve(c1.x, c1.y, p1.x, p1.y, p2.x, p2.y, c2.x, c2.y);
                 }
@@ -90,13 +92,13 @@ class Huggins extends GridTangle {
                 for (let c = 0; c < this.gridPoints[r].length; c++) {
                     let c1 = controlPoints[r][c][4];
                     let p1 = controlPoints[r][c][1];
-                    let p2 = controlPoints[r+1][c][2];
-                    let c2 = controlPoints[r+1][c][7];
+                    let p2 = controlPoints[r + 1][c][2];
+                    let c2 = controlPoints[r + 1][c][7];
                     if (colInd++ % 2) {
                         c1 = controlPoints[r][c][5];
                         p1 = controlPoints[r][c][0];
-                        p2 = controlPoints[r+1][c][3];
-                        c2 = controlPoints[r+1][c][6];
+                        p2 = controlPoints[r + 1][c][3];
+                        c2 = controlPoints[r + 1][c][6];
                     }
                     this.g.curve(c1.x, c1.y, p1.x, p1.y, p2.x, p2.y, c2.x, c2.y);
                 }

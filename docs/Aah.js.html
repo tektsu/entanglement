@@ -26,7 +26,9 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
+            <pre class="prettyprint source linenums"><code>/*jshint esversion: 9 */
+
+/**
  * @typedef {Object} DotElementOptions
  * @property {number|Range} size Dot diameter.
  * @property {number} spacing Relative dot spacing expressed as a percentage of diameter; defines the size of the enclosing polygon.
@@ -55,9 +57,9 @@ class DotElement extends TangleElement {
         super(g, center, options);
         this.spacing = Math.max(100, this.spacing);
 
-        let dAngle = TWO_PI/8;
-        for (let angle=0; angle&lt;TWO_PI; angle+=dAngle) {
-            this.addVertex(new Polar(this.spacing/100 * this.size, angle).toPointCenter(this.center));   // Put a vertex out beyond the tip of the arm
+        let dAngle = TWO_PI / 8;
+        for (let angle = 0; angle &lt; TWO_PI; angle += dAngle) {
+            this.addVertex(new Polar(this.spacing / 100 * this.size, angle).toPointCenter(this.center)); // Put a vertex out beyond the tip of the arm
         }
     }
 
@@ -125,31 +127,31 @@ class AahElement extends TangleElement {
             size: 100,
         };
         super(g, center, options);
-        this.length = this.size/2;
+        this.length = this.size / 2;
         if (this.armCount &lt; 3) this.armCount = 3;
         this.arms = [];
 
-        const dAngle = TWO_PI/this.armCount;
+        const dAngle = TWO_PI / this.armCount;
         const rotation = this.rotate ? random(0, dAngle) : 0;
-        for (let angle=0; angle&lt;TWO_PI-(dAngle/2); angle+=dAngle) {
+        for (let angle = 0; angle &lt; TWO_PI - (dAngle / 2); angle += dAngle) {
 
             // Create the arm
-            let c = new Polar(randomGaussian(this.length, this.lengthSDP/100 * this.length), randomGaussian(angle+rotation, this.thetaSD*Math.PI/180));
-            const gap = randomGaussian(this.gapSDP, this.gapSDP/7)/100 * this.length;
+            let c = new Polar(randomGaussian(this.length, this.lengthSDP / 100 * this.length), randomGaussian(angle + rotation, this.thetaSD * Math.PI / 180));
+            const gap = randomGaussian(this.gapSDP, this.gapSDP / 7) / 100 * this.length;
             let arm = {
-                start: new Polar(gap, c.a).toPointCenter(this.center),  // Draw line from here...
-                stop: c.toPointCenter(this.center),                     // ...to here
+                start: new Polar(gap, c.a).toPointCenter(this.center), // Draw line from here...
+                stop: c.toPointCenter(this.center), // ...to here
                 tipCenter: new Polar(c.r * (this.tipDistancePercent / 100), c.a).toPointCenter(this.center),
                 tipDiameter: !isNaN(this.tipDiameter) ? this.tipDiameter : this.tipDiameter === AahElement.tipType.gap ? gap : 10,
             };
             this.arms.push(arm);
 
             // Polygon vertices associated with this arm
-            let maxLength = Math.max(c.r, c.r * (this.tipDistancePercent / 100)) + arm.tipDiameter/2;
-            this.addVertex(new Polar(maxLength + 5*gap, c.a).toPointCenter(this.center));
-            this.addVertex(new Polar(0.6*c.r, c.a+(dAngle/2)).toPointCenter(this.center));
+            let maxLength = Math.max(c.r, c.r * (this.tipDistancePercent / 100)) + arm.tipDiameter / 2;
+            this.addVertex(new Polar(maxLength + 5 * gap, c.a).toPointCenter(this.center));
+            this.addVertex(new Polar(0.6 * c.r, c.a + (dAngle / 2)).toPointCenter(this.center));
         }
-        if(this.debug) console.log("aah: ", this.aah);
+        if (this.debug) console.log("aah: ", this.aah);
     }
 
 
@@ -210,8 +212,7 @@ class Aah extends Tangle {
      */
     static plans = {
         zentangle: {
-            aah: {
-            },
+            aah: {},
             dot: {
                 size: new Range(3, 6),
                 fillColor: 255,
@@ -232,7 +233,7 @@ class Aah extends Tangle {
         options.plan = options.plan === undefined ? Aah.plans.zentangle : options.plan;
         super(mask, options);
 
-        this.build = function() {
+        this.build = function () {
 
             if (this.plan.aah === undefined) this.plan.aah = {};
             if (this.plan.dot === undefined) this.plan.dot = {};
@@ -310,8 +311,7 @@ class Aah extends Tangle {
 
         this.execute();
     }
-}
-</code></pre>
+}</code></pre>
         </article>
     </section>
 
@@ -321,13 +321,13 @@ class Aah extends Tangle {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Aah.html">Aah</a></li><li><a href="AahElement.html">AahElement</a></li><li><a href="Ambler.html">Ambler</a></li><li><a href="BoxSpiralElement.html">BoxSpiralElement</a></li><li><a href="BoxSpirals.html">BoxSpirals</a></li><li><a href="DotElement.html">DotElement</a></li><li><a href="Emingle.html">Emingle</a></li><li><a href="Entanglement.html">Entanglement</a></li><li><a href="GridTangle.html">GridTangle</a></li><li><a href="Huggins.html">Huggins</a></li><li><a href="Line.html">Line</a></li><li><a href="Point.html">Point</a></li><li><a href="Polar.html">Polar</a></li><li><a href="Polygon.html">Polygon</a></li><li><a href="Range.html">Range</a></li><li><a href="Tangle.html">Tangle</a></li><li><a href="TangleBase.html">TangleBase</a></li><li><a href="TangleElement.html">TangleElement</a></li><li><a href="W2.html">W2</a></li><li><a href="Zentangle.html">Zentangle</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Aah.html">Aah</a></li><li><a href="AahElement.html">AahElement</a></li><li><a href="Ambler.html">Ambler</a></li><li><a href="BoxSpiralElement.html">BoxSpiralElement</a></li><li><a href="BoxSpirals.html">BoxSpirals</a></li><li><a href="DotElement.html">DotElement</a></li><li><a href="Emingle.html">Emingle</a></li><li><a href="Entanglement.html">Entanglement</a></li><li><a href="GridSpacingModeCompression.html">GridSpacingModeCompression</a></li><li><a href="GridSpacingModeLinear.html">GridSpacingModeLinear</a></li><li><a href="GridSpacingModeStatic.html">GridSpacingModeStatic</a></li><li><a href="GridSpacingModeWave.html">GridSpacingModeWave</a></li><li><a href="GridTangle.html">GridTangle</a></li><li><a href="Huggins.html">Huggins</a></li><li><a href="Line.html">Line</a></li><li><a href="Point.html">Point</a></li><li><a href="Polar.html">Polar</a></li><li><a href="Polygon.html">Polygon</a></li><li><a href="Range.html">Range</a></li><li><a href="Tangle.html">Tangle</a></li><li><a href="TangleBase.html">TangleBase</a></li><li><a href="TangleElement.html">TangleElement</a></li><li><a href="W2.html">W2</a></li><li><a href="Zentangle.html">Zentangle</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Tue Aug 18 2020 18:39:32 GMT-0700 (Mountain Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sun Aug 23 2020 18:18:18 GMT-0700 (Mountain Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
