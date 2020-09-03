@@ -5,7 +5,7 @@
  */
 class Entanglement {
 
-    static version = '0.0.6';
+    static version = '0.0.7';
 
     /**
      * Choose a value

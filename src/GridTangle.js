@@ -30,7 +30,7 @@ class GridTangle extends Tangle {
     /**
      * Create a new GridTangle
      * @param {Point[] | Polygon} mask Vertices of a polygon used as a mask. Only the portion of the tangle inside the polygon will be visible.
-     * @param {TangleOptions} options A map of values to be loaded into instance variables.
+     * @param {GridTangleOptions} options A map of values to be loaded into instance variables.
      */
     constructor(mask, options) {
         if (typeof options === 'undefined') options = {};
@@ -244,7 +244,7 @@ class GridSpacingModeStatic {
 }
 
 /**
- * Create a rectangular grid with liniearly increasing spacing.
+ * Create a rectangular grid with linearly increasing spacing.
  */
 class GridSpacingModeLinear {
 
@@ -297,6 +297,9 @@ class GridSpacingModeLinear {
     }
 }
 
+/**
+ * Create a rectangular grid with a sine wave.
+ */
 class GridSpacingModeWave {
 
     /**
@@ -344,6 +347,9 @@ class GridSpacingModeWave {
     }
 }
 
+/**
+ * Create a rectangular grid with a compression wave.
+ */
 class GridSpacingModeCompression {
 
     /**

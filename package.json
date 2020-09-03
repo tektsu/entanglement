@@ -1,6 +1,6 @@
 {
   "name": "entanglement",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Zentingle drawing library based on p5",
   "main": "entanglement.js",
   "directories": {
