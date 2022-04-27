@@ -12,7 +12,7 @@
     "grunt-terser": "^1.0.0"
   },
   "devDependencies": {
-    "grunt": "^1.2.1",
+    "grunt": "^1.5.2",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-exec": "^3.0.0",
     "grunt-jsdoc": "^2.4.1",
